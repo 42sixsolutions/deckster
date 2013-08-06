@@ -1,4 +1,0 @@
-deckster
-========
-
-The Deckster repository
