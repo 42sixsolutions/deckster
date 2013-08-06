@@ -296,11 +296,13 @@ window.Deckster = (options) ->
         if $card.data("col-expand")?
            expandColTo = parseInt($card.data("col-expand")) 
            expandColTo = if expandColTo > __col_max  then __col_max else expandColTo
+        expandColTo = if expandColTo? and expandColTo > 0 then expandColTo else d.col_span
         expandRowTo = parseInt($card.data("row-expand")) if $card.data("row-expand")? 
+        expandRowTo = if expandRowTo? and expandRowTo > 0 then expandRowTo else d.row_span
 
-        d['row_span'] = if expandRowTo? and expandRowTo > 0 then expandRowTo else d.row_span
-        d['col'] = 1
-        d['col_span'] = if expandColTo? and expandColTo > 0 then expandColTo else d.col_span
+        d['row_span'] = expandRowTo
+        d['col'] = if (expandColTo-1)+d.col <= __col_max  then d.col else 1
+        d['col_span'] = expandColTo
 
         if d.col_span == $card.data('original-col-span') and d.row_span == $card.data('original-row-span')
           return;
