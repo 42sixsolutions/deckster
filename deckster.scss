@@ -1,0 +1,98 @@
+$deckster_deck: ".deckster-deck";
+$deckster_card: ".deckster-card";
+$deckster_controls: ".deckster-controls";
+$deckster_drag_handle: ".deckster-drag-handle";
+
+$default_card_width: 300px;
+$default_card_height: 200px;
+$default_card_horizontal_gutter: 10px;
+$default_card_vertical_gutter: 20px;
+
+$content-padding:30px;
+
+/* DECK */
+
+#{$deckster_deck} {
+  position: relative;
+  border: 1px solid red;
+}
+
+$_i: 1;
+@while $_i <= 50 {
+  $_how_many_gutters: $_i - 1;
+  $_how_many_tiles: $_i;
+
+  #{$deckster_deck}[data-col-max="#{$_i}"] {
+    width: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
+  }
+
+  #{$deckster_deck}[data-row-max="#{$_i}"] {
+    height: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
+  }
+
+  $_i: $_i + 1
+}
+
+/* CARD */
+
+#{$deckster_card} {
+  position: absolute;
+  border: 1px solid blue;
+  overflow:auto;
+}
+
+#{$deckster_card} > *{
+  padding:$content-padding;
+}
+
+$_i: 1;
+@while $_i <= 50 {
+  $_how_many_gutters: $_i - 1;
+  $_how_many_tiles: $_i - 1;
+
+  #{$deckster_card}[data-col="#{$_i}"] {
+    left: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
+  }
+
+  #{$deckster_card}[data-row="#{$_i}"] {
+    top: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
+  }
+
+  $_i: $_i + 1
+}
+
+$_i: 1;
+@while $_i <= 12 {
+  $_how_many_gutters: $_i - 1;
+  $_how_many_tiles: $_i;
+
+  #{$deckster_card}[data-col-span="#{$_i}"] {
+    width: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
+  }
+
+  #{$deckster_card}[data-row-span="#{$_i}"] {
+    height: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
+  }
+
+  $_i: $_i + 1
+}
+
+/* CONTROLS */
+
+#{$deckster_controls} {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 1px solid yellow;
+  padding:0px;
+}
+
+#{$deckster_drag_handle} {
+  height: 30px;
+  width: 30px;
+  display: block;
+}
+
+#{$deckster_controls} > a {
+  cursor: pointer;
+}

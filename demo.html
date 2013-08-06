@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Deckster Demo</title>
+<link rel="stylesheet" href="deckster.css" media="all" type="text/css" />
+</head>
+<body>
+<h1>Deckster</h1>
+<div id="deck1" class="deckster-deck" data-col-max="5" data-draggable="true" data-expandable="true" data-cards-expanded="false">
+  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="1" data-expanded="false" data-col-expand="7" data-row-expand="-1">
+    Tile 1
+  </div>
+  <div class="deckster-card" data-col="2" data-row="3" data-col-span="2" data-row-span="1" data-url="./sampleSites/site2.html" data-col-expand="2" data-row-expand="1">
+    Tile 2
+  </div>
+  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="2" data-url="./sampleSites/site3.html" data-col-expand="0" data-row-expand="0">
+    Tile 3
+  </div>
+  <div class="deckster-card" data-col="2" data-row="3" data-col-span="2" data-row-span="2" data-expanded="false" data-col-expand="3" data-row-expand="-1">
+    Tile 4
+  </div>
+  <div class="deckster-card" data-col="1" data-row="3" data-col-span="3" data-row-span="1" data-url="./sampleSites/site5.html" data-col-expand="4" data-row-expand="4">
+    Tile 5
+  </div>
+  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="3" data-url="./sampleSites/site6.html" data-col-expand="10" data-row-expand="3">
+    Tile 6
+  </div>
+</div>
+<script src="jquery-2.0.3.min.js"></script>
+<script src="deckster.js"></script>
+<script type="text/javascript">
+$("#deck1").deckster();
+</script>
+</body>
+</html>

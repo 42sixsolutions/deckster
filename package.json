@@ -1,0 +1,13 @@
+{
+  "name": "deckster",
+  "version": "0.0.1",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt-cli": "0.1.9",
+    "coffee-script": "1.6.3",
+    "node-sass": "0.6.2",
+    "jshint": "2.1.8",
+    "coffeelint": "0.5.6",
+    "csslint": "0.9.10"
+  }
+}
