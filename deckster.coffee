@@ -386,11 +386,22 @@ window.Deckster = (options) ->
           context: $deck
           success: (data,status,response) -> 
             $controls = this.find(_css_variables.selectors.controls).clone true
+            $title = this.find(".deckster-title")
             this.html ""
+            this.append $title
             this.append $controls
             this.append data
 
          _ajax(ajax_options)) if $deck.data("url")?
+
+    if options.url_enabled? # Just in case we'll be needing some real check
+        _on __events.card_added, ($card,d) ->
+          title = $card.data "title"
+          unless title?
+                return
+          title_div = $('<div class="deckster-title">')
+                .text title
+          $card.prepend title_div
 
     if options['expandable'] and options['expandable'] == true 
       _on __events.inited, ()->
