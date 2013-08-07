@@ -11,6 +11,7 @@ _css_variables =
     card_expanded: (option)->'[data-expanded='+option+']'
     deck_expanded: (option) -> '[data-cards-expanded='+option+']'
   classes: {}
+  dimensions: {}
 
 _ajax_default = 
   success: (data,status, response) ->
@@ -108,7 +109,7 @@ window.Deckster = (options) ->
       for col, id of cols
         unless id == undefined || id == __dominate_card_data.id || __cards_needing_resolved_by_id[id]?
           __cards_needing_resolved_by_id[id] = true
-          __cards_needing_resolved_in_order.push id
+          __cards_needing_resolved_in_order.push id 
 
   _loop_through_spaces = (row_start, col_start, row_end, col_end, callback) ->
     row_i = row_start
@@ -156,10 +157,37 @@ window.Deckster = (options) ->
         col_i++
       row_i++
 
+  _apply_transition = ($card,d) ->
+    mysheet = document.styleSheets[0]
+    myrules = mysheet.cssRules ? mysheet.rules
+    rowStr = _css_variables.selectors.card+"[data-row=\""+d.row+"\"]"
+    colStr = _css_variables.selectors.card+"[data-col=\""+d.col+"\"]"
+    _css_variables.dimensions = _css_variables.dimensions || {}
+    _left = _css_variables.dimensions[colStr]
+    _top = _css_variables.dimensions[rowStr]
+    #Did we have this value saved?
+    unless _left? and _top?
+      for rule,index in myrules
+        if rule.selectorText == rowStr
+          _top = rule.style.top
+         # _css_variables.dimensions[rowStr] = _top
+        else if rule.selectorText == colStr 
+          _left = rule.style.left
+          #_css_variables.dimensions[colStr] = _left
+
+    console.log("DONE")
+
+    $card.attr 'data-row', d.row
+    $card.attr 'data-col', d.col
+    $card.animate({
+      top:_top
+      left:_left
+    },"slow","swing") 
+
   _apply_deck = () ->
     row_max = 0
     applied_card_ids = {}
-
+    isDragging = false
     for row, cols of __deck
       for col, id of cols
         unless applied_card_ids[id]?
@@ -171,8 +199,11 @@ window.Deckster = (options) ->
           d = __card_data_by_id[id]
 
           $card.attr 'data-card-id', id
-          $card.attr 'data-row', d.row
-          $card.attr 'data-col', d.col
+          if isDragging
+            _apply_transition($card,d) 
+          else
+            $card.attr 'data-row', d.row
+            $card.attr 'data-col', d.col
           $card.attr 'data-row-span', d.row_span
           $card.attr 'data-col-span', d.col_span
 
@@ -242,10 +273,22 @@ window.Deckster = (options) ->
           original_top = __active_drag_card_drag_data['original_top']
           
           messages = []
-          messages.push 'UP' if new_top - original_top < -200
-          messages.push 'DOWN' if new_top - original_top > 200
-          messages.push 'LEFT' if new_left - original_left < -300
-          messages.push 'RIGHT' if new_left - original_left > 300
+          if new_top - original_top < -200
+            __active_drag_card_drag_data['original_top'] = __active_drag_card_drag_data['original_top']-200
+            _move_card(__$active_drag_card,"up")
+            messages.push 'UP' 
+          if new_top - original_top > 200  
+            __active_drag_card_drag_data['original_top'] = __active_drag_card_drag_data['original_top']+200
+            _move_card(__$active_drag_card,"down")
+            messages.push 'DOWN' 
+          if new_left - original_left < -300
+            __active_drag_card_drag_data['original_left'] = __active_drag_card_drag_data['original_left']-300
+            _move_card(__$active_drag_card,"left")
+            messages.push 'LEFT' 
+          if new_left - original_left > 300
+            __active_drag_card_drag_data['original_left']  = __active_drag_card_drag_data['original_left']+300
+            _move_card(__$active_drag_card,"right")
+            messages.push 'RIGHT'
           console.log messages.join(' ') if messages.length > 0
 
           __$active_drag_card.offset { top: new_top, left: new_left }
