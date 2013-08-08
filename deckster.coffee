@@ -441,3 +441,13 @@ $ = jQuery
 $.fn.deckster = window.Deckster
 
 
+$("#deck1").deckster({
+    animate: {
+      properties: {
+        opacity: ".5"
+      },
+      options: {
+        duration: "slow"
+      }
+    }
+})
