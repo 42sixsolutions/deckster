@@ -24,7 +24,7 @@ _ajax_default =
   async: true
 
 
-_css_variables.classes[sym] = selector.slice(1) for sym, selector of _css_variables.selectors
+_css_variables.classes[sym] = selector[1..] for sym, selector of _css_variables.selectors
 
 window.Deckster = (options) ->
   $deck = $(this)
@@ -423,7 +423,7 @@ window.Deckster = (options) ->
                 return
           $title_div = $('<div>')
                 .text(title)
-                .addClass(_css_variables.selectors.card_title[1..])
+                .addClass(_css_variables.classes.card_title)
           $card.prepend $title_div
 
     if options['expandable'] and options['expandable'] == true 
