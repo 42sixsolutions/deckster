@@ -62,3 +62,11 @@ Running `make lint` yields tips for improving the code.
     -If `data-col-expand` is greater than `data-col-max`, then `data-col-expand` will be implicitly shortened to `data-col-max`.
     
     -Otherwise, the card's dimensions are altered when expanded.
+
+4. Hide Card
+
+    To hide a card, set the `data-hidden` attribute to `true`.
+
+    Notes:
+
+    - If the content loaded from `data-url` is empty, and the card's existing content is empty, then the card will not be shown in the deck.
