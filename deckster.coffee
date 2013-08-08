@@ -193,7 +193,7 @@ window.Deckster = (options) ->
       $card.attr 'data-col', d.col
       $card.css 'opacity','1'
 
-    $card.animate(options.animate.properties, options.animate.options) 
+    $card.stop(true,false).animate(options.animate.properties, options.animate.options) 
 
   _apply_deck = () ->
     row_max = 0
