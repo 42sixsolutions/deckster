@@ -49,9 +49,17 @@ window.Deckster = (options) ->
   ###
   _option_url_enabled = $deck.data 'url-enabled'
   options['url_enabled'] = (if _option_url_enabled? then (if _option_url_enabled == true or _option_url_enabled == 'true' then true else false) else options['url_enabled'])
+  ###
+     Init Dragging options
+  ###   
+  options.animate = options.animate ? {}
+  options.animate.properties = options.animate.properties ? {}
+  options.animate.options = options.animate.options ? {}
 
-  # Deckster Base 
-  # --- Deckster Base Variables
+  ###
+    Deckster Base 
+   --- Deckster Base Variables
+  ###
   __next_id = 1
   __deck = {}
   __cards_by_id = {}
@@ -164,31 +172,33 @@ window.Deckster = (options) ->
     rowStr = _css_variables.selectors.card+"[data-row=\""+d.row+"\"]"
     colStr = _css_variables.selectors.card+"[data-col=\""+d.col+"\"]"
     _css_variables.dimensions = _css_variables.dimensions || {}
-    _left = _css_variables.dimensions[colStr]
-    _top = _css_variables.dimensions[rowStr]
+    leftAnimate = _css_variables.dimensions[colStr]
+    topAnimate = _css_variables.dimensions[rowStr]
     #Did we have this value saved?
-    unless _left? and _top?
+    unless leftAnimate? and topAnimate?
       for rule,index in myrules
         if rule.selectorText == rowStr
-          _top = rule.style.top
-         # _css_variables.dimensions[rowStr] = _top
+          topAnimate = rule.style.top
+          _css_variables.dimensions[rowStr] = topAnimate
         else if rule.selectorText == colStr 
-          _left = rule.style.left
-          #_css_variables.dimensions[colStr] = _left
+          leftAnimate = rule.style.left
+          _css_variables.dimensions[colStr] = leftAnimate
 
-    console.log("DONE")
+    options.animate.properties.top = topAnimate
+    options.animate.properties.left = leftAnimate
+    options.animate.options.duration?= "slow"
+    options.animate.options.easing?= "swing"
+    options.animate.options.always = () ->
+      $card.attr 'data-row', d.row
+      $card.attr 'data-col', d.col
+      $card.css 'opacity','1'
 
-    $card.attr 'data-row', d.row
-    $card.attr 'data-col', d.col
-    $card.animate({
-      top:_top
-      left:_left
-    },"slow","swing") 
+    $card.animate(options.animate.properties, options.animate.options) 
 
   _apply_deck = () ->
     row_max = 0
     applied_card_ids = {}
-    isDragging = false
+    isDragging = true
     for row, cols of __deck
       for col, id of cols
         unless applied_card_ids[id]?
@@ -200,7 +210,7 @@ window.Deckster = (options) ->
           d = __card_data_by_id[id]
 
           $card.attr 'data-card-id', id
-          if isDragging
+          if isDragging and not $card.hasClass "draggable"
             _apply_transition($card,d) 
           else
             $card.attr 'data-row', d.row
