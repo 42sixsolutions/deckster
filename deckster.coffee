@@ -3,6 +3,7 @@ _css_variables =
   selectors:
     deck: '.deckster-deck'
     card: '.deckster-card'
+    card_title: '.deckster-card-title'
     controls: '.deckster-controls'
     drag_handle: '.deckster-drag-handle'
     expand_handle: '.deckster-expand-handle'
@@ -386,7 +387,7 @@ window.Deckster = (options) ->
           context: $deck
           success: (data,status,response) -> 
             $controls = this.find(_css_variables.selectors.controls).clone true
-            $title = this.find(".deckster-title")
+            $title = this.find(_css_variables.selectors.card_title)
             this.html ""
             this.append $title
             this.append $controls
@@ -399,9 +400,10 @@ window.Deckster = (options) ->
           title = $card.data "title"
           unless title?
                 return
-          title_div = $('<div class="deckster-title">')
-                .text title
-          $card.prepend title_div
+          $title_div = $('<div>')
+                .text(title)
+                .addClass(_css_variables.selectors.card_title[1..])
+          $card.prepend $title_div
 
     if options['expandable'] and options['expandable'] == true 
       _on __events.inited, ()->
