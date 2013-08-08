@@ -228,16 +228,21 @@ window.Deckster = (options) ->
     cards = $deck.children(_css_variables.selectors.card)
     cards.each ->
       $card = $(this)
-      d =
-        id: __next_id++
-        row: parseInt $card.attr 'data-row'
-        col: parseInt $card.attr 'data-col'
-        row_span: parseInt $card.attr 'data-row-span'
-        col_span: parseInt $card.attr 'data-col-span'
 
-      __cards_by_id[d.id] = $card
-      __card_data_by_id[d.id] = d
-      _add_card($card, d)
+      _option_hidden = $card.data 'hidden'
+      if _option_hidden == true
+        $card.remove();
+      else
+        d =
+          id: __next_id++
+          row: parseInt $card.attr 'data-row'
+          col: parseInt $card.attr 'data-col'
+          row_span: parseInt $card.attr 'data-row-span'
+          col_span: parseInt $card.attr 'data-col-span'
+
+        __cards_by_id[d.id] = $card
+        __card_data_by_id[d.id] = d
+        _add_card($card, d)
 
     _apply_deck()
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
@@ -397,11 +402,17 @@ window.Deckster = (options) ->
           context: $deck
           success: (data,status,response) -> 
             $controls = this.find(_css_variables.selectors.controls).clone true
-            $title = this.find(_css_variables.selectors.card_title)
-            this.html ""
-            this.append $title
-            this.append $controls
-            this.append data
+            if (!!data.trim()) # url content is not empty
+              $title = this.find(_css_variables.selectors.card_title)
+              this.html ""
+              this.append $title
+              this.append $controls
+              this.append data 
+            else # remove the card if url content is empty & div text content is empty
+              divText = this.clone().children().remove().end().text();
+              if (!divText.trim())
+                this.remove()
+                #_apply_deck()
 
          _ajax(ajax_options)) if $deck.data("url")?
 
