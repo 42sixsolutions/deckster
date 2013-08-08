@@ -1,5 +1,6 @@
 $deckster_deck: ".deckster-deck";
 $deckster_card: ".deckster-card";
+$deckster_card_title: ".deckster-card-title";
 $deckster_controls: ".deckster-controls";
 $deckster_drag_handle: ".deckster-drag-handle";
 
@@ -43,6 +44,13 @@ $_i: 1;
 
 #{$deckster_card} > *{
   padding:$content-padding;
+}
+
+#{$deckster_card_title} {
+  padding: 8px;
+  background-color: #6564EE;
+  color: white;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 $_i: 1;
