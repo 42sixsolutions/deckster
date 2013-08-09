@@ -26,6 +26,24 @@ _ajax_default =
 
 _css_variables.classes[sym] = selector[1..] for sym, selector of _css_variables.selectors
 
+# Jump scroll area
+_jump_scroll =
+  $title_cards: null
+  $nav_list: null
+
+_create_jump_scroll = () ->
+    $("card-nav-list").remove()
+    _jump_scroll.$title_cards = $ '.deckster-deck [data-title]'
+    if _jump_scroll.$title_cards.length is 0
+        return
+    _jump_scroll.$nav_list = $ '<ul id="card-nav-list">'
+    _jump_scroll.$title_cards.each (index, card) ->
+        title = $(this).data 'title'
+        console.log "title is #{title}"
+        $nav_item = $  "<li>#{title}</li>"
+        _jump_scroll.$nav_list.append $nav_item
+        $("body").prepend _jump_scroll.$nav_list
+
 window.Deckster = (options) ->
   $deck = $(this)
 
@@ -248,6 +266,7 @@ window.Deckster = (options) ->
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
     for callback in __event_callbacks[__events.inited] || []
       break if callback($deck) == false
+    _create_jump_scroll 0xDCC0FFEEBAD
 
 
   # Deckster Drag
