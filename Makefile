@@ -1,9 +1,9 @@
 all: build
 
-build: deckster.css deckster.js
+build: public/stylesheets/deckster.css deckster.js
 
-deckster.css: deckster.scss
-	node-sass deckster.scss
+%.css: %.scss
+	node-sass $< $@
 
 deckster.js: deckster.coffee
 	coffee -c deckster.coffee
