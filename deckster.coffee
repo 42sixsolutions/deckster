@@ -31,18 +31,32 @@ _jump_scroll =
   $title_cards: null
   $nav_list: null
 
+_scrollToView = ($el) ->
+  offset = $el.offset()
+  offset.top -= 20
+  offset.left -= 20
+  $('html, body').animate {
+    scrollTop: offset.top
+    scrollLeft: offset.left
+  }
+
 _create_jump_scroll = () ->
+    J = _jump_scroll
     $("card-nav-list").remove()
-    _jump_scroll.$title_cards = $ '.deckster-deck [data-title]'
-    if _jump_scroll.$title_cards.length is 0
+    # Collect all data-title cards from ALL DECKS on the pge
+    J.$title_cards = $ '.deckster-deck [data-title]'
+    if J.$title_cards.length is 0
         return
-    _jump_scroll.$nav_list = $ '<ul id="card-nav-list">'
-    _jump_scroll.$title_cards.each (index, card) ->
-        title = $(this).data 'title'
+    J.$nav_list = $ '<ul id="card-nav-list">'
+
+    J.$title_cards.each (index, card) ->
+        title = $(card).data 'title'
         console.log "title is #{title}"
         $nav_item = $  "<li>#{title}</li>"
-        _jump_scroll.$nav_list.append $nav_item
-        $("body").prepend _jump_scroll.$nav_list
+        $nav_item.on 'click', () ->
+          _scrollToView $ card
+        J.$nav_list.append $nav_item
+        $("body").prepend J.$nav_list
 
 window.Deckster = (options) ->
   $deck = $(this)
