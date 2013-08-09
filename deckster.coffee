@@ -452,7 +452,7 @@ window.Deckster = (options) ->
               this.html ""
               this.append $title
               this.append $controls
-              this.append data 
+              this.append '<div class="content">' + data + '</div>'
             else # remove the card if url content is empty & div text content is empty
               divText = this.clone().children().remove().end().text();
               if (!divText.trim())

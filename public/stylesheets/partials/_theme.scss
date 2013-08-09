@@ -23,23 +23,40 @@ h1 {
 
 #{$deckster_card} {
   background: $cardbg;
-  overflow: auto;
-}
-
-.control {
-  color: lighten($controls,15%);
-
-  &:hover {
-    color: $controls;
+  overflow: none;
+  padding-top: 40px;
+  
+  #{$deckster_card_title} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: $text;
+    padding: 0 $padding;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-bottom: 1px solid $bodybg;
   }
+
+  .control {
+    color: lighten($controls,15%);
+  
+    &:hover {
+      color: $controls;
+    }
+  }
+
+  .content {
+     display: block;
+     overflow: auto;
+     height: 100%;
+     padding: $padding;
+  }
+  
 }
 
-#{$deckster_card_title} {
-  color: $text;
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid $bodybg;
-}
+
 
 #card-nav-list {
   font: 12px "Lucida Grand", sans-serif;
