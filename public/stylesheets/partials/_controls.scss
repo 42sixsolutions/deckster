@@ -1,0 +1,48 @@
+/* -------------------------- Controls -------------------------- */
+
+.control {
+  font-family: 'controls';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  height: 30px;
+  width: 30px;
+  display: inline-block;
+  text-align: center;
+  line-height: 30px;
+}
+
+.control.expand:before {
+  content: "\e000";
+}
+
+.control.collapse:before {
+  content: "\e001";
+}
+
+.control.drag:before {
+  content: "\e003";
+}
+
+.control.popout:before {
+  content: "\f064";
+}
+
+
+#{$deckster_controls} {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0px;
+}
+
+#{$deckster_drag_handle} {
+}
+
+#{$deckster_controls} > a {
+  cursor: pointer;
+}

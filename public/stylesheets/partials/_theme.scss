@@ -1,0 +1,28 @@
+$bodybg: 		#eeeeee;
+$cardbg: 		#ffffff;
+$text: 			#313131;
+$controls: 		#bbbbbb;
+$padding: 		20px;
+$font: 			'MuseoSans', Arial, Helvetica, sans-serif;
+
+/* -------------------------- Theme -------------------------- */
+
+body {
+	background: $bodybg;
+	color: $text;
+	font-family: $font;
+	font-weight: normal;
+}
+
+#{$deckster_card} {
+	background: $cardbg;
+	padding: $padding;
+}
+
+.control {
+	color: lighten($controls,15%);
+	
+	&:hover {
+		color: $controls;
+	}
+}
