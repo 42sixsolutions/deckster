@@ -18,16 +18,16 @@ Deckster is a lightweight web UI framework for organizing lots of interactive el
 
 1. Install the smelting tools: node-sass and coffee-script. `npm install -g node-sass coffee-script`
 2. Smelt the source into finely crafted JavaScript and CSS. `make`
-3. Launch the demo. `open demo.html`
+3. Launch the demo. `make serve`
 
 # DEPLOY
 
 1. Run `make zip`.
 2. Copy the resulting `.zip` file to your web application.
 3. Expand the contents into `public/` or the like.
-4. Move files and modify `demo.html` as necessary.
+4. Move files and modify `index.html` as necessary.
 
-`sampleSites/` represents sample data sources for the main `demo.html` application.
+`sampleSites/` represents sample data sources for the main `index.html` application.
 
 # LINT
 

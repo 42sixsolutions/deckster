@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {},
   "devDependencies": {
-    "grunt-cli": "0.1.9",
+    "paperboy": "0.0.5",
     "coffee-script": "1.6.3",
     "node-sass": "0.6.2",
     "jshint": "2.1.8",

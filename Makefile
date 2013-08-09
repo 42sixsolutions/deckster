@@ -8,8 +8,11 @@ deckster.css: deckster.scss
 deckster.js: deckster.coffee
 	coffee -c deckster.coffee
 
-zip: deckster.js deckster.css demo.html jquery-2.0.3.min.js
-	zip deckster-0.0.1.zip deckster.js deckster.css demo.html jquery-2.0.3.min.js
+serve: deckster.js deckster.css index.html jquery-2.0.3.min.js
+	node server.js
+
+zip: deckster.js deckster.css index.html jquery-2.0.3.min.js
+	zip deckster-0.0.1.zip deckster.js deckster.css index.html jquery-2.0.3.min.js
 
 lint: coffeelint jshint csslint tidy
 
@@ -23,8 +26,8 @@ jshint: deckster.js package.json
 csslint: deckster.css
 	-csslint .
 
-tidy: demo.html
-	-tidy demo.html 2>&1
+tidy: index.html
+	-tidy index.html 2>&1
 
 clean:
 	-rm *.zip
