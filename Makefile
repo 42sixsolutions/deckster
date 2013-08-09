@@ -1,8 +1,11 @@
+CSS_DIR = public/stylesheets
+MAIN_CSS = ${CSS_DIR}/deckster.css
+
 all: build
 
-build: public/stylesheets/deckster.css deckster.js
+build: ${MAIN_CSS} deckster.js
 
-%.css: %.scss
+${MAIN_CSS}: ${CSS_DIR}/deckster.scss ${CSS_DIR}/partials/*.scss
 	node-sass $< $@
 
 deckster.js: deckster.coffee
