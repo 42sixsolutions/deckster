@@ -368,7 +368,7 @@ window.Deckster = (options) ->
     _on __events.inited, ($deck) ->
       controls = """
                  <a class='#{_css_variables.classes.expand_handle} control expand'></a>
-                 <a class='#{_css_variables.classes.collapse_handle} contol collapse' style='display:none;'>c</a>
+                 <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
       $deck.find(_css_variables.selectors.controls).append controls
 
