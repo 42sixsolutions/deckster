@@ -8,21 +8,27 @@ $font: 			'MuseoSans', Arial, Helvetica, sans-serif;
 /* -------------------------- Theme -------------------------- */
 
 body {
-	background: $bodybg;
-	color: $text;
-	font-family: $font;
-	font-weight: normal;
+  background: $bodybg;
+  color: $text;
+  font-family: $font;
+  font-weight: normal;
 }
 
 #{$deckster_card} {
-	background: $cardbg;
-	padding: $padding;
+  background: $cardbg;
 }
 
 .control {
-	color: lighten($controls,15%);
-	
-	&:hover {
-		color: $controls;
-	}
+  color: lighten($controls,15%);
+
+  &:hover {
+    color: $controls;
+  }
+}
+
+#{$deckster_card_title} {
+  color: $text;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid $bodybg;
 }
