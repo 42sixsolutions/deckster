@@ -13,6 +13,7 @@ _css_variables =
     deck_expanded: (option) -> '[data-cards-expanded='+option+']'
   classes: {}
   dimensions: {}
+  styleSheet: "deckster.css"
 
 _ajax_default = 
   success: (data,status, response) ->
@@ -199,8 +200,6 @@ window.Deckster = (options) ->
       row_i++
 
   _apply_transition = ($card,d) ->
-    mysheet = document.styleSheets[0]
-    myrules = mysheet.cssRules ? mysheet.rules
     rowStr = _css_variables.selectors.card+"[data-row=\""+d.row+"\"]"
     colStr = _css_variables.selectors.card+"[data-col=\""+d.col+"\"]"
     _css_variables.dimensions = _css_variables.dimensions || {}
@@ -208,6 +207,19 @@ window.Deckster = (options) ->
     topAnimate = _css_variables.dimensions[rowStr]
     #Did we have this value saved?
     unless leftAnimate? and topAnimate?
+      mysheet = null
+      for sheet, index in document.styleSheets
+        if _css_variables.styleSheet == sheet.href.split("/").pop()
+          mysheet = sheet
+          break
+
+      if  mysheet == null
+        $card.attr 'data-row', d.row
+        $card.attr 'data-col', d.col
+        $card.css 'opacity','1'
+        return
+
+      myrules = mysheet.cssRules ? mysheet.rules
       for rule,index in myrules
         if rule.selectorText == rowStr
           topAnimate = rule.style.top
