@@ -24,7 +24,7 @@ h1 {
 #{$deckster_card} {
   background: $cardbg;
   overflow: none;
-  padding-top: 40px;
+  padding: 40px 0 $padding 0;
   
   #{$deckster_card_title} {
     position: absolute;
@@ -36,7 +36,6 @@ h1 {
     height: 40px;
     line-height: 40px;
     text-align: center;
-    border-bottom: 1px solid $bodybg;
   }
 
   .control {
@@ -51,7 +50,7 @@ h1 {
      display: block;
      overflow: auto;
      height: 100%;
-     padding: $padding;
+     padding: 0 $padding;
   }
   
 }
