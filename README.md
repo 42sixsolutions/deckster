@@ -69,4 +69,4 @@ Running `make lint` yields tips for improving the code.
 
     Notes:
 
-    - If the content loaded from `data-url` is empty, and the card's existing content is empty, then the card will not be shown in the deck.
+    -If the content loaded from `data-url` is empty, and the card's existing content is empty, then the card will not be shown in the deck.
