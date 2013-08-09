@@ -13,6 +13,7 @@ _css_variables =
     deck_expanded: (option) -> '[data-cards-expanded='+option+']'
   classes: {}
   dimensions: {}
+  styleSheet: "deckster.css"
 
 _ajax_default = 
   success: (data,status, response) ->
@@ -24,7 +25,39 @@ _ajax_default =
   async: true
 
 
-_css_variables.classes[sym] = selector.slice(1) for sym, selector of _css_variables.selectors
+_css_variables.classes[sym] = selector[1..] for sym, selector of _css_variables.selectors
+
+# Jump scroll area
+_jump_scroll =
+  $title_cards: null
+  $nav_list: null
+
+_scrollToView = ($el) ->
+  offset = $el.offset()
+  offset.top -= 20
+  offset.left -= 20
+  $('html, body').animate {
+    scrollTop: offset.top
+    scrollLeft: offset.left
+  }
+
+_create_jump_scroll = () ->
+    J = _jump_scroll
+    $("card-nav-list").remove()
+    # Collect all data-title cards from ALL DECKS on the pge
+    J.$title_cards = $ '.deckster-deck [data-title]'
+    if J.$title_cards.length is 0
+        return
+    J.$nav_list = $ '<ul id="card-nav-list">'
+
+    J.$title_cards.each (index, card) ->
+        title = $(card).data 'title'
+        console.log "title is #{title}"
+        $nav_item = $  "<li>#{title}</li>"
+        $nav_item.on 'click', () ->
+          _scrollToView $ card
+        J.$nav_list.append $nav_item
+        $("body").prepend J.$nav_list
 
 window.Deckster = (options) ->
   $deck = $(this)
@@ -167,8 +200,6 @@ window.Deckster = (options) ->
       row_i++
 
   _apply_transition = ($card,d) ->
-    mysheet = document.styleSheets[0]
-    myrules = mysheet.cssRules ? mysheet.rules
     rowStr = _css_variables.selectors.card+"[data-row=\""+d.row+"\"]"
     colStr = _css_variables.selectors.card+"[data-col=\""+d.col+"\"]"
     _css_variables.dimensions = _css_variables.dimensions || {}
@@ -176,6 +207,19 @@ window.Deckster = (options) ->
     topAnimate = _css_variables.dimensions[rowStr]
     #Did we have this value saved?
     unless leftAnimate? and topAnimate?
+      mysheet = null
+      for sheet, index in document.styleSheets
+        if _css_variables.styleSheet == sheet.href.split("/").pop()
+          mysheet = sheet
+          break
+
+      if  mysheet == null
+        $card.attr 'data-row', d.row
+        $card.attr 'data-col', d.col
+        $card.css 'opacity','1'
+        return
+
+      myrules = mysheet.cssRules ? mysheet.rules
       for rule,index in myrules
         if rule.selectorText == rowStr
           topAnimate = rule.style.top
@@ -228,21 +272,27 @@ window.Deckster = (options) ->
     cards = $deck.children(_css_variables.selectors.card)
     cards.each ->
       $card = $(this)
-      d =
-        id: __next_id++
-        row: parseInt $card.attr 'data-row'
-        col: parseInt $card.attr 'data-col'
-        row_span: parseInt $card.attr 'data-row-span'
-        col_span: parseInt $card.attr 'data-col-span'
 
-      __cards_by_id[d.id] = $card
-      __card_data_by_id[d.id] = d
-      _add_card($card, d)
+      _option_hidden = $card.data 'hidden'
+      if _option_hidden == true
+        $card.remove();
+      else
+        d =
+          id: __next_id++
+          row: parseInt $card.attr 'data-row'
+          col: parseInt $card.attr 'data-col'
+          row_span: parseInt $card.attr 'data-row-span'
+          col_span: parseInt $card.attr 'data-col-span'
+
+        __cards_by_id[d.id] = $card
+        __card_data_by_id[d.id] = d
+        _add_card($card, d)
 
     _apply_deck()
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
     for callback in __event_callbacks[__events.inited] || []
       break if callback($deck) == false
+    _create_jump_scroll 0xDCC0FFEEBAD
 
 
   # Deckster Drag
@@ -251,7 +301,7 @@ window.Deckster = (options) ->
     __active_drag_card_drag_data = undefined
 
     _on __events.inited, ($deck) ->
-      controls = "<a class='#{_css_variables.classes.drag_handle}'>O</a>"
+      controls = "<a class='#{_css_variables.classes.drag_handle} control drag'></a>"
       $deck.find(_css_variables.selectors.controls).append controls
 
     _on __events.inited, ($deck) ->
@@ -329,8 +379,8 @@ window.Deckster = (options) ->
   if options['expandable'] && options['expandable'] == true
     _on __events.inited, ($deck) ->
       controls = """
-                 <a class='#{_css_variables.classes.expand_handle}'>X</a>
-                 <a class='#{_css_variables.classes.collapse_handle}' style='display:none;'>c</a>
+                 <a class='#{_css_variables.classes.expand_handle} control expand'></a>
+                 <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
       $deck.find(_css_variables.selectors.controls).append controls
 
@@ -397,11 +447,17 @@ window.Deckster = (options) ->
           context: $deck
           success: (data,status,response) -> 
             $controls = this.find(_css_variables.selectors.controls).clone true
-            $title = this.find(_css_variables.selectors.card_title)
-            this.html ""
-            this.append $title
-            this.append $controls
-            this.append data
+            if (!!data.trim()) # url content is not empty
+              $title = this.find(_css_variables.selectors.card_title)
+              this.html ""
+              this.append $title
+              this.append $controls
+              this.append data 
+            else # remove the card if url content is empty & div text content is empty
+              divText = this.clone().children().remove().end().text();
+              if (!divText.trim())
+                this.remove()
+                #_apply_deck()
 
          _ajax(ajax_options)) if $deck.data("url")?
 
@@ -412,7 +468,7 @@ window.Deckster = (options) ->
                 return
           $title_div = $('<div>')
                 .text(title)
-                .addClass(_css_variables.selectors.card_title[1..])
+                .addClass(_css_variables.classes.card_title)
           $card.prepend $title_div
 
     if options['expandable'] and options['expandable'] == true 

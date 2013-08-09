@@ -1,0 +1,57 @@
+$bodybg: 		#eeeeee;
+$cardbg: 		#ffffff;
+$text: 			#313131;
+$controls: 		#bbbbbb;
+$padding: 		20px;
+$font: 			'MuseoSans', Arial, Helvetica, sans-serif;
+
+/* -------------------------- Theme -------------------------- */
+
+body {
+  background: $bodybg;
+  color: $text;
+  font-family: $font;
+  font-weight: normal;
+}
+
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: $text;
+  font-weight: 500;
+}
+
+#{$deckster_card} {
+  background: $cardbg;
+  overflow: auto;
+}
+
+.control {
+  color: lighten($controls,15%);
+
+  &:hover {
+    color: $controls;
+  }
+}
+
+#{$deckster_card_title} {
+  color: $text;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid $bodybg;
+}
+
+#card-nav-list {
+  font: 12px "Lucida Grand", sans-serif;
+  color: white;
+  background-color: #333;
+  padding: 5px;
+  position:fixed;
+  top:5px;
+  right:5px;
+  z-index: 500;
+  
+  li {
+      padding: 5px;
+  }
+}

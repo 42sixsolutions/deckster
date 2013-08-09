@@ -1,0 +1,23 @@
+$deckster_deck: ".deckster-deck";
+$deckster_card: ".deckster-card";
+$deckster_card_title: ".deckster-card-title";
+$deckster_controls: ".deckster-controls";
+$deckster_drag_handle: ".deckster-drag-handle";
+
+$default_card_width: 300px;
+$default_card_height: 200px;
+$default_card_horizontal_gutter: 10px;
+$default_card_vertical_gutter: 10px;
+
+$content-padding: 30px;
+
+
+@import "partials/mixins";
+@import "partials/reset";
+@import "partials/fonts";
+@import "partials/theme";
+@import "partials/grid";
+@import "partials/controls";
+
+
+
