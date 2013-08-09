@@ -16,6 +16,7 @@ body {
 
 #{$deckster_card} {
   background: $cardbg;
+  overflow: auto;
 }
 
 .control {

@@ -289,7 +289,7 @@ window.Deckster = (options) ->
     __active_drag_card_drag_data = undefined
 
     _on __events.inited, ($deck) ->
-      controls = "<a class='#{_css_variables.classes.drag_handle}'>O</a>"
+      controls = "<a class='#{_css_variables.classes.drag_handle} control drag'></a>"
       $deck.find(_css_variables.selectors.controls).append controls
 
     _on __events.inited, ($deck) ->
@@ -367,8 +367,8 @@ window.Deckster = (options) ->
   if options['expandable'] && options['expandable'] == true
     _on __events.inited, ($deck) ->
       controls = """
-                 <a class='#{_css_variables.classes.expand_handle}'>X</a>
-                 <a class='#{_css_variables.classes.collapse_handle}' style='display:none;'>c</a>
+                 <a class='#{_css_variables.classes.expand_handle} control expand'></a>
+                 <a class='#{_css_variables.classes.collapse_handle} contol collapse' style='display:none;'>c</a>
                  """
       $deck.find(_css_variables.selectors.controls).append controls
 
