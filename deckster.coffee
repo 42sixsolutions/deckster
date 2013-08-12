@@ -8,6 +8,7 @@ _css_variables =
     drag_handle: '.deckster-drag-handle'
     expand_handle: '.deckster-expand-handle'
     collapse_handle: '.deckster-collapse-handle'
+    card_jump_scroll: '.deckster-card-jump-scroll'
   selector_functions:
     card_expanded: (option)->'[data-expanded='+option+']'
     deck_expanded: (option) -> '[data-cards-expanded='+option+']'
@@ -41,6 +42,27 @@ _scrollToView = ($el) ->
     scrollLeft: offset.left
   }
 
+_nav_menu = null # Feel free to rename this if something else fits better
+
+_create_nav_menu = () ->
+    markup = """<div id="deckster-scroll-helper" class="btn-group-vertical">
+          <div class="btn-group #{_css_variables.classes.card_jump_scroll}">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              JC <!-- "jump [to] card" -->
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right">
+            </ul>
+          </div>
+          <button type="button" class="btn btn-default jump-deck-menu-toggle">
+                (JD)<!-- "jump [to] deck" -- not implemented -->
+          </button>
+          </div>
+        """ # "stupid emacs
+    button_dom = $ markup
+    $("body").append button_dom  
+    
+
 _create_jump_scroll = () ->
     J = _jump_scroll
     $("card-nav-list").remove()
@@ -48,7 +70,9 @@ _create_jump_scroll = () ->
     J.$title_cards = $ '.deckster-deck [data-title]'
     if J.$title_cards.length is 0
         return
-    J.$nav_list = $ '<ul id="card-nav-list">'
+
+    _nav_menu ?= _create_nav_menu "()"
+    J.$nav_list = $ "#deckster-scroll-helper ul"
 
     J.$title_cards.each (index, card) ->
         title = $(card).data 'title'
@@ -57,7 +81,7 @@ _create_jump_scroll = () ->
         $nav_item.on 'click', () ->
           _scrollToView $ card
         J.$nav_list.append $nav_item
-        $("body").prepend J.$nav_list
+
 
 window.Deckster = (options) ->
   $deck = $(this)
