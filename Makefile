@@ -11,11 +11,11 @@ ${MAIN_CSS}: ${CSS_DIR}/deckster.scss ${CSS_DIR}/partials/*.scss
 deckster.js: deckster.coffee
 	coffee -c deckster.coffee
 
-serve: deckster.js deckster.css index.html jquery-2.0.3.min.js
+serve: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 	node server.js
 
-zip: deckster.js deckster.css index.html jquery-2.0.3.min.js
-	zip deckster-0.0.1.zip deckster.js deckster.css index.html jquery-2.0.3.min.js
+zip: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
+	zip deckster-0.0.1.zip deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 
 lint: coffeelint jshint csslint tidy
 
@@ -26,7 +26,7 @@ jshint: deckster.js package.json
 	-jshint .
 	-jshint *.json
 
-csslint: deckster.css
+csslint: ${MAIN_CSS}
 	-csslint .
 
 tidy: index.html
@@ -34,5 +34,5 @@ tidy: index.html
 
 clean:
 	-rm *.zip
-	-rm deckster.css
+	-rm ${MAIN_CSS}
 	-rm deckster.js
