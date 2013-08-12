@@ -21,6 +21,12 @@ h1 {
   font-weight: 500;
 }
 
+#{$deckster_title} {
+  text-align: center;
+  padding: 5px;
+  background-color: #ddddff;
+}
+
 #{$deckster_card} {
   background: $cardbg;
   overflow: none;
