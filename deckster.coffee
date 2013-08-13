@@ -129,8 +129,8 @@ window.Deckster = (options) ->
     draggable: true
     expandable: true
     url_enabled:true
-    removable:true
-
+    removable: true
+  
   options = $.extend {}, __default_options, options
   _option_draggable = $deck.data 'draggable'
   options['draggable'] = true if _option_draggable? && (_option_draggable == true || _option_draggable == 'true')
@@ -331,6 +331,12 @@ window.Deckster = (options) ->
 
     $deck.attr 'data-row-max', row_max
 
+  _should_remove_card_in_init = ($card, $deck) ->
+    ($card.data('hidden') == true or 
+      ($deck.data('remove-empty') == true and 
+       !$card.find(_css_variables.selectors.card_content).text().trim() and 
+       !$card.data('url')))
+
   init = ->
     __col_max = $deck.data 'col-max'
     # Add title to deck
@@ -344,8 +350,7 @@ window.Deckster = (options) ->
     cards.each ->
       $card = $(this)
 
-      _option_hidden = $card.data 'hidden'
-      if _option_hidden == true or (!$card.find(_css_variables.selectors.card_content).text().trim() and $card.data('url') == null)
+      if _should_remove_card_in_init($card, $deck)
         $card.remove();
       else
         d =
@@ -538,7 +543,7 @@ window.Deckster = (options) ->
                 this.append '<div class="content">' + data + '</div>'
               else # remove the card if url content is empty & div text content is empty
                 divText = this.find(_css_variables.selectors.card_content).text()
-                if (!divText.trim())
+                if (!divText.trim() and $deck.data('remove-empty') == true)
                   this.remove()
 
            _ajax(ajax_options)
