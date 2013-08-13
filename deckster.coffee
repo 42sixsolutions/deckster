@@ -534,9 +534,9 @@ window.Deckster = (options) ->
             type: if $card.data("url-method")? then $card.data "url-method"  else "GET"
             context: $card
             success: (data,status,response) -> 
+              $title = this.find(_css_variables.selectors.card_title)
               if (!!data.trim()) # url content is not empty
                 $controls = this.find(_css_variables.selectors.controls).clone true
-                $title = this.find(_css_variables.selectors.card_title)
                 this.html ""
                 this.append $title
                 this.append $controls
@@ -544,9 +544,7 @@ window.Deckster = (options) ->
               else # remove the card if url content is empty & div text content is empty
                 divText = this.find(_css_variables.selectors.card_content).text()
                 if (!divText.trim() and $deck.data('remove-empty') == true)
-                  id = parseInt this.attr 'data-card-id'
-                  titleText = this.find(_css_variables.selectors.card_title).text()
-                  _remove_from_jump_scroll this, id, titleText
+                  _remove_from_jump_scroll $title.text()
                   this.remove()
                   _remove_card_from_deck this
 
@@ -638,7 +636,7 @@ window.Deckster = (options) ->
 
         _remove_card_from_deck $card
         $card.remove()
-        _remove_from_jump_scroll $card, id, titleText
+        _remove_from_jump_scroll titleText
         _apply_deck()
 
     _remove_card_from_deck = ($card) ->
@@ -658,7 +656,7 @@ window.Deckster = (options) ->
         "' class='btn btn-default #{_css_variables.classes.removed_card_button}'>Re-add</button>" + 
       "</li>"
 
-    _remove_from_jump_scroll = ($card, cardId, cardTitle) ->
+    _remove_from_jump_scroll = (cardTitle) ->
       $nav_list = $(_css_variables.selectors.card_jump_scroll).find('ul')
 
       $nav_list.find('li').filter () ->
