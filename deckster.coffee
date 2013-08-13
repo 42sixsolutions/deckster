@@ -14,6 +14,7 @@ _css_variables =
     removed_dropdown: '.deckster-removed-dropdown'
     removed_card_li: '.deckster-removed-card-li'
     removed_card_button: '.deckster-removed-card-button'
+    card_content:'.content'
 
   selector_functions:
     card_expanded: (option)->'[data-expanded='+option+']'
@@ -168,7 +169,9 @@ window.Deckster = (options) ->
   __events =
     card_added: 'card_added'
     inited: 'inited'
-
+    card_expanded: 'card_expanded'
+    card_collapsed: 'card_collapsed'
+    
   __event_callbacks = {}
 
   # --- Deckster Base Functions
@@ -493,7 +496,9 @@ window.Deckster = (options) ->
 
         $expand_handle.hide()
         $expand_handle.siblings(_css_variables.selectors.collapse_handle).show()
-
+        for callback in __event_callbacks[__events.card_expanded] || []
+          break if callback($deck,$card) == false
+          
     _collapse_on_click = (element) ->
         $collapse_handle = $(element)
         $card = $collapse_handle.parents(_css_variables.selectors.card)
@@ -513,27 +518,31 @@ window.Deckster = (options) ->
 
         $collapse_handle.hide()
         $collapse_handle.siblings(_css_variables.selectors.expand_handle).show()
-
+        for callback in __event_callbacks[__events.card_collapsed] || []
+          break if callback($deck,$card) == false
+          
     if options['url_enabled'] == true
-      _on __events.card_added, ($deck,d) ->
-        (ajax_options = 
-          url: $deck.data "url" 
-          type: if $deck.data("url-method")? then $deck.data "url-method"  else "GET"
-          context: $deck
-          success: (data,status,response) -> 
-            $controls = this.find(_css_variables.selectors.controls).clone true
-            if (!!data.trim()) # url content is not empty
-              $title = this.find(_css_variables.selectors.card_title)
-              this.html ""
-              this.append $title
-              this.append $controls
-              this.append '<div class="content">' + data + '</div>'
-            else # remove the card if url content is empty & div text content is empty
-              divText = this.clone().children().remove().end().text();
-              if (!divText.trim())
-                this.remove()
-                
-         _ajax(ajax_options)) if $deck.data("url")?
+      _on __events.card_added, ($card,d) ->
+        if $card.data("url")?
+          ajax_options = 
+            url: $card.data "url" 
+            type: if $card.data("url-method")? then $card.data "url-method"  else "GET"
+            context: $card
+            success: (data,status,response) -> 
+              $controls = this.find(_css_variables.selectors.controls).clone true
+              if (!!data.trim()) # url content is not empty
+                $title = this.find(_css_variables.selectors.card_title)
+                this.html ""
+                this.append $title
+                this.append $controls
+                this.append '<div class="content">' + data + '</div>'
+              else # remove the card if url content is empty & div text content is empty
+                divText = this.clone().children().remove().end().text();
+                if (!divText.trim())
+                  this.remove()
+                  #_apply_deck()
+
+           _ajax(ajax_options)
 
     if options.url_enabled? # Just in case we'll be needing some real check
         _on __events.card_added, ($card,d) ->
@@ -556,6 +565,28 @@ window.Deckster = (options) ->
             $(this).find(_css_variables.selectors.expand_handle).trigger "click"
           )
         )
+        
+       _on __events.card_expanded, ($deck,$card) ->
+        deckId = $deck.data("deck-id") ? 1
+        cardId = $card.data("card-id")
+        if options["card-actions"]? and options["card-actions"]["deck-"+deckId]? and options["card-actions"]["deck-"+deckId]["card-"+cardId]? 
+
+         cardActions = options["card-actions"]["deck-"+deckId]["card-"+cardId]
+         if cardActions["card-expanded"]?
+           ajaxOptions = cardActions["card-expanded"]($card,$card.find(_css_variables.selectors.card_content))
+           if ajaxOptions?
+            $card.queue().push(()->_ajax(ajaxOptions))
+
+      _on __events.card_collapsed, ($deck,$card) ->
+        deckId = $deck.data("deck-id") ? 1
+        cardId = $card.data("card-id")
+        if options["card-actions"]? and options["card-actions"]["deck-"+deckId]? and options["card-actions"]["deck-"+deckId]["card-"+cardId]? 
+
+         cardActions = options["card-actions"]["deck-"+deckId]["card-"+cardId]
+         if cardActions["card-collapsed"]?
+           ajaxOptions = cardActions["card-collapsed"]($card,$card.find(_css_variables.selectors.card_content))
+           if ajaxOptions?
+            $card.queue().push(()->_ajax(ajaxOptions))
 
   # Deckster Remove
   if options['removable'] && options['removable'] == true
@@ -664,5 +695,37 @@ $("#deck1").deckster({
       options: {
         duration: "slow"
       }
+    }
+  
+    "card-actions":{
+      "deck-1":
+        "card-6":
+          "card-expanded": ($card,$contentSection)->
+            ajax_options =
+              url:"./sampleSites/site6expand"
+              type:"GET"
+              success: (data,status, response)->
+                ###
+                  You'll want to replace the conte
+                ###
+                $cardContent = $contentSection.html(data)
+
+                console.log("I've successfully replaced the content")
+              error: ()->
+                console.log("I've failed to repalce the content")
+            
+            return ajax_options
+          "card-collapsed": ($card, $contentSection)->
+            ajax_options =
+              url:"./sampleSites/site6"
+              type:"GET"
+              success: (data,status, response)->
+                $cardContent = $contentSection.html(data)
+
+                console.log("I've successfully replaced the content")
+              error: ()->
+                console.log("I've failed to repalce the content")
+            
+            return ajax_options
     }
 })
