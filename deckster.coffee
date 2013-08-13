@@ -608,7 +608,7 @@ window.Deckster = (options) ->
         $card = $remove_handle.parents(_css_variables.selectors.card)
         id = parseInt $card.attr 'data-card-id'
         titleText = $card.find(_css_variables.selectors.card_title).text()
-        dropdown = $(_css_variables.selectors.removed_dropdown)
+        dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
 
         if dropdown.val()?
           # add to dropdown menu
@@ -627,7 +627,7 @@ window.Deckster = (options) ->
           </div>
           " 
           $deck.parent().prepend(removed_dropdown_div)
-          dropdown = $(_css_variables.selectors.removed_dropdown)
+          dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
           
         dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + id).click ->
           _add_back_card(id)
@@ -673,9 +673,9 @@ window.Deckster = (options) ->
       _add_to_jump_scroll_card "#{_css_variables.selectors.card_jump_scroll} ul", $card
 
       # remove from the "Removed Cards" dropdown
-      $('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
+      $deck.parent().find('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
 
-      dropdown = $(_css_variables.selectors.removed_dropdown)
+      dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
       dropdown.remove() if dropdown.find('ul').children().size() == 0
         
   # Deckster End
