@@ -545,6 +545,7 @@ window.Deckster = (options) ->
                 divText = this.find(_css_variables.selectors.card_content).text()
                 if (!divText.trim() and $deck.data('remove-empty') == true)
                   this.remove()
+                  _remove_card_from_deck this
 
            _ajax(ajax_options)
 
@@ -632,9 +633,20 @@ window.Deckster = (options) ->
         dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + id).click ->
           _add_back_card(id)
 
+        _remove_card_from_deck $card
         $card.remove()
         _remove_from_jump_scroll $card, id, titleText
         _apply_deck()
+
+    _remove_card_from_deck = ($card) ->
+      cardId = parseInt($card.attr('data-card-id'))
+
+      for row, cols of __deck
+        for col, id of cols 
+          if cardId == id
+            delete __deck[row][col]
+
+      return undefined
 
     _get_removed_card_li_tag = (id, titleText) ->
       "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
