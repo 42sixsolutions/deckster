@@ -656,7 +656,7 @@ window.Deckster = (options) ->
       $card = __cards_by_id[cardId] 
       d = __card_data_by_id[cardId]
 
-      $('#deck1').append($card)
+      $deck.append($card)
       _add_card $card, d
       _apply_deck()
 
