@@ -71,9 +71,17 @@ Running `make lint` yields tips for improving the code.
     Notes:
 
     -If the content loaded from `data-url` is empty, and the card's existing content is empty, then the card will not be shown in the deck.
+    -If the deck's `data-remove-empty` attribute is `false`, then no empty cards will be removed automatically when the deck loads.
 
+5. Remove Card
+    
+    To remove a card from the deck, click on the "remove" control handle on the card.  
 
-5. Adding Expanding/Collapsing Callbacks
+    Notes:
+
+    -Removed cards will be displayed in the `Removed Cards` dropdown menu at top left corner.  Removed cards can be added back to the deck by clicking on the `Re-add` button on the removed card in the dropdown menu.
+
+6. Adding Expanding/Collapsing Callbacks
     
     If you'd like to change the content of a card when it is expanded or collapsed, there are callbacks you can set when the deck is being initialized.  
 
