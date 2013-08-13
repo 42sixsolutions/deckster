@@ -10,6 +10,11 @@ _css_variables =
     collapse_handle: '.deckster-collapse-handle'
     card_jump_scroll: '.deckster-card-jump-scroll'
     deck_jump_scroll: '.deckster-deck-jump-scroll'
+    remove_handle: '.deckster-remove-handle'
+    removed_dropdown: '.deckster-removed-dropdown'
+    removed_card_li: '.deckster-removed-card-li'
+    removed_card_button: '.deckster-removed-card-button'
+
   selector_functions:
     card_expanded: (option)->'[data-expanded='+option+']'
     deck_expanded: (option) -> '[data-cards-expanded='+option+']'
@@ -96,6 +101,18 @@ _create_jump_scroll_card = () ->
     _create_jump_scroll "#{_css_variables.selectors.card_jump_scroll} ul",
             '.deckster-deck [data-title]'
 
+_add_to_jump_scroll_card = (target_ul_selector, $card) ->
+    J = _jump_scroll
+
+    $card_title_ddl = $ target_ul_selector
+    J.$nav_list = $card_title_ddl
+
+    title = $card.find(_css_variables.selectors.card_title).text()
+    $nav_item = $  "<li>#{title}</li>"
+    $nav_item.on 'click', () ->
+      _scrollToView $card
+    J.$nav_list.append $nav_item
+
 _create_jump_scroll_deck = () ->
     _create_jump_scroll "#{_css_variables.selectors.deck_jump_scroll} ul",
             '.deckster-deck[data-title]'
@@ -111,12 +128,15 @@ window.Deckster = (options) ->
     draggable: true
     expandable: true
     url_enabled:true
+    removable:true
 
   options = $.extend {}, __default_options, options
   _option_draggable = $deck.data 'draggable'
   options['draggable'] = true if _option_draggable? && (_option_draggable == true || _option_draggable == 'true')
   _option_expandable = $deck.data 'expandable' 
   options['expandable'] = true if _option_expandable? && (_option_expandable == true || _option_expandable == 'true')
+  _option_removable = $deck.data 'removable' 
+  options['removable'] = true if _option_removable? && (_option_removable == true || _option_removable == 'true')
   ### 
    if 'url-enabled' is not defined then refer back to previously set option.
    if 'url-enabled' is defined then return 'true' if 'true' otherwise 'false'
@@ -354,9 +374,9 @@ window.Deckster = (options) ->
       $deck.find(_css_variables.selectors.controls).append controls
 
     _on __events.inited, ($deck) ->
-      _bind_controls()
+      _bind_drag_controls(this)
 
-    _bind_controls = () ->
+    _bind_drag_controls = (deck) ->
       $deck.find(_css_variables.selectors.drag_handle).on "mousedown", (e) ->
         $drag_handle = $(this)
         __$active_drag_card = $drag_handle.parents(_css_variables.selectors.card)
@@ -434,7 +454,13 @@ window.Deckster = (options) ->
       $deck.find(_css_variables.selectors.controls).append controls
 
       $deck.find(_css_variables.selectors.expand_handle).click ->
-        $expand_handle = $(this)
+        _expand_on_click(this)
+
+      $deck.find(_css_variables.selectors.collapse_handle).click ->
+        _collapse_on_click(this)
+
+    _expand_on_click = (element) ->
+        $expand_handle = $(element)
         $card = $expand_handle.parents(_css_variables.selectors.card)
         id = parseInt $card.attr 'data-card-id'
 
@@ -468,8 +494,8 @@ window.Deckster = (options) ->
         $expand_handle.hide()
         $expand_handle.siblings(_css_variables.selectors.collapse_handle).show()
 
-      $deck.find(_css_variables.selectors.collapse_handle).click ->
-        $collapse_handle = $(this)
+    _collapse_on_click = (element) ->
+        $collapse_handle = $(element)
         $card = $collapse_handle.parents(_css_variables.selectors.card)
         id = parseInt $card.attr 'data-card-id'
 
@@ -506,14 +532,14 @@ window.Deckster = (options) ->
               divText = this.clone().children().remove().end().text();
               if (!divText.trim())
                 this.remove()
-                #_apply_deck()
-
+                
          _ajax(ajax_options)) if $deck.data("url")?
 
     if options.url_enabled? # Just in case we'll be needing some real check
         _on __events.card_added, ($card,d) ->
           title = $card.data "title"
-          unless title?
+
+          unless title? and !$card.find(_css_variables.selectors.card_title).text()
                 return
           $title_div = $('<div>')
                 .text(title)
@@ -531,8 +557,92 @@ window.Deckster = (options) ->
           )
         )
 
+  # Deckster Remove
+  if options['removable'] && options['removable'] == true
+    _on __events.inited, ($deck) ->
+      controls = """
+                 <a class='#{_css_variables.classes.remove_handle}'>R</a>
+                 """
+      $deck.find(_css_variables.selectors.controls).append controls
 
+      $deck.find(_css_variables.selectors.remove_handle).click ->
+        _remove_on_click(this)
 
+    _remove_on_click = (element) ->
+        $remove_handle = $(element)
+        $card = $remove_handle.parents(_css_variables.selectors.card)
+        id = parseInt $card.attr 'data-card-id'
+        titleText = $card.find(_css_variables.selectors.card_title).text()
+        dropdown = $(_css_variables.selectors.removed_dropdown)
+
+        if dropdown.val()?
+          # add to dropdown menu
+          dropdown.find('ul').append(_get_removed_card_li_tag(id, titleText)).appendTo(dropdown)
+        else
+          # construct a new dropdown menu
+          removed_dropdown_div = "
+          <div class='btn-group #{_css_variables.classes.removed_dropdown}'>
+            <button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>
+              Removed Cards
+              <span class='caret'></span>
+            </button>
+            <ul class='dropdown-menu pull-left'>
+              " + _get_removed_card_li_tag(id, titleText) + " 
+            </ul>
+          </div>
+          " 
+          $('body').prepend(removed_dropdown_div)
+          dropdown = $(_css_variables.selectors.removed_dropdown)
+          
+        dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + id).click ->
+          _add_back_card(id)
+
+        $card.remove()
+        _remove_from_jump_scroll $card, id, titleText
+        _apply_deck()
+
+    _get_removed_card_li_tag = (id, titleText) ->
+      "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
+        "' class='#{_css_variables.classes.removed_card_li}'>" + titleText + 
+        "<button id='#{_css_variables.classes.removed_card_button}-" + id + 
+        "' class='btn btn-default #{_css_variables.classes.removed_card_button}'>Re-add</button>" + 
+      "</li>"
+
+    _remove_from_jump_scroll = ($card, cardId, cardTitle) ->
+      $nav_list = $(_css_variables.selectors.card_jump_scroll).find('ul')
+
+      $nav_list.find('li').filter () ->
+        $.text([this]) == cardTitle 
+      .remove();
+
+    _add_back_card = (cardId) ->
+      return unless cardId?
+        
+      $card = __cards_by_id[cardId] 
+      d = __card_data_by_id[cardId]
+
+      $('#deck1').append($card)
+      _add_card $card, d
+      _apply_deck()
+
+      # add back the control buttons click behavior
+      $card.find(_css_variables.selectors.remove_handle).click ->
+        _remove_on_click(this)
+      $card.find(_css_variables.selectors.expand_handle).click ->
+        _expand_on_click(this)
+      $card.find(_css_variables.selectors.collapse_handle).click ->
+        _collapse_on_click(this)
+      _bind_drag_controls($card)
+
+      # add back to the jump card 
+      _add_to_jump_scroll_card "#{_css_variables.selectors.card_jump_scroll} ul", $card
+
+      # remove from the "Removed Cards" dropdown
+      $('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
+
+      dropdown = $(_css_variables.selectors.removed_dropdown)
+      dropdown.remove() if dropdown.find('ul').children().size() == 0
+        
   # Deckster End
 
   init()

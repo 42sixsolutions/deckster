@@ -46,3 +46,12 @@
 #{$deckster_controls} > a {
   cursor: pointer;
 }
+
+#{$deckster_removed_card_li} {
+  white-space: nowrap;
+}
+
+#{$deckster_removed_card_button} {
+  margin-left:2px; 
+  margin-right:2px;
+}
