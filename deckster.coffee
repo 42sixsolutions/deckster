@@ -529,18 +529,17 @@ window.Deckster = (options) ->
             type: if $card.data("url-method")? then $card.data "url-method"  else "GET"
             context: $card
             success: (data,status,response) -> 
-              $controls = this.find(_css_variables.selectors.controls).clone true
               if (!!data.trim()) # url content is not empty
+                $controls = this.find(_css_variables.selectors.controls).clone true
                 $title = this.find(_css_variables.selectors.card_title)
                 this.html ""
                 this.append $title
                 this.append $controls
                 this.append '<div class="content">' + data + '</div>'
               else # remove the card if url content is empty & div text content is empty
-                divText = this.clone().children().remove().end().text();
+                divText = this.find(_css_variables.selectors.card_content).text()
                 if (!divText.trim())
                   this.remove()
-                  #_apply_deck()
 
            _ajax(ajax_options)
 
