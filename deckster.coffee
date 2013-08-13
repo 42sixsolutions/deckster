@@ -626,7 +626,7 @@ window.Deckster = (options) ->
             </ul>
           </div>
           " 
-          $('body').prepend(removed_dropdown_div)
+          $deck.parent().prepend(removed_dropdown_div)
           dropdown = $(_css_variables.selectors.removed_dropdown)
           
         dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + id).click ->
