@@ -345,7 +345,7 @@ window.Deckster = (options) ->
       $card = $(this)
 
       _option_hidden = $card.data 'hidden'
-      if _option_hidden == true
+      if _option_hidden == true or (!$card.find(_css_variables.selectors.card_content).text().trim() and $card.data('url') == null)
         $card.remove();
       else
         d =
