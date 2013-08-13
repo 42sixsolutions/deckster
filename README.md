@@ -71,6 +71,7 @@ Running `make lint` yields tips for improving the code.
     Notes:
 
     -If the content loaded from `data-url` is empty, and the card's existing content is empty, then the card will not be shown in the deck.
+    
     -If the deck's `data-remove-empty` attribute is `false`, then no empty cards will be removed automatically when the deck loads.
 
 5. Remove Card
