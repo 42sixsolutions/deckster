@@ -351,7 +351,7 @@ window.Deckster = (options) ->
       $card = $(this)
 
       if _should_remove_card_in_init($card, $deck)
-        $card.remove();
+        $card.remove()
       else
         d =
           id: __next_id++
@@ -544,6 +544,9 @@ window.Deckster = (options) ->
               else # remove the card if url content is empty & div text content is empty
                 divText = this.find(_css_variables.selectors.card_content).text()
                 if (!divText.trim() and $deck.data('remove-empty') == true)
+                  id = parseInt this.attr 'data-card-id'
+                  titleText = this.find(_css_variables.selectors.card_title).text()
+                  _remove_from_jump_scroll this, id, titleText
                   this.remove()
                   _remove_card_from_deck this
 
