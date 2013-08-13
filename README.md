@@ -71,3 +71,57 @@ Running `make lint` yields tips for improving the code.
     Notes:
 
     -If the content loaded from `data-url` is empty, and the card's existing content is empty, then the card will not be shown in the deck.
+
+
+5. Adding Expanding/Collapsing Callbacks
+    
+    If you'd like to change the content of a card when it is expanded or collapsed, there are callbacks you can set when the deck is being initialized.  
+
+    Required Format
+
+              "card-actions": { ...
+                "deck-<deckId>": { ...
+                  "card-<cardId>": {
+                      card-expanded: function(..) {
+                        ..
+                      },
+                      card-collapsed: function(..){
+                        ..
+                      }
+                  }
+                }
+              }
+              
+     The example below targets the deck with `data-deck-id = 1` that also contains a card with `data-card-id = 6` 
+
+            $("#deck1").deckster({
+              "card-actions": {
+                "deck-1": {
+                  "card-6": {
+                    "card-expanded": function($card, $contentSection) {
+                      var ajax_options;
+                      ajax_options = {
+                        url: "./sampleSites/site6expand",
+                        ...
+                        success: function(data, status, response) {
+                              ...
+                              $contentSection.html(data)
+                        },
+                      };
+                      return ajax_options;
+                    },
+                    "card-collapsed": function($card, $contentSection) {
+                       
+                       $contentSection.append("...new content here...")
+                    }
+                  }
+                }
+              }
+            });  
+       
+    Things to Note:
+
+    1. You are given a handle to the card being expanded/collapsed.
+    2. For convience, you are also given a handle to the main content area of the card. If you'd like to make changes/edits to the content, you should use this handle.
+    3. If you'd like to run an ajax request, construct a mapping with the required information and return it from the method.
+
