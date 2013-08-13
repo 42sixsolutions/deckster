@@ -9,6 +9,7 @@ _css_variables =
     expand_handle: '.deckster-expand-handle'
     collapse_handle: '.deckster-collapse-handle'
     card_jump_scroll: '.deckster-card-jump-scroll'
+    deck_jump_scroll: '.deckster-deck-jump-scroll'
   selector_functions:
     card_expanded: (option)->'[data-expanded='+option+']'
     deck_expanded: (option) -> '[data-cards-expanded='+option+']'
@@ -45,7 +46,7 @@ _scrollToView = ($el) ->
 _nav_menu = null # Feel free to rename this if something else fits better
 
 _create_nav_menu = () ->
-    markup = """<div id="deckster-scroll-helper" class="btn-group-vertical">
+    markup = """<div id="deckster-scroll-helper" class="btn-group">
           <div class="btn-group #{_css_variables.classes.card_jump_scroll}">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
               JC <!-- "jump [to] card" -->
@@ -54,34 +55,50 @@ _create_nav_menu = () ->
             <ul class="dropdown-menu pull-right">
             </ul>
           </div>
-          <button type="button" class="btn btn-default jump-deck-menu-toggle">
+          <div class="btn-group #{_css_variables.classes.deck_jump_scroll}">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                 (JD)<!-- "jump [to] deck" -- not implemented -->
-          </button>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right">
+            </ul>
           </div>
+        </div>
         """ # "stupid emacs
     button_dom = $ markup
     $("body").append button_dom  
     
-
-_create_jump_scroll = () ->
+_create_jump_scroll = (target_ul_selector, title_selector) ->
     J = _jump_scroll
-    $("card-nav-list").remove()
-    # Collect all data-title cards from ALL DECKS on the pge
-    J.$title_cards = $ '.deckster-deck [data-title]'
-    if J.$title_cards.length is 0
+    _nav_menu ?= _create_nav_menu "()"
+    $card_title_ddl = $ target_ul_selector
+    $card_title_ddl.children().remove()
+    # We're abusing J at this point.  At some point, maybe clean this
+    # up.  Right now this function will run too many times: for each
+    # of [card, deck] it will be run as many times as there are decks,
+    # thus if there are 3 decks it will be run 6 times.
+    J.$title_items = $ title_selector
+    if J.$title_items.length is 0
         return
 
-    _nav_menu ?= _create_nav_menu "()"
-    J.$nav_list = $ "#deckster-scroll-helper ul"
+    J.$nav_list = $card_title_ddl
 
-    J.$title_cards.each (index, card) ->
-        title = $(card).data 'title'
+    J.$title_items.each (index, item) ->
+        title = $(item).data 'title'
         console.log "title is #{title}"
         $nav_item = $  "<li>#{title}</li>"
         $nav_item.on 'click', () ->
-          _scrollToView $ card
+          _scrollToView $ item
         J.$nav_list.append $nav_item
 
+_create_jump_scroll_card = () ->
+    # Collect all data-title cards from ALL DECKS on the pge
+    _create_jump_scroll "#{_css_variables.selectors.card_jump_scroll} ul",
+            '.deckster-deck [data-title]'
+
+_create_jump_scroll_deck = () ->
+    _create_jump_scroll "#{_css_variables.selectors.deck_jump_scroll} ul",
+            '.deckster-deck[data-title]'
 
 window.Deckster = (options) ->
   $deck = $(this)
@@ -296,7 +313,7 @@ window.Deckster = (options) ->
     # Add title to deck
     $deck_wrapper = $ "<div>"
     $deck.replaceWith($deck_wrapper)
-    title = $deck.data "title"
+    title = $deck.data("title") or "Deckster Deck"
     $title_div = $ "<div class=\"deckster-title\">#{title}</div>"
     $deck_wrapper.append $title_div, $deck
 
@@ -323,7 +340,8 @@ window.Deckster = (options) ->
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
     for callback in __event_callbacks[__events.inited] || []
       break if callback($deck) == false
-    _create_jump_scroll 0xDCC0FFEEBAD
+    _create_jump_scroll_card 0xDCC0FFEEBAD
+    _create_jump_scroll_deck 0xDEADBEEF
 
 
   # Deckster Drag
