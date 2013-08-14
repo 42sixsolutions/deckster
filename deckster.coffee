@@ -634,7 +634,8 @@ window.Deckster = (options) ->
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($deck) ->
       controls = """
-                 <a class='#{_css_variables.classes.remove_handle}'>R</a>
+                 <a class='#{_css_variables.classes.remove_handle}'>
+                  <img src='/public/images/x.png' width='20' height='20'></a>
                  """
       $deck.find(_css_variables.selectors.controls).append controls
 
@@ -646,6 +647,9 @@ window.Deckster = (options) ->
         $card = $remove_handle.parents(_css_variables.selectors.card)
         id = parseInt $card.attr 'data-card-id'
         titleText = $card.find(_css_variables.selectors.card_title).text()
+        if !titleText
+          # display the first 15 characters of the content
+          titleText = $card.find(_css_variables.selectors.card_content).text().substring(0,15)
         dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
 
         if dropdown.val()?
@@ -659,7 +663,7 @@ window.Deckster = (options) ->
               Removed Cards
               <span class='caret'></span>
             </button>
-            <ul class='dropdown-menu pull-left'>
+            <ul class='dropdown-menu removed-cards pull-left'>
               " + _get_removed_card_li_tag(id, titleText) + " 
             </ul>
           </div>
@@ -688,8 +692,9 @@ window.Deckster = (options) ->
     _get_removed_card_li_tag = (id, titleText) ->
       "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
         "' class='#{_css_variables.classes.removed_card_li}'>" + titleText + 
-        "<button id='#{_css_variables.classes.removed_card_button}-" + id + 
-        "' class='btn btn-default #{_css_variables.classes.removed_card_button}'>Re-add</button>" + 
+        "<a id='#{_css_variables.classes.removed_card_button}-" + id + 
+        "' ><img src='/public/images/plus.png' 
+                class='#{_css_variables.classes.removed_card_button}' ></a>" + 
       "</li>"
 
     _add_back_card = (cardId) ->

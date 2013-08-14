@@ -47,11 +47,30 @@
   cursor: pointer;
 }
 
+#{$deckster_remove_handle} {
+  vertical-align: middle;
+}
+
 #{$deckster_removed_card_li} {
   white-space: nowrap;
 }
 
 #{$deckster_removed_card_button} {
-  margin-left:2px; 
-  margin-right:2px;
+  width: 20px;
+  height: 20px;
+  position: absolute;
 }
+
+.dropdown-menu.removed-cards > li > a {
+  display: inline;
+  padding: 2px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.dropdown-menu.removed-cards > li > a:hover, 
+.dropdown-menu.removed-cards > li > a:focus {
+  background-color: white;
+  background-image: none;
+}
+
