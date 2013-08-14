@@ -164,7 +164,7 @@ window.Deckster = (options) ->
   
   options = $.extend {}, __default_options, options
   _option_draggable = $deck.data 'draggable'
-  options['draggable'] = true if _option_draggable? && (_option_draggable == true || _option_draggable == 'true')
+  options['draggable'] = (if _option_draggable? then ( if _option_draggable == true || _option_draggable == 'true' then true else false) else options['draggable'])
   _option_expandable = $deck.data 'expandable' 
   options['expandable'] = (if _option_expandable? then (if _option_expandable == true || _option_expandable == 'true' then true else false) else options['expandable'])
   _option_removable = $deck.data 'removable' 
@@ -629,7 +629,7 @@ window.Deckster = (options) ->
               .text(title)
               .addClass(_css_variables.classes.card_title)
         $card.prepend $title_div
-          
+
   # Deckster Remove
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($deck) ->
