@@ -49,8 +49,8 @@ _nav_menu = null # Feel free to rename this if something else fits better
 _nav_menu_options = {}
 
 ###
-# Creates the Bootstrap-based Navigation menu/Jump Scroll bar/Scroll
-# helper from HTML, applies config options, places it in the DOM tree and returns the new element
+# Creates the Bootstrap-based Navigation menu/Jump Scroll bar/Scroll helper from HTML,
+# applies config options, places it in the DOM tree and returns the new element
 ###
 _create_nav_menu = () ->
     markup = """<div id="deckster-scroll-helper" class="btn-group">
@@ -120,22 +120,21 @@ _create_nav_menu = () ->
 # the title-selector (e.g., '.deckster-deck [data-title]' for a card
 # with a title
 _create_jump_scroll = (target_ul_selector, title_selector) ->
-    _nav_menu ?= _create_nav_menu "()"
-    $card_title_ddl = $ target_ul_selector
+    _nav_menu ?= _create_nav_menu()
+    $item_title_ddl = $ target_ul_selector
     # Start fresh
-    $card_title_ddl.children().remove()
+    $item_title_ddl.children().remove()
     $title_items = $ title_selector
     if $title_items.length is 0
         return
 
     $title_items.each (index, item) ->
         title = $(item).data 'title'
-        console.log "title is #{title}"
         $nav_item = $  "<li><a href='#'>#{title}</a></li>"
         # Set up the click callback for the menu item
         $nav_item.on 'click', () ->
           _scrollToView $ item
-        $card_title_ddl.append $nav_item
+        $item_title_ddl.append $nav_item
 
 _create_jump_scroll_card = () ->
     # Collect all data-title cards from ALL DECKS on the pge
