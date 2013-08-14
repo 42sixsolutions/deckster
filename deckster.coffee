@@ -160,18 +160,23 @@ window.Deckster = (options) ->
     removable: true
   
   options = $.extend {}, __default_options, options
-  _option_draggable = $deck.data 'draggable'
-  options['draggable'] = (if _option_draggable? then ( if _option_draggable == true || _option_draggable == 'true' then true else false) else options['draggable'])
-  _option_expandable = $deck.data 'expandable' 
-  options['expandable'] = (if _option_expandable? then (if _option_expandable == true || _option_expandable == 'true' then true else false) else options['expandable'])
-  _option_removable = $deck.data 'removable' 
-  options['removable'] = (if _option_removable? then (if _option_removable == true || _option_removable == 'true' then true else false) else options['removable'])
+
   ### 
-   if 'url-enabled' is not defined then refer back to previously set option.
-   if 'url-enabled' is defined then return 'true' if 'true' otherwise 'false'
+  # Modify an option setting (with the config_option key) based on the
+  # presence and value of a corresponding data- attribute (data_attr)
+  # on the Deck DOM element
   ###
-  _option_url_enabled = $deck.data 'url-enabled'
-  options['url_enabled'] = (if _option_url_enabled? then (if _option_url_enabled == true or _option_url_enabled == 'true' then true else false) else options['url_enabled'])
+  __set_option = (data_attr, config_option) ->
+    option = $deck.data data_attr
+    if option?
+      options[config_option or data_attr] = option in [true, 'true']
+    # if the data- attribute is not found, don't change the value
+
+  __set_option 'draggable'
+  __set_option 'expandable'
+  __set_option 'removable'
+  __set_option 'url-enabled', 'url_enabled'
+
   ###
      Init Dragging options
   ###   
