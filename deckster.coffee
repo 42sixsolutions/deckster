@@ -102,18 +102,6 @@ _create_jump_scroll_card = () ->
     _create_jump_scroll "#{_css_variables.selectors.card_jump_scroll} ul",
             '.deckster-deck [data-title]'
 
-_add_to_jump_scroll_card = (target_ul_selector, $card) ->
-    J = _jump_scroll
-
-    $card_title_ddl = $ target_ul_selector
-    J.$nav_list = $card_title_ddl
-
-    title = $card.find(_css_variables.selectors.card_title).text()
-    $nav_item = $  "<li>#{title}</li>"
-    $nav_item.on 'click', () ->
-      _scrollToView $card
-    J.$nav_list.append $nav_item
-
 _create_jump_scroll_deck = () ->
     _create_jump_scroll "#{_css_variables.selectors.deck_jump_scroll} ul",
             '.deckster-deck[data-title]'
@@ -534,9 +522,9 @@ window.Deckster = (options) ->
             type: if $card.data("url-method")? then $card.data "url-method"  else "GET"
             context: $card
             success: (data,status,response) -> 
-              $title = this.find(_css_variables.selectors.card_title)
               if (!!data.trim()) # url content is not empty
                 $controls = this.find(_css_variables.selectors.controls).clone true
+                $title = this.find(_css_variables.selectors.card_title)
                 this.html ""
                 this.append $title
                 this.append $controls
@@ -544,7 +532,7 @@ window.Deckster = (options) ->
               else # remove the card if url content is empty & div text content is empty
                 divText = this.find(_css_variables.selectors.card_content).text()
                 if (!divText.trim() and $deck.data('remove-empty') == true)
-                  _remove_from_jump_scroll $title.text()
+                  _create_jump_scroll_card()
                   this.remove()
                   _remove_card_from_deck this
 
@@ -636,7 +624,7 @@ window.Deckster = (options) ->
 
         _remove_card_from_deck $card
         $card.remove()
-        _remove_from_jump_scroll titleText
+        _create_jump_scroll_card()
         _apply_deck()
 
     _remove_card_from_deck = ($card) ->
@@ -655,13 +643,6 @@ window.Deckster = (options) ->
         "<button id='#{_css_variables.classes.removed_card_button}-" + id + 
         "' class='btn btn-default #{_css_variables.classes.removed_card_button}'>Re-add</button>" + 
       "</li>"
-
-    _remove_from_jump_scroll = (cardTitle) ->
-      $nav_list = $(_css_variables.selectors.card_jump_scroll).find('ul')
-
-      $nav_list.find('li').filter () ->
-        $.text([this]) == cardTitle 
-      .remove();
 
     _add_back_card = (cardId) ->
       return unless cardId?
@@ -683,7 +664,7 @@ window.Deckster = (options) ->
       _bind_drag_controls($card)
 
       # add back to the jump card 
-      _add_to_jump_scroll_card "#{_css_variables.selectors.card_jump_scroll} ul", $card
+      _create_jump_scroll_card()
 
       # remove from the "Removed Cards" dropdown
       $deck.parent().find('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
