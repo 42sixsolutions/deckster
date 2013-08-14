@@ -36,10 +36,6 @@ _ajax_default =
 _css_variables.classes[sym] = selector[1..] for sym, selector of _css_variables.selectors
 
 # Jump scroll area
-_jump_scroll =
-  $title_cards: null
-  $nav_list: null
-
 _scrollToView = ($el) ->
   offset = $el.offset()
   offset.top -= 20
@@ -52,6 +48,10 @@ _scrollToView = ($el) ->
 _nav_menu = null # Feel free to rename this if something else fits better
 _nav_menu_options = {}
 
+###
+# Creates the Bootstrap-based Navigation menu/Jump Scroll bar/Scroll
+# helper from HTML, applies config options, places it in the DOM tree and returns the new element
+###
 _create_nav_menu = () ->
     markup = """<div id="deckster-scroll-helper" class="btn-group">
           <div class="btn-group #{_css_variables.classes.card_jump_scroll}">
@@ -91,10 +91,8 @@ _create_nav_menu = () ->
         else
         if left
             button_dom.css "left", left
-    calculate_x()
 
     y_pos = _nav_menu_options["y-position"]
-
     top = "5px"
     calculate_top = () ->
         if y_pos is "bottom"
@@ -104,13 +102,17 @@ _create_nav_menu = () ->
             top = ($(window).height() - button_dom.height()) / 2
         button_dom.css "top", top
      
-    # Apply calculate_top once to get approximate positioning
+    # Apply calculate functions once to get approximate positioning
+    calculate_x()
     calculate_top()
+
     $("body").append button_dom
 
-    # Re-calculate with button-size known
+    # Re-calculate with button size known
     calculate_top()
     calculate_x()
+
+    # This makes sure something relevant is returned
     button_dom
 
 # Designed both for scrolling to a deck and scrolling to a card in any deck.
@@ -118,27 +120,22 @@ _create_nav_menu = () ->
 # the title-selector (e.g., '.deckster-deck [data-title]' for a card
 # with a title
 _create_jump_scroll = (target_ul_selector, title_selector) ->
-    J = _jump_scroll
     _nav_menu ?= _create_nav_menu "()"
     $card_title_ddl = $ target_ul_selector
+    # Start fresh
     $card_title_ddl.children().remove()
-    # We're abusing J at this point.  At some point, maybe clean this
-    # up.  Right now this function will run too many times: for each
-    # of [card, deck] it will be run as many times as there are decks,
-    # thus if there are 3 decks it will be run 6 times.
-    J.$title_items = $ title_selector
-    if J.$title_items.length is 0
+    $title_items = $ title_selector
+    if $title_items.length is 0
         return
 
-    J.$nav_list = $card_title_ddl
-
-    J.$title_items.each (index, item) ->
+    $title_items.each (index, item) ->
         title = $(item).data 'title'
         console.log "title is #{title}"
         $nav_item = $  "<li><a href='#'>#{title}</a></li>"
+        # Set up the click callback for the menu item
         $nav_item.on 'click', () ->
           _scrollToView $ item
-        J.$nav_list.append $nav_item
+        $card_title_ddl.append $nav_item
 
 _create_jump_scroll_card = () ->
     # Collect all data-title cards from ALL DECKS on the pge
