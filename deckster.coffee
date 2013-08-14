@@ -50,6 +50,7 @@ _scrollToView = ($el) ->
   }
 
 _nav_menu = null # Feel free to rename this if something else fits better
+_nav_menu_options = {}
 
 _create_nav_menu = () ->
     markup = """<div id="deckster-scroll-helper" class="btn-group">
@@ -58,22 +59,64 @@ _create_nav_menu = () ->
               JC <!-- "jump [to] card" -->
               <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu pull-right">
+            <ul class="dropdown-menu pull-left">
             </ul>
           </div>
           <div class="btn-group #{_css_variables.classes.deck_jump_scroll}">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                (JD)<!-- "jump [to] deck" -- not implemented -->
+                JD<!-- "jump [to] deck" -- not implemented -->
               <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu pull-right">
+            <ul class="dropdown-menu pull-left">
             </ul>
           </div>
         </div>
         """ # "stupid emacs
     button_dom = $ markup
-    $("body").append button_dom  
-    
+
+    left = false
+    x_pos =_nav_menu_options["x-position"]
+    calculate_x = () ->
+        if x_pos is "left"
+            left = "5px"
+        else if x_pos is "right"
+            button_dom.css "right", "5px"
+            button_dom.find("ul.dropdown-menu")
+                .removeClass("pull-left")
+                .addClass("pull-right")
+        else if x_pos is "middle"
+            bw = button_dom.find(_css_variables.selectors.deck_jump_scroll)
+                    .width()
+            left = ($(window).width() - bw) / 2
+        else
+        if left
+            button_dom.css "left", left
+    calculate_x()
+
+    y_pos = _nav_menu_options["y-position"]
+
+    top = "5px"
+    calculate_top = () ->
+        if y_pos is "bottom"
+            top = ($(window).height() - button_dom.height()) - 5
+            button_dom.addClass("dropup")
+        else if y_pos is "middle"
+            top = ($(window).height() - button_dom.height()) / 2
+        button_dom.css "top", top
+     
+    # Apply calculate_top once to get approximate positioning
+    calculate_top()
+    $("body").append button_dom
+
+    # Re-calculate with button-size known
+    calculate_top()
+    calculate_x()
+    button_dom
+
+# Designed both for scrolling to a deck and scrolling to a card in any deck.
+# Builds the list based on all elements present in the DOM that match
+# the title-selector (e.g., '.deckster-deck [data-title]' for a card
+# with a title
 _create_jump_scroll = (target_ul_selector, title_selector) ->
     J = _jump_scroll
     _nav_menu ?= _create_nav_menu "()"
@@ -92,7 +135,7 @@ _create_jump_scroll = (target_ul_selector, title_selector) ->
     J.$title_items.each (index, item) ->
         title = $(item).data 'title'
         console.log "title is #{title}"
-        $nav_item = $  "<li>#{title}</li>"
+        $nav_item = $  "<li><a href='#'>#{title}</a></li>"
         $nav_item.on 'click', () ->
           _scrollToView $ item
         J.$nav_list.append $nav_item
@@ -138,6 +181,12 @@ window.Deckster = (options) ->
   options.animate = options.animate ? {}
   options.animate.properties = options.animate.properties ? {}
   options.animate.options = options.animate.options ? {}
+
+  ###
+  # Nav menu options (global)
+  ###
+
+  $.extend(_nav_menu_options, options["scroll-helper"])
 
   ###
     Deckster Base 
@@ -538,7 +587,7 @@ window.Deckster = (options) ->
 
            _ajax(ajax_options)
 
-    if options.url_enabled? # Just in case we'll be needing some real check
+    if true # Just in case we'll be needing some real check later on
         _on __events.card_added, ($card,d) ->
           title = $card.data "title"
 
@@ -725,5 +774,11 @@ $("#deck1").deckster({
                 console.log("I've failed to repalce the content")
             
             return ajax_options
+    }
+
+    "scroll-helper": {
+        "x-position": "middle" # left | middle | right
+        "y-position": "top" # bottom | middle | top
+        "stay-in-view": false # true
     }
 })
