@@ -37,11 +37,14 @@ Running `make lint` yields tips for improving the code.
 # Options
 
 1. Expand/Collapse a Deck
-      
-   -Expand/Collapse All Cards in a Deck:
+    
+    Note:
+    The attribute, data-expandable="true", must be set on the deck for this section to work.
+
+    Expand/Collapse All Cards in a Deck:
     By default all cards will be expanded (i.e. a data attribute will be implicity added to the deck <..class="deckster-deck".. data-cards-expanded="true"..>). To override, a developer can set `data-cards-expanded="false"` (No cards in this deck will be expanded).
    
-   -Expand/Collapse a Card in the Deck:
+    Expand/Collapse a Card in the Deck:
     All cards in a deck will be expanded unless the deck has the data attribute `data-cards-expanded="false"`. If you want to make sure a card or cards isn't expanded with the whole deck, then add a `data-expanded="false"` attribute to the card's metadata. (i.e. < .. class="deckster-card" ... data-expanded="false" ..>)
 
 2. Add Content via URL
