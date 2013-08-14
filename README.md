@@ -89,7 +89,7 @@ Clicking on one of these will scroll the page to bring the selected item into vi
 
 5. Remove Card
     
-    To remove a card from the deck, click on the "remove" control handle on the card.  
+    To remove a card from the deck, click on the "remove" control handle on the card. To disable this functionality, add the `data-removable="false"` attribute to the deck element. 
 
     Notes:
 

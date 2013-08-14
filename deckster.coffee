@@ -168,7 +168,7 @@ window.Deckster = (options) ->
   _option_expandable = $deck.data 'expandable' 
   options['expandable'] = (if _option_expandable? then (if _option_expandable == true || _option_expandable == 'true' then true else false) else options['expandable'])
   _option_removable = $deck.data 'removable' 
-  options['removable'] = true if _option_removable? && (_option_removable == true || _option_removable == 'true')
+  options['removable'] = (if _option_removable? then (if _option_removable == true || _option_removable == 'true' then true else false) else options['removable'])
   ### 
    if 'url-enabled' is not defined then refer back to previously set option.
    if 'url-enabled' is defined then return 'true' if 'true' otherwise 'false'
