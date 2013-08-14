@@ -50,6 +50,9 @@ Running `make lint` yields tips for improving the code.
     
     -For debugging purposes, you can disable all URL calls within a deck by declaring `data-url-enabled="false"` on the parent deck.
 
+25. Add a Title to a Card or Deck
+    Both Decks and Cards honor the "data-title" attribute in the HTML markup.  If a value is provided for this attribute in an element of class "deckster-deck" or "deckster-card", Deckster will add a title header to the Deck or Card.
+
 3. Customize Expand Size
 
     To customize a card's expand size, set the `data-col-expand` attribute to adjust the column size and the `data-row-expand` attribute to adjust the row size. The maximum column size is specified via `data-col-max` (which is set on the deck element).
@@ -131,6 +134,6 @@ Running `make lint` yields tips for improving the code.
     Things to Note:
 
     1. You are given a handle to the card being expanded/collapsed.
-    2. For convience, you are also given a handle to the main content area of the card. If you'd like to make changes/edits to the content, you should use this handle.
+    2. For convenience, you are also given a handle to the main content area of the card. If you'd like to make changes/edits to the content, you should use this handle.
     3. If you'd like to run an ajax request, construct a mapping with the required information and return it from the method.
 
