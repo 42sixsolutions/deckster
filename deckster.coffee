@@ -166,7 +166,7 @@ window.Deckster = (options) ->
   _option_draggable = $deck.data 'draggable'
   options['draggable'] = true if _option_draggable? && (_option_draggable == true || _option_draggable == 'true')
   _option_expandable = $deck.data 'expandable' 
-  options['expandable'] = true if _option_expandable? && (_option_expandable == true || _option_expandable == 'true')
+  options['expandable'] = (if _option_expandable? then (if _option_expandable == true || _option_expandable == 'true' then true else false) else options['expandable'])
   _option_removable = $deck.data 'removable' 
   options['removable'] = true if _option_removable? && (_option_removable == true || _option_removable == 'true')
   ### 
@@ -562,43 +562,7 @@ window.Deckster = (options) ->
         $collapse_handle.siblings(_css_variables.selectors.expand_handle).show()
         for callback in __event_callbacks[__events.card_collapsed] || []
           break if callback($deck,$card) == false
-          
-    if options['url_enabled'] == true
-      _on __events.card_added, ($card,d) ->
-        if $card.data("url")?
-          ajax_options = 
-            url: $card.data "url" 
-            type: if $card.data("url-method")? then $card.data "url-method"  else "GET"
-            context: $card
-            success: (data,status,response) -> 
-              if (!!data.trim()) # url content is not empty
-                $controls = this.find(_css_variables.selectors.controls).clone true
-                $title = this.find(_css_variables.selectors.card_title)
-                this.html ""
-                this.append $title
-                this.append $controls
-                this.append '<div class="content">' + data + '</div>'
-              else # remove the card if url content is empty & div text content is empty
-                divText = this.find(_css_variables.selectors.card_content).text()
-                if (!divText.trim() and $deck.data('remove-empty') == true)
-                  _create_jump_scroll_card()
-                  this.remove()
-                  _remove_card_from_deck this
 
-           _ajax(ajax_options)
-
-    if true # Just in case we'll be needing some real check later on
-        _on __events.card_added, ($card,d) ->
-          title = $card.data "title"
-
-          unless title? and !$card.find(_css_variables.selectors.card_title).text()
-                return
-          $title_div = $('<div>')
-                .text(title)
-                .addClass(_css_variables.classes.card_title)
-          $card.prepend $title_div
-
-    if options['expandable'] and options['expandable'] == true 
       _on __events.inited, ()->
         #Find all decks that don't have "data-cards-expanded=false"
         $(_css_variables.selectors.deck+":not("+_css_variables.selector_functions.deck_expanded(false)+")").each((index)->
@@ -631,6 +595,41 @@ window.Deckster = (options) ->
            if ajaxOptions?
             $card.queue().push(()->_ajax(ajaxOptions))
 
+  if options['url_enabled'] == true
+    _on __events.card_added, ($card,d) ->
+      if $card.data("url")?
+        ajax_options = 
+          url: $card.data "url" 
+          type: if $card.data("url-method")? then $card.data "url-method"  else "GET"
+          context: $card
+          success: (data,status,response) -> 
+            if (!!data.trim()) # url content is not empty
+              $controls = this.find(_css_variables.selectors.controls).clone true
+              $title = this.find(_css_variables.selectors.card_title)
+              this.html ""
+              this.append $title
+              this.append $controls
+              this.append '<div class="content">' + data + '</div>'
+            else # remove the card if url content is empty & div text content is empty
+              divText = this.find(_css_variables.selectors.card_content).text()
+              if (!divText.trim() and $deck.data('remove-empty') == true)
+                _create_jump_scroll_card()
+                this.remove()
+                _remove_card_from_deck this
+
+         _ajax(ajax_options)
+
+  if true # Just in case we'll be needing some real check later on
+      _on __events.card_added, ($card,d) ->
+        title = $card.data "title"
+
+        unless title? and !$card.find(_css_variables.selectors.card_title).text()
+              return
+        $title_div = $('<div>')
+              .text(title)
+              .addClass(_css_variables.classes.card_title)
+        $card.prepend $title_div
+          
   # Deckster Remove
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($deck) ->
