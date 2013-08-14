@@ -600,14 +600,14 @@ window.Deckster = (options) ->
           type: if $card.data("url-method")? then $card.data "url-method"  else "GET"
           context: $card
           success: (data,status,response) -> 
-            if (!!data.trim()) # url content is not empty
+            if (!!data.trim()) # URL content is not empty
               $controls = this.find(_css_variables.selectors.controls).clone true
               $title = this.find(_css_variables.selectors.card_title)
               this.html ""
               this.append $title
               this.append $controls
               this.append '<div class="content">' + data + '</div>'
-            else # remove the card if url content is empty & div text content is empty
+            else # Remove the card if url content is empty & div text content is empty
               divText = this.find(_css_variables.selectors.card_content).text()
               if (!divText.trim() and $deck.data('remove-empty') == true)
                 _create_jump_scroll_card()
@@ -645,15 +645,15 @@ window.Deckster = (options) ->
         id = parseInt $card.attr 'data-card-id'
         titleText = $card.find(_css_variables.selectors.card_title).text()
         if !titleText
-          # display the first 15 characters of the content
+          # Display the first 15 characters of the content
           titleText = $card.find(_css_variables.selectors.card_content).text().substring(0,15)
         dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
 
         if dropdown.val()?
-          # add to dropdown menu
+          # Add to dropdown menu
           dropdown.find('ul').append(_get_removed_card_li_tag(id, titleText)).appendTo(dropdown)
         else
-          # construct a new dropdown menu
+          # Construct a new dropdown menu
           removed_dropdown_div = "
           <div class='btn-group #{_css_variables.classes.removed_dropdown}'>
             <button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>
@@ -665,17 +665,23 @@ window.Deckster = (options) ->
             </ul>
           </div>
           " 
+          # Add the 'Removed Cards' dropdown to the page - right above the deck title bar
           $deck.parent().prepend(removed_dropdown_div)
           dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
           
+        # Define onclick behavior for the 'Add' button in the 'Removed Cards' dropdown
         dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + id).click ->
           _add_back_card(id)
 
+        # Remove this card from the deck
         _remove_card_from_deck $card
         $card.remove()
         _create_jump_scroll_card()
         _apply_deck()
 
+    ###
+    # Removes the card from the __deck variable so that it doesn't take up space once removed
+    ###
     _remove_card_from_deck = ($card) ->
       cardId = parseInt($card.attr('data-card-id'))
 
@@ -686,6 +692,11 @@ window.Deckster = (options) ->
 
       return undefined
 
+    ###
+    # Returns the <li> tag for this card, to be shown within the 'Removed Card' dropdown.
+    # It displays the card title (or the first 15 characters of the card content, if no title),
+    #   and an 'Add' button.
+    ###
     _get_removed_card_li_tag = (id, titleText) ->
       "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
         "' class='#{_css_variables.classes.removed_card_li}'>" + titleText + 
@@ -694,17 +705,21 @@ window.Deckster = (options) ->
                 class='#{_css_variables.classes.removed_card_button}' ></a>" + 
       "</li>"
 
+    ###
+    # This is the callback when the 'Add' button is clicked for the card from the 'Removed Cards' dropdown
+    ###
     _add_back_card = (cardId) ->
       return unless cardId?
         
       $card = __cards_by_id[cardId] 
       d = __card_data_by_id[cardId]
 
+      # Add the card back to the deck
       $deck.append($card)
       _add_card $card, d
       _apply_deck()
 
-      # add back the control buttons click behavior
+      # Add back the control buttons click behavior
       $card.find(_css_variables.selectors.remove_handle).click ->
         _remove_on_click(this)
       $card.find(_css_variables.selectors.expand_handle).click ->
@@ -713,12 +728,13 @@ window.Deckster = (options) ->
         _collapse_on_click(this)
       _bind_drag_controls($card)
 
-      # add back to the jump card 
+      # Add back to the jump card 
       _create_jump_scroll_card()
 
-      # remove from the "Removed Cards" dropdown
+      # Remove from the "Removed Cards" dropdown
       $deck.parent().find('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
 
+      # Remove the "Removed Cards" dropdown if it doesn't have any cards
       dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
       dropdown.remove() if dropdown.find('ul').children().size() == 0
         
