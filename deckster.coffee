@@ -365,6 +365,12 @@ window.Deckster = (options) ->
 
     $deck.attr 'data-row-max', row_max
 
+  ###
+  # Initially, cards will be hidden if the 'data-hidden' attribute is true, or
+  #   if the deck's 'remove-empty' attribute is true, and
+  #   there is no card content, and
+  #   there is no 'data-url' attribute
+  ###
   _should_remove_card_in_init = ($card, $deck) ->
     ($card.data('hidden') == true or 
       ($deck.data('remove-empty') == true and 
