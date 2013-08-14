@@ -635,7 +635,7 @@ window.Deckster = (options) ->
     _on __events.inited, ($deck) ->
       controls = """
                  <a class='#{_css_variables.classes.remove_handle}'>
-                  <img src='/public/images/x.png' width='20' height='20'></a>
+                  <img src='./public/images/x.png' width='20' height='20'></a>
                  """
       $deck.find(_css_variables.selectors.controls).append controls
 
@@ -693,7 +693,7 @@ window.Deckster = (options) ->
       "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
         "' class='#{_css_variables.classes.removed_card_li}'>" + titleText + 
         "<a id='#{_css_variables.classes.removed_card_button}-" + id + 
-        "' ><img src='/public/images/plus.png' 
+        "' ><img src='./public/images/plus.png' 
                 class='#{_css_variables.classes.removed_card_button}' ></a>" + 
       "</li>"
 
