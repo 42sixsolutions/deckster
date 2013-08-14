@@ -34,6 +34,13 @@ Deckster is a lightweight web UI framework for organizing lots of interactive el
 
 Running `make lint` yields tips for improving the code.
 
+# Using Deckster
+
+## Navigation
+For large pages with many cards or multiple decks, a navigation button bar is provided at the top right (position is
+configurable, see below).  Each button opens a drop-down menu with a list of items, either cards or decks, listed by title.
+Clicking on one of these will scroll the page to bring the selected item into view.
+
 # Options
 
 1. Expand/Collapse a Deck
@@ -140,3 +147,14 @@ Running `make lint` yields tips for improving the code.
     2. For convenience, you are also given a handle to the main content area of the card. If you'd like to make changes/edits to the content, you should use this handle.
     3. If you'd like to run an ajax request, construct a mapping with the required information and return it from the method.
 
+14. Configuring the positioning of the Jump Scroll bar
+    
+    The positioning of the Jump Scroll Bar can be configured in the options object passed in to the Deckster
+    constructor function.  For example:
+
+            $("#deck1").deckster({
+              "scroll-helper": {
+                  "x-position": "middle" # left | middle | right
+                  "y-position": "top" # bottom | middle | top
+              }
+            });
