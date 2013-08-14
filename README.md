@@ -156,5 +156,6 @@ Clicking on one of these will scroll the page to bring the selected item into vi
               "scroll-helper": {
                   "x-position": "middle" # left | middle | right
                   "y-position": "top" # bottom | middle | top
+		  "stay-in-view": false # true | false
               }
             });

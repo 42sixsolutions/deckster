@@ -74,6 +74,13 @@ _create_nav_menu = () ->
         """ # "stupid emacs
     button_dom = $ markup
 
+    stay_in_view = _nav_menu_options["stay-in-view"]
+    if stay_in_view? and not stay_in_view
+        outer_el = document
+        button_dom.css 'position', 'absolute'
+    else
+        outer_el = window # outer_el is what we're going to measure to place the button bar
+
     left = false
     x_pos =_nav_menu_options["x-position"]
     calculate_x = () ->
@@ -87,7 +94,7 @@ _create_nav_menu = () ->
         else if x_pos is "middle"
             bw = button_dom.find(_css_variables.selectors.deck_jump_scroll)
                     .width()
-            left = ($(window).width() - bw) / 2
+            left = ($(outer_el).width() - bw) / 2
         else
         if left
             button_dom.css "left", left
@@ -96,10 +103,10 @@ _create_nav_menu = () ->
     top = "5px"
     calculate_top = () ->
         if y_pos is "bottom"
-            top = ($(window).height() - button_dom.height()) - 5
+            top = ($(outer_el).height() - button_dom.height()) - 5
             button_dom.addClass("dropup")
         else if y_pos is "middle"
-            top = ($(window).height() - button_dom.height()) / 2
+            top = ($(outer_el).height() - button_dom.height()) / 2
         button_dom.css "top", top
      
     # Apply calculate functions once to get approximate positioning
@@ -806,6 +813,6 @@ $("#deck1").deckster({
     "scroll-helper": {
         "x-position": "middle" # left | middle | right
         "y-position": "top" # bottom | middle | top
-        "stay-in-view": false # true
+        "stay-in-view": true # true
     }
 })
