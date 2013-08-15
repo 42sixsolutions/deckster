@@ -32,7 +32,7 @@ _ajax_default =
   type: 'GET'
   async: true
 
-
+_ajax_requests = {}
 _css_variables.classes[sym] = selector[1..] for sym, selector of _css_variables.selectors
 
 # Jump scroll area
@@ -596,7 +596,17 @@ window.Deckster = (options) ->
          if cardActions["card-expanded"]?
            ajaxOptions = cardActions["card-expanded"]($card,$card.find(_css_variables.selectors.card_content))
            if ajaxOptions?
-            $card.queue().push(()->_ajax(ajaxOptions))
+             ###
+                Abort any requests that are currently on-going.
+             ###
+             if _ajax_requests[deckId] and _ajax_requests[deckId][cardId]
+              _ajax_requests[deckId][cardId].abort()
+              delete _ajax_requests[deckId][cardId]
+
+             ###
+                Send the ajax request after any card animation has finished (Typically when a card is expanded its size will be changed.) For example, trying to animate and load content into the card makes both operations laggy and detract from the user experience. 
+             ###
+             $card.queue().push(()->_ajax(ajaxOptions))
 
       _on __events.card_collapsed, ($deck,$card) ->
         deckId = $deck.data("deck-id") ? 1
@@ -631,7 +641,13 @@ window.Deckster = (options) ->
                 this.remove()
                 _remove_card_from_deck this
 
-         _ajax(ajax_options)
+         deckId = $card.closest(_css_variables.selectors.deck).data("deck-id") ? 1
+         cardId = d.id
+         ###
+          Keep track of requests incase we need to abort them.
+         ###
+         _ajax_requests[deckId] = _ajax_requests[deckId] || {}
+         _ajax_requests[deckId][cardId] = _ajax(ajax_options)
 
   if true # Just in case we'll be needing some real check later on
       _on __events.card_added, ($card,d) ->
