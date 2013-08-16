@@ -767,9 +767,23 @@ window.Deckster = (options) ->
       $card = __cards_by_id[cardId] 
       d = __card_data_by_id[cardId]
 
-      # Set the row = very last row, column = left-most
-      d.row = data_row_max + 1
-      d.col = 1
+      # See if the card can fit in the last row, if not - add it back in the very last row, in the first column.
+      can_fit_in_last_row = false
+
+      for col in [1..__col_max] by 1
+        if _does_fit_location(data_row_max, col, d)
+          can_fit_in_last_row = true
+          console.log "fits in max row: data_row_max, col: " + data_row_max, col
+          break
+        else
+          console.log "doesn't fit in max row: data_row_max, col: " + data_row_max, col
+
+      if can_fit_in_last_row 
+        d.row = data_row_max
+        d.col = col
+      else
+        d.row = data_row_max + 1
+        d.col = 1
       
       _add_back_card_helper(cardId, $card, d)
       
@@ -797,6 +811,20 @@ window.Deckster = (options) ->
       # Remove the "Removed Cards" dropdown if it doesn't have any cards
       dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
       dropdown.remove() if dropdown.find('ul').children().size() == 0
+  
+  _does_fit_location = (row,col,d) ->
+    row_end = d.row_span+row
+    col_end = d.col_span+col
+
+    if col_end-1 > __col_max
+      return false
+
+    for row_test in [row..row_end]
+      for col_test in [col..col_end]
+        if __deck[row_test] and __deck[row_test][col_test] #these areas must be empty
+          return false # if not return false; we can't use spot.
+
+    return true
 
   # Deckster End
 
