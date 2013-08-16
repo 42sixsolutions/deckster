@@ -58,13 +58,12 @@
 #{$deckster_removed_card_button} {
   width: 20px;
   height: 20px;
-  position: absolute;
+  vertical-align: middle;
 }
 
 .dropdown-menu.removed-cards > li > a {
   display: inline;
   padding: 2px;
-  margin-right: 20px;
   cursor: pointer;
 }
 
