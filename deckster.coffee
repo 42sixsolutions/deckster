@@ -754,29 +754,7 @@ window.Deckster = (options) ->
       $card = __cards_by_id[cardId] 
       d = __card_data_by_id[cardId]
 
-      # Add the card back to the deck
-      $deck.append($card)
-      _add_card $card, d
-      _apply_deck()
-
-      # Add back the control buttons click behavior
-      $card.find(_css_variables.selectors.remove_handle).click ->
-        _remove_on_click(this)
-      $card.find(_css_variables.selectors.expand_handle).click ->
-        _expand_on_click(this)
-      $card.find(_css_variables.selectors.collapse_handle).click ->
-        _collapse_on_click(this)
-      _bind_drag_controls($card)
-
-      # Add back to the jump card 
-      _create_jump_scroll_card()
-
-      # Remove from the "Removed Cards" dropdown
-      $deck.parent().find('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
-
-      # Remove the "Removed Cards" dropdown if it doesn't have any cards
-      dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
-      dropdown.remove() if dropdown.find('ul').children().size() == 0
+      _add_back_card_helper(cardId, $card, d)
         
     ###
     # This is the callback when the 'Add to bottom ' button is clicked for the card from the 'Removed Cards' dropdown
@@ -793,6 +771,9 @@ window.Deckster = (options) ->
       d.row = data_row_max + 1
       d.col = 1
       
+      _add_back_card_helper(cardId, $card, d)
+      
+    _add_back_card_helper = (cardId, $card, d) ->
       # Add the card back to the deck
       $deck.append($card)
       _add_card $card, d
