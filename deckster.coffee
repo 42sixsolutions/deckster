@@ -715,7 +715,7 @@ window.Deckster = (options) ->
 
     return true    
 
-  _does_fit_location= (row,col,d) ->
+  _fit_location = (row,col,d) ->
     row_end = d.row_span+row-1
     col_end = d.col_span+col-1
 
@@ -736,7 +736,7 @@ window.Deckster = (options) ->
     b = 50
     for row in [1..__row_max] #search over all rows, including last.
       for col in [1..__col_max] #search over all columns.
-        if _does_fit_location(row,col,d)
+        if _fit_location(row,col,d)
 
           new_d = 
             "id": d.id
