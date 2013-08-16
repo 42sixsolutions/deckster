@@ -14,6 +14,7 @@ _css_variables =
     removed_dropdown: '.deckster-removed-dropdown'
     removed_card_li: '.deckster-removed-card-li'
     removed_card_button: '.deckster-removed-card-button'
+    add_card_to_bottom_button: '.deckster-add-card-to-bottom-button'
     card_content:'.content'
 
   selector_functions:
@@ -282,7 +283,7 @@ window.Deckster = (options) ->
       d = __card_data_by_id[id]
       _resolve_card_position $card, d
       _mark_card_as_resolved d
-
+      
   _resolve_card_position = ($card, d) ->
     row_i = 1
     while true # WARNING --- MUST BREAK LOOP
@@ -706,6 +707,10 @@ window.Deckster = (options) ->
         dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + id).click ->
           _add_back_card(id)
 
+        # Define onclick behavior for the 'Add to bottom' button in the 'Removed Cards' dropdown
+        dropdown.find('#' + _css_variables.classes.add_card_to_bottom_button + '-' + id).click ->
+          _add_back_card_to_bottom(id)
+
         # Remove this card from the deck
         _remove_card_from_deck $card
         $card.remove()
@@ -736,6 +741,8 @@ window.Deckster = (options) ->
         "<a id='#{_css_variables.classes.removed_card_button}-" + id + 
         "' ><img src='./public/images/plus.png' 
                 class='#{_css_variables.classes.removed_card_button}' ></a>" + 
+        "<button id='#{_css_variables.classes.add_card_to_bottom_button}-" + id + 
+        "' class='btn btn-default '>Add to bottom</button>" +
       "</li>"
 
     ###
@@ -771,6 +778,45 @@ window.Deckster = (options) ->
       dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
       dropdown.remove() if dropdown.find('ul').children().size() == 0
         
+    ###
+    # This is the callback when the 'Add to bottom ' button is clicked for the card from the 'Removed Cards' dropdown
+    ###
+    _add_back_card_to_bottom = (cardId) ->
+      return unless cardId?
+        
+      data_row_max = parseInt($deck.attr 'data-row-max')
+      console.log "data-row-max: " + data_row_max
+      $card = __cards_by_id[cardId] 
+      d = __card_data_by_id[cardId]
+
+      # Set the row = very last row, column = left-most
+      d.row = data_row_max + 1
+      d.col = 1
+      
+      # Add the card back to the deck
+      $deck.append($card)
+      _add_card $card, d
+      _apply_deck()
+
+      # Add back the control buttons click behavior
+      $card.find(_css_variables.selectors.remove_handle).click ->
+        _remove_on_click(this)
+      $card.find(_css_variables.selectors.expand_handle).click ->
+        _expand_on_click(this)
+      $card.find(_css_variables.selectors.collapse_handle).click ->
+        _collapse_on_click(this)
+      _bind_drag_controls($card)
+
+      # Add back to the jump card 
+      _create_jump_scroll_card()
+
+      # Remove from the "Removed Cards" dropdown
+      $deck.parent().find('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
+
+      # Remove the "Removed Cards" dropdown if it doesn't have any cards
+      dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
+      dropdown.remove() if dropdown.find('ul').children().size() == 0
+
   # Deckster End
 
   init()
