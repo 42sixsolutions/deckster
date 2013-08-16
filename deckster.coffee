@@ -16,6 +16,8 @@ _css_variables =
     removed_card_button: '.deckster-removed-card-button'
     add_card_to_bottom_button: '.deckster-add-card-to-bottom-button'
     card_content:'.content'
+    placeholders: '.placeholders'
+    droppable:'.droppable'
 
   selector_functions:
     card_expanded: (option)->'[data-expanded='+option+']'
@@ -165,7 +167,8 @@ window.Deckster = (options) ->
     expandable: true
     url_enabled:true
     removable: true
-  
+    droppable: true
+
   options = $.extend {}, __default_options, options
 
   ### 
@@ -183,6 +186,7 @@ window.Deckster = (options) ->
   __set_option 'expandable'
   __set_option 'removable'
   __set_option 'url-enabled', 'url_enabled'
+  __set_option 'droppable'
 
   ###
      Init Dragging options
@@ -206,6 +210,7 @@ window.Deckster = (options) ->
   __cards_by_id = {}
   __card_data_by_id = {}
   __col_max = 0
+  __row_max = 0
 
   __cards_needing_resolved_in_order = []
   __cards_needing_resolved_by_id = {}
@@ -231,6 +236,7 @@ window.Deckster = (options) ->
 
   _add_card = ($card, d) ->
     throw 'Card is too wide' if d.col_span > __col_max
+
     _force_card_to_position $card, d, {row: d.row, col: d.col}
 
     for callback in __event_callbacks[__events.card_added] || []
@@ -373,7 +379,7 @@ window.Deckster = (options) ->
           $card.attr 'data-col-span', d.col_span
 
           row_max_value = d.row + d.row_span - 1
-          row_max = row_max_value if row_max_value > row_max
+          __row_max = row_max_value if row_max_value > __row_max
 
     $deck.attr 'data-row-max', row_max
 
@@ -649,6 +655,135 @@ window.Deckster = (options) ->
          ###
          _ajax_requests[deckId] = _ajax_requests[deckId] || {}
          _ajax_requests[deckId][cardId] = _ajax(ajax_options)
+
+  _placeholder_div = ($card,_d,settings) ->
+    width = $card.outerWidth()
+    height = $card.outerHeight()
+    $placeholder = 
+    $("<div>")
+    .addClass("placeholders")
+    .addClass(_css_variables.selectors.card.substring(1))
+    .attr("data-col",_d["col"])
+    .attr("data-row",_d["row"])
+    .attr("data-col-span",_d.col_span)
+    .attr("data-row-span",_d.row_span)
+    .css("background-color","rgb("+settings.r+","+settings.g+","+settings.b+")")
+    .css("z-index",settings.zIndex)
+    $card.closest(_css_variables.selectors.deck).append($placeholder)
+    $placeholder.click( (action) ->
+      _remove_old_position $card,__card_data_by_id[_d.id]
+      $selectedCard = $(action.currentTarget)
+      #$card.css("z-index",0)
+      __card_data_by_id[_d.id] = _d
+      _set_new_position $card,_d
+      _apply_transition $card,_d 
+      $card.find(_css_variables.selectors.droppable).trigger("click")
+      console.log "Deck",__deck
+    )
+    $placeholder.mouseenter( (action) ->
+      $(this).data("prev-z-index",$(this).css("z-index"))      
+      $(this).css("z-index",1000)
+    )
+    $placeholder.mouseleave( (action) ->
+      $(this).css("z-index",$(this).data("prev-z-index"))
+    )
+    return $card
+
+  _remove_old_position = ($card,d) ->
+    row_end = d.row+d.row_span-1
+    col_end = d.col+d.col_span-1
+
+    for row_remove in [d.row..row_end]
+      for col_remove in [d.col..col_end]
+        console.log row_remove, col_remove
+        console.log __deck
+        delete __deck[row_remove][col_remove]
+
+    console.log("removed",__deck)
+    return true
+
+  _set_new_position = ($card,d) ->
+    row_end = d.row_span+d.row-1
+    col_end = d.col_span+d.col-1
+
+    #add new entry to grid
+    for row_add in [d.row..row_end]
+      if not(__deck[row_add])
+        __deck[row_add] = {}
+      for col_add in [d.col..col_end]
+        __deck[row_add][col_add] = d.id
+
+    return true    
+
+  _does_fit_location= (row,col,d) ->
+    row_end = d.row_span+row-1
+    col_end = d.col_span+col-1
+
+    if col_end > __col_max
+      return false
+
+    for row_test in [row..row_end]
+      for col_test in [col..col_end]
+        if __deck[row_test] and __deck[row_test][col_test] #these areas must be empty
+          return false # if not return false; we can't use spot.
+
+    return true
+
+  _add_placeholders = ($card,d)->
+    zIndex = 1
+    r = 0
+    g = 25
+    b = 50
+    for row in [1..__row_max] #search over all rows, including last.
+      for col in [1..__col_max] #search over all columns.
+        if _does_fit_location(row,col,d)
+
+          new_d = 
+            "id": d.id
+            "row": row
+            "col":col
+            "row_span":d.row_span
+            "col_span":d.col_span
+          console.log "new_d",new_d
+          _placeholder_div($card,new_d,
+            "zIndez":zIndex
+            "r":r
+            "g":g
+            "b":b)
+
+          zIndex += 1
+          r = ((r+0)%250)
+          g = ((g+50)%250)
+          b = ((b+50)%250)
+
+    return -1;
+
+  if options.droppable == true
+    _on __events.inited, ($card,d) ->
+      console.log($card)
+      $controls = $card.find(_css_variables.selectors.controls)
+      console.log($controls)
+      $droppable = $("<a>D</a>").addClass(_css_variables.selectors.droppable.substring(1))
+      $droppable.click( (element) ->  
+        $drop_handle = $(element.currentTarget)
+        if not $drop_handle.hasClass("cancel") 
+          $card = $drop_handle.closest(_css_variables.selectors.card)
+          $deck = $drop_handle.closest(_css_variables.selectors.deck)
+          $deck.find(_css_variables.selectors.controls).hide()
+          $card.find(_css_variables.selectors.controls).show()
+          $drop_handle.html("C").addClass("cancel")
+          id = parseInt($card.attr('data-card-id'))
+          d = __card_data_by_id[id]
+          _add_placeholders $card,d
+        else
+          $drop_handle.removeClass("cancel").html("D")
+          $deck = $drop_handle.closest(_css_variables.selectors.deck)
+          $deck.find(_css_variables.selectors.controls).show()
+          $deck.find(_css_variables.selectors.placeholders).remove()
+      )
+      $controls.append($droppable)
+          
+
 
   if true # Just in case we'll be needing some real check later on
       _on __events.card_added, ($card,d) ->
