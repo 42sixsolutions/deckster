@@ -26,6 +26,9 @@ _css_variables =
   dimensions: {}
   styleSheet: "deckster.css"
 
+###
+  Default Ajax options, some options are typically overwritten.
+###
 _ajax_default = 
   success: (data,status, response) ->
       console.log("Success: "+status)
@@ -35,6 +38,9 @@ _ajax_default =
   type: 'GET'
   async: true
 
+###
+  Used to keep track of ajax requests. Typically stored as _ajax_requests[deckId][cardId] = $.ajax(...)
+###
 _ajax_requests = {}
 _css_variables.classes[sym] = selector[1..] for sym, selector of _css_variables.selectors
 
@@ -216,7 +222,11 @@ window.Deckster = (options) ->
   __cards_needing_resolved_by_id = {}
 
   __dominate_card_data = undefined
+  
 
+  ###
+    Registered callbacks events. 
+  ###
   __events =
     card_added: 'card_added'
     inited: 'inited'
@@ -315,6 +325,10 @@ window.Deckster = (options) ->
         col_i++
       row_i++
 
+  ###
+    Used to transition cards to new positions on the deck. Typical scenario arises when a card is being dragged to a new position and adjacent cards need to be repositioned.
+    Transition positions are looked up and cached locally.
+  ###
   _apply_transition = ($card,d) ->
     rowStr = _css_variables.selectors.card+"[data-row=\""+d.row+"\"]"
     colStr = _css_variables.selectors.card+"[data-col=\""+d.col+"\"]"
@@ -353,6 +367,9 @@ window.Deckster = (options) ->
       $card.attr 'data-col', d.col
       $card.css 'opacity','1'
 
+    ###
+    The animation becomes confusing and inaccurate when to many animations are attempted on the same card;Solution: Stop current and pending animations and start just this one.
+    ###
     $card.stop(true,false).animate(options.animate.properties, options.animate.options) 
 
   _apply_deck = () ->
@@ -581,6 +598,7 @@ window.Deckster = (options) ->
 
         $collapse_handle.hide()
         $collapse_handle.siblings(_css_variables.selectors.expand_handle).show()
+        _clean_up_deck()
         for callback in __event_callbacks[__events.card_collapsed] || []
           break if callback($deck,$card) == false
 
@@ -626,6 +644,9 @@ window.Deckster = (options) ->
            if ajaxOptions?
             $card.queue().push(()->_ajax(ajaxOptions))
 
+  ###
+    Setting url_enabled to true allows ajax requests to run.
+  ###
   if options['url_enabled'] == true
     _on __events.card_added, ($card,d) ->
       if $card.data("url")?
@@ -656,6 +677,9 @@ window.Deckster = (options) ->
          _ajax_requests[deckId] = _ajax_requests[deckId] || {}
          _ajax_requests[deckId][cardId] = _ajax(ajax_options)
 
+  ###
+    Droppable Helper Methods:
+  ###
   _placeholder_div = ($card,_d,settings) ->
     width = $card.outerWidth()
     height = $card.outerHeight()
@@ -678,7 +702,6 @@ window.Deckster = (options) ->
       _set_new_position $card,_d
       _apply_transition $card,_d 
       $card.find(_css_variables.selectors.droppable).trigger("click")
-      console.log "Deck",__deck
     )
     $placeholder.mouseenter( (action) ->
       $(this).data("prev-z-index",$(this).css("z-index"))      
@@ -695,11 +718,8 @@ window.Deckster = (options) ->
 
     for row_remove in [d.row..row_end]
       for col_remove in [d.col..col_end]
-        console.log row_remove, col_remove
-        console.log __deck
-        delete __deck[row_remove][col_remove]
+        delete __deck[row_remove][col_remove]       
 
-    console.log("removed",__deck)
     return true
 
   _set_new_position = ($card,d) ->
@@ -713,7 +733,22 @@ window.Deckster = (options) ->
       for col_add in [d.col..col_end]
         __deck[row_add][col_add] = d.id
 
+    if row_end > __row_max
+      __row_max = row_end
+
+    _clean_up_deck()
+
     return true    
+
+  _clean_up_deck = ()->
+    #Clean up empty rows
+    row_subtractor = __row_max
+    while row_subtractor > 0
+      if $.isEmptyObject(__deck[row_subtractor])
+        delete __deck[row_subtractor]
+        if __row_max == row_subtractor
+          __row_max -= 1
+      row_subtractor -= 1  
 
   _fit_location = (row,col,d) ->
     row_end = d.row_span+row-1
@@ -734,7 +769,7 @@ window.Deckster = (options) ->
     r = 0
     g = 25
     b = 50
-    for row in [1..__row_max] #search over all rows, including last.
+    for row in [1..(__row_max+1)] #search over all rows, including last.
       for col in [1..__col_max] #search over all columns.
         if _fit_location(row,col,d)
 
@@ -752,25 +787,27 @@ window.Deckster = (options) ->
             "b":b)
 
           zIndex += 1
-          r = ((r+0)%250)
-          g = ((g+50)%250)
+          r = ((r+0)%200)
+          g = ((g+50)%150)
           b = ((b+50)%250)
 
     return -1;
 
+  ### 
+    If set to true, cards can be picked up and dropped to a new spot on the deck without disturbing the positions of any other card.
+    :Droppable Helper Methods End.
+  ###
   if options.droppable == true
     _on __events.inited, ($card,d) ->
-      console.log($card)
       $controls = $card.find(_css_variables.selectors.controls)
-      console.log($controls)
       $droppable = $("<a>D</a>").addClass(_css_variables.selectors.droppable.substring(1))
       $droppable.click( (element) ->  
         $drop_handle = $(element.currentTarget)
         if not $drop_handle.hasClass("cancel") 
           $card = $drop_handle.closest(_css_variables.selectors.card)
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
-          $deck.find(_css_variables.selectors.controls).hide()
-          $card.find(_css_variables.selectors.controls).show()
+          $deck.find(_css_variables.selectors.controls).children(":visible").addClass("hider").hide()
+          $drop_handle.show()
           $drop_handle.html("C").addClass("cancel")
           id = parseInt($card.attr('data-card-id'))
           d = __card_data_by_id[id]
@@ -778,12 +815,11 @@ window.Deckster = (options) ->
         else
           $drop_handle.removeClass("cancel").html("D")
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
-          $deck.find(_css_variables.selectors.controls).show()
+          $deck.find(_css_variables.selectors.controls).children(".hider").show().removeClass("hider")
           $deck.find(_css_variables.selectors.placeholders).remove()
       )
       $controls.append($droppable)
           
-
 
   if true # Just in case we'll be needing some real check later on
       _on __events.card_added, ($card,d) ->
