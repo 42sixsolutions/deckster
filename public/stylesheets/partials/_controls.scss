@@ -32,6 +32,30 @@
   content: "\f064";
 }
 
+.control.remove:before {
+  content: "\f056";
+}
+
+.control.add:before {
+  content: "\e002";
+}
+
+.control.droppable1:before {
+  content: "\f12e";
+}
+
+.control.droppable2:before {
+  content: "\f055";
+}
+
+.control.carrot-down:before {
+  content: "\f0d7";
+}
+
+.control.carrot-up:before {
+  content: "\f0d8";
+}
+
 
 #{$deckster_controls} {
   position: absolute;
@@ -45,10 +69,11 @@
 
 #{$deckster_controls} > a {
   cursor: pointer;
+  text-decoration: none;
 }
 
 #{$deckster_remove_handle} {
-  vertical-align: middle;
+
 }
 
 #{$deckster_removed_card_li} {

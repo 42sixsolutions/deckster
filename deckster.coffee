@@ -799,10 +799,7 @@ window.Deckster = (options) ->
   # Deckster Remove
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($deck) ->
-      controls = """
-                 <a class='#{_css_variables.classes.remove_handle}'>
-                  <img src='./public/images/x.png' width='20' height='20'></a>
-                 """
+      controls = "<a class='#{_css_variables.classes.remove_handle} control remove'></a>"
       $deck.find(_css_variables.selectors.controls).append controls
 
       $deck.find(_css_variables.selectors.remove_handle).click ->
@@ -873,11 +870,8 @@ window.Deckster = (options) ->
     _get_removed_card_li_tag = (id, titleText) ->
       "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
         "' class='#{_css_variables.classes.removed_card_li}'>" + titleText + 
-        "<a id='#{_css_variables.classes.removed_card_button}-" + id + 
-        "' ><img src='./public/images/plus.png' 
-                class='#{_css_variables.classes.removed_card_button}' ></a>" + 
         "<button id='#{_css_variables.classes.add_card_to_bottom_button}-" + id + 
-        "' class='btn btn-default '>Add to bottom</button>" +
+        "' class='btn control add'>Add to bottom</button>" +
       "</li>"
 
     ###
