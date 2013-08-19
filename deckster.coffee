@@ -906,6 +906,9 @@ window.Deckster = (options) ->
     _get_removed_card_li_tag = (id, titleText) ->
       "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
         "' class='#{_css_variables.classes.removed_card_li}'>" + titleText + 
+        "<a id='#{_css_variables.classes.removed_card_button}-" + id + 
+        "' ><img src='./public/images/plus.png' 
+                 class='#{_css_variables.classes.removed_card_button}' ></a>" + 
         "<button id='#{_css_variables.classes.add_card_to_bottom_button}-" + id + 
         "' class='btn control add'>Add to bottom</button>" +
       "</li>"
@@ -927,8 +930,7 @@ window.Deckster = (options) ->
     _add_back_card_to_bottom = (cardId) ->
       return unless cardId?
         
-      data_row_max = parseInt($deck.attr 'data-row-max')
-      console.log "data-row-max: " + data_row_max
+      console.log "__row_max: " + __row_max
       $card = __cards_by_id[cardId] 
       d = __card_data_by_id[cardId]
 
@@ -936,18 +938,18 @@ window.Deckster = (options) ->
       can_fit_in_last_row = false
 
       for col in [1..__col_max] by 1
-        if _does_fit_location(data_row_max, col, d)
+        if _does_fit_location(__row_max, col, d)
           can_fit_in_last_row = true
-          console.log "fits in max row: data_row_max, col: " + data_row_max, col
+          console.log "fits in max row: __row_max, col: " + __row_max, col
           break
         else
-          console.log "doesn't fit in max row: data_row_max, col: " + data_row_max, col
+          console.log "doesn't fit in max row: __row_max, col: " + __row_max, col
 
       if can_fit_in_last_row 
-        d.row = data_row_max
+        d.row = __row_max
         d.col = col
       else
-        d.row = data_row_max + 1
+        d.row = __row_max + 1
         d.col = 1
       
       _add_back_card_helper(cardId, $card, d)
