@@ -26,45 +26,44 @@
 }
 
 .control.drag:before {
-  content: "\e003";
-}
-
-.control.popout:before {
-  content: "\f064";
-}
-
-.control.remove:before {
-  content: "\f056";
-}
-
-.control.add:before {
   content: "\e002";
 }
 
-.control.droppable1:before {
-  content: "\f12e";
+.control.popout:before {
+  content: "\e003";
 }
 
-.control.droppable1.cancel:before,
-.control.droppable2:before {
-  content: "\f055";
+.control.remove:before {
+  content: "\e004";
+}
+
+.control.add:before {
+  content: "\e005";
+}
+
+.control.droppable:before {
+  content: "\e006";
+}
+
+.control.droppable.cancel:before,
+.control.cancel-drop:before {
+  content: "\e007";
 }
 
 .control.carrot-down:before {
-  content: "\f0d7";
+  content: "\e008";
 }
 
 .control.carrot-up:before {
-  content: "\f0d8";
+  content: "\e009";
 }
 
 
 #{$deckster_controls} {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 5px;
+  right: 5px;
   padding: 0;
-  width: 100%;
 }
 
 #{$deckster_drag_handle} {

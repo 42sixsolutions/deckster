@@ -1,12 +1,27 @@
 @mixin clearfix() {
-	*zoom:1;
+  *zoom:1;
 
-	&:before,
-	&:after {
-	    content:"";
-	    display:table;
-	}
-	&:after {
-	    clear:both;
-	}
+  &:before,
+  &:after {
+    content:"";
+    display:table;
+  }
+  &:after {
+    clear:both;
+  }
+}
+
+@mixin box-shadow($x, $y, $blur, $color) { // color, blur, x, y
+  -ms-box-shadow:$x $y $blur $color; // IE10+
+  @if ($x == 0 and $y == 0) { // non directional glow
+    filter: Glow(color=#{ie-hex-str($color)},strength=#{numericvalue($blur)});
+    -ms-filter: glow(color=#{ie-hex-str($color)},strength=#{numericvalue($blur)});
+  } @else {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=#{numericvalue($blur)}, Direction=#{degrees($x, $y)}, Color='#{ie-hex-str($color)}')"; // IE8
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=#{numericvalue($blur)}, Direction=#{degrees($x, $y)}, Color='#{ie-hex-str($color)}'); // IE7-
+  }
+  -o-box-shadow:$x $y $blur $color; // Opera
+  -moz-box-shadow:$x $y $blur $color; // Firefox
+  -webkit-box-shadow:$x $y $blur $color; // Webkit (Safari, Chrome, other)
+  box-shadow:$x $y $blur $color;
 }

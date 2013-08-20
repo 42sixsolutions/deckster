@@ -113,45 +113,46 @@
 	}
 
 	
-	.control.expand:before {
-		content: "\e000";
-	}
-	
-	.control.collapse:before {
-		content: "\e001";
-	}
+.control.expand:before {
+  content: "\e000";
+}
 
-	.control.drag:before {
-		content: "\e003";
-	}
-	
-	.control.popout:before {
-		content: "\f064";
-	}
+.control.collapse:before {
+  content: "\e001";
+}
 
-	.control.remove:before {
-		content: "\f056";
-	}
+.control.drag:before {
+  content: "\e002";
+}
 
-	.control.add:before {
-		content: "\e002";
-	}
+.control.popout:before {
+  content: "\e003";
+}
 
-	.control.droppable1:before {
-		content: "\f12e";
-	}
+.control.remove:before {
+  content: "\e004";
+}
 
-	.control.droppable2:before {
-		content: "\f055";
-	}
+.control.add:before {
+  content: "\e005";
+}
 
-	.control.carrot-down:before {
-		content: "\f0d7";
-	}
+.control.droppable:before {
+  content: "\e006";
+}
 
-	.control.carrot-up:before {
-		content: "\f0d8";
-	}
+.control.droppable.cancel:before,
+.control.cancel-drop:before {
+  content: "\e007";
+}
+
+.control.carrot-down:before {
+  content: "\e008";
+}
+
+.control.carrot-up:before {
+  content: "\e009";
+}
 	
 
 </style>
@@ -170,36 +171,36 @@
 		&amp;#xe001;
 	</div>
 	<div class="box1">
-		<div class="fs1" aria-hidden="true" data-icon="&#xe003;"></div>
-		&amp;#xe003;
-	</div>
-	<div class="box1">
-		<div class="fs1" aria-hidden="true" data-icon="&#xf064;"></div>
-		&amp;#xf064;
-	</div>
-	<div class="box1">
-		<div class="fs1" aria-hidden="true" data-icon="&#xf056;"></div>
-		&amp;#xf056;
-	</div>
-	<div class="box1">
 		<div class="fs1" aria-hidden="true" data-icon="&#xe002;"></div>
 		&amp;#xe002;
 	</div>
 	<div class="box1">
-		<div class="fs1" aria-hidden="true" data-icon="&#xf12e;"></div>
-		&amp;#xf12e;
+		<div class="fs1" aria-hidden="true" data-icon="&#xe003;"></div>
+		&amp;#xe003;
 	</div>
 	<div class="box1">
-		<div class="fs1" aria-hidden="true" data-icon="&#xf055;"></div>
-		&amp;#xf055;
+		<div class="fs1" aria-hidden="true" data-icon="&#xe004;"></div>
+		&amp;#xe004;
 	</div>
 	<div class="box1">
-		<div class="fs1" aria-hidden="true" data-icon="&#xf0d7;"></div>
-		&amp;#xf0d7;
+		<div class="fs1" aria-hidden="true" data-icon="&#xe005;"></div>
+		&amp;#xe005;
 	</div>
 	<div class="box1">
-		<div class="fs1" aria-hidden="true" data-icon="&#xf0d8;"></div>
-		&amp;#xf0d8;
+		<div class="fs1" aria-hidden="true" data-icon="&#xe006;"></div>
+		&amp;#xe006;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe007;"></div>
+		&amp;#xe007;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe008;"></div>
+		&amp;#xe008;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe009;"></div>
+		&amp;#xe009;
 	</div>
 
 	<div class="clear"></div>
@@ -230,12 +231,12 @@
 		add
 	</span>
 	<span class="box1">
-		<span aria-hidden="true" class="control droppable1"></span>
-		droppable1
+		<span aria-hidden="true" class="control droppable"></span>
+		droppable
 	</span>
 	<span class="box1">
-		<span aria-hidden="true" class="control droppable2"></span>
-		droppable2
+		<span aria-hidden="true" class="control cancel-drop"></span>
+		cancel-drop
 	</span>
 	<span class="box1">
 		<span aria-hidden="true" class="control carrot-down"></span>
