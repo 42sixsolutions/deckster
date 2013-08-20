@@ -439,6 +439,11 @@ window.Deckster = (options) ->
         __card_data_by_id[d.id] = d
         _add_card($card, d)
 
+      $cheight = $(this).height()
+      $theight = $('.deckster-card-title',this).height() + 40
+      $('.deckster-card-title',this).css('margin-top',-$theight)
+      $(this).css('padding-top',$theight)
+
     _apply_deck()
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
     for callback in __event_callbacks[__events.inited] || []
@@ -800,7 +805,7 @@ window.Deckster = (options) ->
   if options.droppable == true
     _on __events.inited, ($card,d) ->
       $controls = $card.find(_css_variables.selectors.controls)
-      $droppable = $("<a>D</a>").addClass(_css_variables.selectors.droppable.substring(1))
+      $droppable = $("<a></a>").addClass(_css_variables.selectors.droppable.substring(1) + ' control droppable1')
       $droppable.click( (element) ->  
         $drop_handle = $(element.currentTarget)
         if not $drop_handle.hasClass("cancel") 
@@ -808,12 +813,12 @@ window.Deckster = (options) ->
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
           $deck.find(_css_variables.selectors.controls).children(":visible").addClass("hider").hide()
           $drop_handle.show()
-          $drop_handle.html("C").addClass("cancel")
+          $drop_handle.addClass("cancel")
           id = parseInt($card.attr('data-card-id'))
           d = __card_data_by_id[id]
           _add_placeholders $card,d
         else
-          $drop_handle.removeClass("cancel").html("D")
+          $drop_handle.removeClass("cancel")
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
           $deck.find(_css_variables.selectors.controls).children(".hider").show().removeClass("hider")
           $deck.find(_css_variables.selectors.placeholders).remove()

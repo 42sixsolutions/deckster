@@ -21,27 +21,29 @@ h1 {
   font-weight: 500;
 }
 
+#{$deckster_deck} {
+  @include clearfix();
+}
+
 #{$deckster_title} {
   text-align: center;
-  padding: 5px;
-  background-color: #ddddff;
+  padding: 5px 60px;
+  background-color: #ccc;
 }
 
 #{$deckster_card} {
   background: $cardbg;
   overflow: none;
-  padding: 40px 0 $padding 0;
+  padding: 0 0 $padding 0;
   
   #{$deckster_card_title} {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     color: $text;
-    padding: 0 $padding;
-    height: 40px;
-    line-height: 40px;
+    padding: 20px 60px;
     text-align: center;
+    font-weight: 500;
+    font-size: 1.2em;
   }
 
   .control {
@@ -62,8 +64,8 @@ h1 {
 }
 
 #deckster-scroll-helper {
-  position:fixed;
-  top:5px;
-  right:5px;
+  position: fixed;
+  top: 5px;
+  right: 5px;
   z-index: 400;  
 }
