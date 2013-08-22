@@ -414,12 +414,13 @@ window.Deckster = (options) ->
 
   init = ->
     __col_max = $deck.data 'col-max'
-    # Add title to deck
-    $deck_wrapper = $ "<div>"
-    $deck.replaceWith($deck_wrapper)
-    title = $deck.data("title") or "Deckster Deck"
-    $title_div = $ "<div class=\"deckster-title\">#{title}</div>"
-    $deck_wrapper.append $title_div, $deck
+    # Add title to deck if present
+    title = $deck.data("title")
+    if title?
+      $deck_wrapper = $ "<div>"
+      $deck.replaceWith($deck_wrapper)
+      $title_div = $ "<div class=\"deckster-title\">#{title}</div>"
+      $deck_wrapper.append $title_div, $deck
 
     cards = $deck.children(_css_variables.selectors.card)
     cards.each ->
