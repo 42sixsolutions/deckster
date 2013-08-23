@@ -27,6 +27,8 @@ _css_variables =
   classes: {}
   dimensions: {}
   styleSheet: "deckster.css"
+  # if no title available, display this many chars from the content section
+  chars_to_display: 20
 
 ###
   Default Ajax options, some options are typically overwritten.
@@ -414,6 +416,10 @@ window.Deckster = (options) ->
     $deck_wrapper = $(_init_deck_wrapper($deck))
     $deck.replaceWith($deck_wrapper)
     $deck_wrapper.append $deck
+    # Hide the "Removed Cards" dropdown if it doesn't have any cards
+    $dropdown = $deck_wrapper.find(_css_variables.selectors.removed_dropdown)
+    $dropdown.hide() if $dropdown.find('ul').children().size() == 0
+
     return true
 
   _init_deck_wrapper = ($deck) ->
@@ -891,35 +897,26 @@ window.Deckster = (options) ->
     _remove_on_click = (element) ->
         $remove_handle = $(element)
         $card = $remove_handle.parents(_css_variables.selectors.card)
+        deckId = $card.closest(_css_variables.classes.deck).attr('id')
         id = parseInt $card.attr 'data-card-id'
         titleText = $card.find(_css_variables.selectors.card_title).text()
-        if !titleText
-          # Display the first 15 characters of the content
-          titleText = $card.find(_css_variables.selectors.card_content).text().substring(0,15)
+        unless titleText.length
+          # Display the first n characters of the content
+          $content = $card.find(_css_variables.selectors.card_content)
+          charLen = _css_variables.chars_to_display
+          charLen = $content.text().length if $content.text().length < _css_variables.chars_to_display
+          titleText = $content.text().substring(0,charLen)+"..."
+
         dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
 
-        if dropdown.val()?
-          # Add to dropdown menu
-          dropdown.find('ul').append(_get_removed_card_li_tag(id, titleText)).appendTo(dropdown)
-        else
-          # Construct a new dropdown menu
-          removed_dropdown_div = "
-          <div class='btn-group #{_css_variables.classes.removed_dropdown}'>
-            <button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>
-              Removed Cards
-              <span class='caret'></span>
-            </button>
-            <ul class='dropdown-menu removed-cards pull-left'>
-              " + _get_removed_card_li_tag(id, titleText) + " 
-            </ul>
-          </div>
-          " 
-          # Add the 'Removed Cards' dropdown to the page - right above the deck title bar
-          $deck.parent().prepend(removed_dropdown_div)
-          dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
+        if dropdown.is(":hidden")
+          dropdown.show()
+
+        # Add to dropdown menu
+        dropdown.find('ul').append(_get_removed_card_li_tag(id, titleText)).appendTo(dropdown)
           
         # Define onclick behavior for the 'Add' button in the 'Removed Cards' dropdown
-        dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + id).click ->
+        dropdown.find('#'+_css_variables.classes.removed_card_button + '-' + id).click ->
           _add_back_card(id)
 
         # Define onclick behavior for the 'Add to bottom' button in the 'Removed Cards' dropdown
@@ -928,7 +925,10 @@ window.Deckster = (options) ->
 
         # Remove this card from the deck
         _remove_card_from_deck $card
-        $card.remove()
+
+        #Detach card from deck
+        $card.detach()
+
         _create_jump_scroll_card($deck)
         _apply_deck()
 
@@ -942,6 +942,8 @@ window.Deckster = (options) ->
         for col, id of cols 
           if cardId == id
             delete __deck[row][col]
+            if $.isEmptyObject(__deck[row])
+              delete __deck[row]
 
       return undefined
 
@@ -990,7 +992,7 @@ window.Deckster = (options) ->
           console.log "fits in max row: __row_max, col: " + __row_max, col
           break
         else
-          console.log "doesn't fit in max row: __row_max, col: " + __row_max, col
+          console.log$ "doesn't fit in max row: __row_max, col: " + __row_max, col
 
       if can_fit_in_last_row 
         d.row = __row_max
@@ -1007,24 +1009,15 @@ window.Deckster = (options) ->
       _add_card $card, d
       _apply_deck()
 
-      # Add back the control buttons click behavior
-      $card.find(_css_variables.selectors.remove_handle).click ->
-        _remove_on_click(this)
-      $card.find(_css_variables.selectors.expand_handle).click ->
-        _expand_on_click(this)
-      $card.find(_css_variables.selectors.collapse_handle).click ->
-        _collapse_on_click(this)
-      _bind_drag_controls($card)
-
       # Add back to the jump card 
       _create_jump_scroll_card($deck)
 
       # Remove from the "Removed Cards" dropdown
       $deck.parent().find('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
 
-      # Remove the "Removed Cards" dropdown if it doesn't have any cards
+      # Hide the "Removed Cards" dropdown if it doesn't have any cards
       dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
-      dropdown.remove() if dropdown.find('ul').children().size() == 0
+      dropdown.hide() if dropdown.find('ul').children().size() == 0
   
   _does_fit_location = (row,col,d) ->
     row_end = d.row_span+row
