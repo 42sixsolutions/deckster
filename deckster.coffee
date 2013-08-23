@@ -18,6 +18,8 @@ _css_variables =
     card_content:'.content'
     placeholders: '.placeholders'
     droppable:'.droppable'
+    deck_title:'.deckster-title'
+    deck_container:'.deckster-deck-container'
 
   selector_functions:
     card_expanded: (option)->'[data-expanded='+option+']'
@@ -63,14 +65,6 @@ _nav_menu_options = {}
 ###
 _create_nav_menu = () ->
     markup = """<div id="deckster-scroll-helper" class="btn-group">
-          <div class="btn-group #{_css_variables.classes.card_jump_scroll}">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-              JC <!-- "jump [to] card" -->
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu pull-left">
-            </ul>
-          </div>
           <div class="btn-group #{_css_variables.classes.deck_jump_scroll}">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                 JD<!-- "jump [to] deck" -- not implemented -->
@@ -152,10 +146,10 @@ _create_jump_scroll = (target_ul_selector, title_selector) ->
           _scrollToView $ item
         $item_title_ddl.append $nav_item
 
-_create_jump_scroll_card = () ->
-    # Collect all data-title cards from ALL DECKS on the pge
-    _create_jump_scroll "#{_css_variables.selectors.card_jump_scroll} ul",
-            '.deckster-deck [data-title]'
+_create_jump_scroll_card = ($deck) ->
+    # Collect all data-title cards from given deck
+    _create_jump_scroll("#"+$deck.attr("id")+"-nav"+" ul",
+            "#"+$deck.attr("id")+'.deckster-deck [data-title]')
 
 _create_jump_scroll_deck = () ->
     _create_jump_scroll "#{_css_variables.selectors.deck_jump_scroll} ul",
@@ -258,6 +252,7 @@ window.Deckster = (options) ->
     __dominate_card_data = d
     _identify_problem_cards()
     __deck = {}
+    __deck_mgr = {}
 
     _loop_through_spaces p.row, p.col, (p.row + (d.row_span - 1)), (p.col + (d.col_span - 1)), (p2) ->
       __deck[p2.row] = {} unless __deck[p2.row]?
@@ -412,15 +407,48 @@ window.Deckster = (options) ->
        !$card.find(_css_variables.selectors.card_content).text().trim() and 
        !$card.data('url')))
 
+ 
+  _init_deck_header = ($deck) ->
+    # Add title to deck if present
+    title = $deck.data("title") or ""
+    $deck_wrapper = $(_init_deck_wrapper($deck))
+    $deck.replaceWith($deck_wrapper)
+    $deck_wrapper.append $deck
+    return true
+
+  _init_deck_wrapper = ($deck) ->
+    return """
+        <div class="#{_css_variables.classes.deck_container}" data-row-max="8">
+          <div class="deck-header">
+            <div class="wrapper">
+              <div class="#{_css_variables.classes.deck_title}">#{$deck.data("title") or ""}</div>
+              <div class="deck-controls">
+                #{_init_card_add_remove()}
+                #{_init_card_scroll($deck)}
+              </div>
+            </div>
+          </div>
+    """
+
+  _init_card_add_remove = ()->
+    return """
+           <div class="btn-group #{_css_variables.classes.removed_dropdown}">
+              <span class="dropdown-toggle control add" data-toggle="dropdown"></span>
+              <ul class="dropdown-menu pull-right"></ul>
+            </div>
+    """
+
+  _init_card_scroll = ($deck)->
+    return """
+                <div id="#{$deck.attr("id")}-nav"class="btn-group #{_css_variables.classes.card_jump_scroll}">
+                  <span class="dropdown-toggle control jump-card caret" data-toggle="dropdown"></span>
+                  <ul class="dropdown-menu pull-right"></ul>
+                </div>
+    """
+
   init = ->
     __col_max = $deck.data 'col-max'
-    # Add title to deck if present
-    title = $deck.data("title")
-    if title?
-      $deck_wrapper = $ "<div>"
-      $deck.replaceWith($deck_wrapper)
-      $title_div = $ "<div class=\"deckster-title\">#{title}</div>"
-      $deck_wrapper.append $title_div, $deck
+    _init_deck_header($deck)
 
     cards = $deck.children(_css_variables.selectors.card)
     cards.each ->
@@ -449,9 +477,22 @@ window.Deckster = (options) ->
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
     for callback in __event_callbacks[__events.inited] || []
       break if callback($deck) == false
-    _create_jump_scroll_card 0xDCC0FFEEBAD
+    _create_jump_scroll_card $deck
     _create_jump_scroll_deck 0xDEADBEEF
 
+
+  _on __events.inited, ($deck,row_min,row_max,col_min,col_max)->
+    ###
+    for y in [row_min..(row_max)]
+
+      for x in [col_min..(col_max)]
+
+        if __deck_mgr[y] == null
+          __deck_mgr[y] = {}
+
+        __deck_mgr[y][x] = $deck.attr("id")
+    ###
+    return true
 
   # Deckster Drag
   if options['draggable'] && options['draggable'] == true
@@ -671,7 +712,7 @@ window.Deckster = (options) ->
             else # Remove the card if url content is empty & div text content is empty
               divText = this.find(_css_variables.selectors.card_content).text()
               if (!divText.trim() and $deck.data('remove-empty') == true)
-                _create_jump_scroll_card()
+                _create_jump_scroll_card($deck)
                 this.remove()
                 _remove_card_from_deck this
 
@@ -840,11 +881,11 @@ window.Deckster = (options) ->
 
   # Deckster Remove
   if options['removable'] && options['removable'] == true
-    _on __events.inited, ($deck) ->
+    _on __events.inited, ($card) ->
       controls = "<a class='#{_css_variables.classes.remove_handle} control remove'></a>"
-      $deck.find(_css_variables.selectors.controls).append controls
+      $card.find(_css_variables.selectors.controls).append controls
 
-      $deck.find(_css_variables.selectors.remove_handle).click ->
+      $card.find(_css_variables.selectors.remove_handle).click ->
         _remove_on_click(this)
 
     _remove_on_click = (element) ->
@@ -888,7 +929,7 @@ window.Deckster = (options) ->
         # Remove this card from the deck
         _remove_card_from_deck $card
         $card.remove()
-        _create_jump_scroll_card()
+        _create_jump_scroll_card($deck)
         _apply_deck()
 
     ###
@@ -976,7 +1017,7 @@ window.Deckster = (options) ->
       _bind_drag_controls($card)
 
       # Add back to the jump card 
-      _create_jump_scroll_card()
+      _create_jump_scroll_card($deck)
 
       # Remove from the "Removed Cards" dropdown
       $deck.parent().find('#' + _css_variables.classes.removed_card_li + '-' + cardId).remove()
