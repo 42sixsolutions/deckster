@@ -36,6 +36,9 @@ Running `make lint` yields tips for improving the code.
 
 # Using Deckster
 
+## Init
+Each deck should be initialized with a call to the '$(..).deckster(..)' function. The caller should be a jquery object containing the deck element. You should pass your configuration options to this call.
+
 ## Navigation
 For large pages with many cards or multiple decks, a navigation button bar is provided at the top right (position is
 configurable, see below).  Each button opens a drop-down menu with a list of items, either cards or decks, listed by title.
