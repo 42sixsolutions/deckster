@@ -409,7 +409,11 @@ window.Deckster = (options) ->
  
   _init_deck_header = ($deck) ->
     # Add title to deck if present
-    title = $deck.data("title") or ""
+    title = $deck.data("title")
+    unless title
+      $deck.attr "data-title",$deck.attr("id")
+      title = $deck.attr("id")
+
     $deck_wrapper = $(_init_deck_wrapper($deck))
     $deck.replaceWith($deck_wrapper)
     $deck_wrapper.append $deck
