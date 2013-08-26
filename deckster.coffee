@@ -741,7 +741,7 @@ window.Deckster = (options) ->
     .attr("data-row",_d["row"])
     .attr("data-col-span",_d.col_span)
     .attr("data-row-span",_d.row_span)
-    .css("background-color","rgb("+settings.r+","+settings.g+","+settings.b+")")
+    #.css("background-color","rgb("+settings.r+","+settings.g+","+settings.b+")")
     .css("z-index",settings.zIndex)
     $card.closest(_css_variables.selectors.deck).append($placeholder)
     $placeholder.click( (action) ->
