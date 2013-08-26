@@ -409,7 +409,11 @@ window.Deckster = (options) ->
  
   _init_deck_header = ($deck) ->
     # Add title to deck if present
-    title = $deck.data("title") or ""
+    title = $deck.data("title")
+    unless title
+      $deck.attr "data-title",$deck.attr("id")
+      title = $deck.attr("id")
+
     $deck_wrapper = $(_init_deck_wrapper($deck))
     $deck.replaceWith($deck_wrapper)
     $deck_wrapper.append $deck
@@ -486,6 +490,9 @@ window.Deckster = (options) ->
 
   _on __events.inited, ($deck,row_min,row_max,col_min,col_max)->
     ###
+    row_max = $deck.attr "data-row-max"
+    row_min = $deck.attr "data-row-min"
+
     for y in [row_min..(row_max)]
 
       for x in [col_min..(col_max)]
@@ -1043,51 +1050,4 @@ $ = jQuery
 $.fn.deckster = window.Deckster
 
 
-$("#deck1").deckster({
-    animate: {
-      properties: {
-        opacity: ".5"
-      },
-      options: {
-        duration: "slow"
-      }
-    }
-  
-    "card-actions":{
-      "deck-1":
-        "card-6":
-          "card-expanded": ($card,$contentSection)->
-            ajax_options =
-              url:"./sampleSites/site6expand"
-              type:"GET"
-              success: (data,status, response)->
-                ###
-                  You'll want to replace the conte
-                ###
-                $cardContent = $contentSection.html(data)
 
-                console.log("I've successfully replaced the content")
-              error: ()->
-                console.log("I've failed to repalce the content")
-            
-            return ajax_options
-          "card-collapsed": ($card, $contentSection)->
-            ajax_options =
-              url:"./sampleSites/site6"
-              type:"GET"
-              success: (data,status, response)->
-                $cardContent = $contentSection.html(data)
-
-                console.log("I've successfully replaced the content")
-              error: ()->
-                console.log("I've failed to repalce the content")
-            
-            return ajax_options
-    }
-
-    "scroll-helper": {
-        "x-position": "middle" # left | middle | right
-        "y-position": "top" # bottom | middle | top
-        "stay-in-view": true # true
-    }
-})
