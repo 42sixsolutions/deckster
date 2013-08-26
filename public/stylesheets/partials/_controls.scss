@@ -58,6 +58,22 @@
   content: "\e009";
 }
 
+.control.add-back:before {
+  content: "\e00a";
+}
+
+.control.add-bottom:before {
+  content: "\e00b";
+}
+
+.control.jump-card:before {
+  content: "\e00c";
+}
+
+.control.jump-deck:before {
+  content: "\e00d";
+}
+
 
 #{$deckster_controls} {
   position: absolute;

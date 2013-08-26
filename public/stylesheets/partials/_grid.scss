@@ -5,21 +5,16 @@
   margin: 0 auto;
 }
 
-#{deckster_deck_container} {
-  position: relative;
-  margin: 0 auto;  
-}
-
 $_i: 1;
 @while $_i <= 50 {
   $_how_many_gutters: $_i - 1;
   $_how_many_tiles: $_i;
 
-  #{$deckster_deck_container}[data-col-max="#{$_i}"] {
+  #{$deckster_deck}[data-col-max="#{$_i}"] {
     width: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
   }
 
-  #{$deckster_deck_container}[data-row-max="#{$_i}"] {
+  #{$deckster_deck}[data-row-max="#{$_i}"] {
     height: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
   }
 
@@ -63,72 +58,3 @@ $_i: 1;
 
   $_i: $_i + 1
 }
-
-/*
-
-#{$deckster_deck} {
-  position: relative;
-  margin: 0 auto;
-}
-
-$_i: 1;
-@while $_i <= 50 {
-  $_how_many_gutters: $_i - 1;
-  $_how_many_tiles: $_i;
-
-  #{$deckster_deck}[data-col-max="#{$_i}"] {
-    width: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
-  }
-
-  #{$deckster_deck}[data-row-max="#{$_i}"] {
-    height: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
-  }
-
-  $_i: $_i + 1
-}
-
-#{$deckster_card} {
-  position: absolute;
-  overflow:auto;
-}
-
-#{$deckster_card} > *{
-  padding:$content-padding;
-}
-
-#{$deckster_card_title} {
-}
-
-$_i: 1;
-@while $_i <= 50 {
-  $_how_many_gutters: $_i - 1;
-  $_how_many_tiles: $_i - 1;
-
-  #{$deckster_card}[data-col="#{$_i}"] {
-    left: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
-  }
-
-  #{$deckster_card}[data-row="#{$_i}"] {
-    top: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
-  }
-
-  $_i: $_i + 1
-}
-
-$_i: 1;
-@while $_i <= 12 {
-  $_how_many_gutters: $_i - 1;
-  $_how_many_tiles: $_i;
-
-  #{$deckster_card}[data-col-span="#{$_i}"] {
-    width: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
-  }
-
-  #{$deckster_card}[data-row-span="#{$_i}"] {
-    height: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
-  }
-
-  $_i: $_i + 1
-}
-
-*/

@@ -65,20 +65,17 @@ _nav_menu_options = {}
 # Creates the Bootstrap-based Navigation menu/Jump Scroll bar/Scroll helper from HTML,
 # applies config options, places it in the DOM tree and returns the new element
 ###
+
 _create_nav_menu = () ->
-    markup = """<div id="deckster-scroll-helper" class="btn-group">
-          <div class="btn-group #{_css_variables.classes.deck_jump_scroll}">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                JD<!-- "jump [to] deck" -- not implemented -->
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu pull-left">
-            </ul>
+    markup = """<div class="btn-group #{_css_variables.classes.deck_jump_scroll}">
+            <span class="dropdown-toggle control jump-deck" data-toggle="dropdown"></span>
+            <ul class="dropdown-menu pull-right"></ul>
           </div>
         </div>
         """ # "stupid emacs
     button_dom = $ markup
 
+    ### Let the Design/Developer place this in CSS 
     stay_in_view = _nav_menu_options["stay-in-view"]
     if stay_in_view? and not stay_in_view
         outer_el = document
@@ -117,13 +114,13 @@ _create_nav_menu = () ->
     # Apply calculate functions once to get approximate positioning
     calculate_x()
     calculate_top()
-
+    ###
     $("body").append button_dom
-
+    ###
     # Re-calculate with button size known
     calculate_top()
     calculate_x()
-
+    ###
     # This makes sure something relevant is returned
     button_dom
 
@@ -424,7 +421,7 @@ window.Deckster = (options) ->
 
   _init_deck_wrapper = ($deck) ->
     return """
-        <div class="#{_css_variables.classes.deck_container}" data-row-max="8">
+        <div class="#{_css_variables.classes.deck_container}">
           <div class="deck-header">
             <div class="wrapper">
               <div class="#{_css_variables.classes.deck_title}">#{$deck.data("title") or ""}</div>
@@ -439,17 +436,17 @@ window.Deckster = (options) ->
   _init_card_add_remove = ()->
     return """
            <div class="btn-group #{_css_variables.classes.removed_dropdown}">
-              <span class="dropdown-toggle control add" data-toggle="dropdown"></span>
-              <ul class="dropdown-menu pull-right"></ul>
-            </div>
+             <span class="dropdown-toggle control add" data-toggle="dropdown"></span>
+             <ul class="dropdown-menu pull-right"></ul>
+           </div>
     """
 
   _init_card_scroll = ($deck)->
     return """
-                <div id="#{$deck.attr("id")}-nav"class="btn-group #{_css_variables.classes.card_jump_scroll}">
-                  <span class="dropdown-toggle control jump-card caret" data-toggle="dropdown"></span>
-                  <ul class="dropdown-menu pull-right"></ul>
-                </div>
+           <div id="#{$deck.attr("id")}-nav" class="btn-group #{_css_variables.classes.card_jump_scroll}">
+             <span class="dropdown-toggle control jump-card" data-toggle="dropdown"></span>
+             <ul class="dropdown-menu pull-right"></ul>
+           </div>
     """
 
   init = ->

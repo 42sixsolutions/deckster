@@ -1,5 +1,6 @@
 $bodybg: 		#eeeeee;
 $cardbg: 		#ffffff;
+$headerbg: 		#1e262d;
 $text: 			#313131;
 $controls: 		#bbbbbb;
 $padding: 		20px;
@@ -14,23 +15,75 @@ body {
   font-weight: normal;
 }
 
-h1 {
-  text-align: center;
-  margin: 20px 0;
-  color: $text;
-  font-weight: 500;
+.deck-header {
+  display: block;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  background: $headerbg;
+  margin: 0 0 20px 0;
+  color: #fff;
+  
+  .wrapper {
+    margin: 0 auto;
+    width: 1230px;
+    position: relative;
+  }
+  
+  .deck-title {
+    width: 100%;
+    padding: 0 80px;
+    text-align: center;
+  }
+  
+  .deck-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    
+    .btn-group {
+      float: left;
+    }
+    
+    .control {
+      font-size: 1em;
+      
+      &:hover {
+        color: $controls;
+      }
+    }
+  }
+  
+}
+
+#{$deckster_deck_jump_scroll} {
+	position: fixed;
+	top: 5px;
+	right: 10px;
+	z-index: 999;
+
+  .control {
+    font-size: 1em;
+    color: lighten($controls,25%);
+
+    &:hover {
+      color: $controls;
+    }
+  }
 }
 
 #{$deckster_deck} {
   display: block;
   position: relative;
-  top: 10px;
+  top: 50px;
 }
 
 #{$deckster_title} {
   text-align: center;
-  padding: 5px 60px;
-  background-color: #ccc;
 }
 
 #{$deckster_card} {
@@ -70,5 +123,9 @@ h1 {
   position: fixed;
   top: 5px;
   right: 5px;
-  z-index: 400;  
+  width: 20px;
+  height: 30px;
+  z-index: 400;
+  font-size: 1em;
+
 }
