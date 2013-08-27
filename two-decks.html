@@ -42,16 +42,76 @@
 <script src="public/js/bootstrap.js"></script>
 <script src="./deckster.js"></script>
 <script>
-$("#deck2").deckster({
-    animate: {
-      properties: {
-        opacity: ".5"
-      },
-      options: {
-        duration: "slow"
-      }
-    }
-})
+    $(document).ready(function(){
+        $("#deck1").deckster({
+            animate: {
+                properties: {
+                    opacity: ".5"
+                },
+                options: {
+                    duration: "slow"
+                }
+            },
+            "card-actions": {
+                "deck-1": {
+                    "card-6": {
+                        "card-expanded": function($card, $contentSection) {
+                            var ajax_options;
+                            ajax_options = {
+                                url: "./sampleSites/site6expand",
+                                type: "GET",
+                                success: function(data, status, response) {
+                                    /*
+                                     You'll want to replace the conte
+                                     */
+
+                                    var $cardContent;
+                                    $cardContent = $contentSection.html(data);
+                                    return console.log("I've successfully replaced the content");
+                                },
+                                error: function() {
+                                    return console.log("I've failed to repalce the content");
+                                }
+                            };
+                            return ajax_options;
+                        },
+                        "card-collapsed": function($card, $contentSection) {
+                            var ajax_options;
+                            ajax_options = {
+                                url: "./sampleSites/site6",
+                                type: "GET",
+                                success: function(data, status, response) {
+                                    var $cardContent;
+                                    $cardContent = $contentSection.html(data);
+                                    return console.log("I've successfully replaced the content");
+                                },
+                                error: function() {
+                                    return console.log("I've failed to repalce the content");
+                                }
+                            };
+                            return ajax_options;
+                        }
+                    }
+                }
+            },
+            "scroll-helper": {
+                "x-position": "middle",
+                "y-position": "top",
+                "stay-in-view": true
+            }
+        });
+
+        $("#deck2").deckster({
+            animate: {
+                properties: {
+                    opacity: ".5"
+                },
+                options: {
+                    duration: "slow"
+                }
+            }
+        });
+    });
 </script>
 </body>
 </html>
