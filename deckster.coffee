@@ -490,6 +490,7 @@ window.Deckster = (options) ->
     _create_jump_scroll_deck 0xDEADBEEF
 
   _adjust_adjacent_decks = ($deck) ->
+    ###
     deckId = $deck.attr("id")
     specs = _window.__deck_mgr.lookup[deckId]
     console.log("specs",specs)
@@ -536,10 +537,12 @@ window.Deckster = (options) ->
 
     console.log("lookups!", _window.__deck_mgr.lookup)
     ###
+    ###
       Update global variables.
       -New overall max row (note: the for loop increments this value 1 extra time when exiting for-loop)
       -New Layout
       -Deck Max 
+    ###
     ###
     _window.__deck_mgr.row = newRow-1 
     console.log("_window.__deck_mgr.row",_window.__deck_mgr.row)
@@ -547,12 +550,12 @@ window.Deckster = (options) ->
     console.log("layout",_window.__deck_mgr.layout)
     console.log("__row_max!",__row_max)
     _window.__deck_mgr.lookup[deckId].row_max = specs.row_min+__row_max
-
+    ###
 
     #Update Page
     $deck
     .closest(_css_variables.selectors.deck_container)
-    .attr("data-row-max",_window.__deck_mgr.lookup[deckId].row_max)
+    .attr("data-row-max",__row_max+1)
     
     return true    
  
@@ -564,11 +567,11 @@ window.Deckster = (options) ->
 
   _on __events.card_expanded, ($deck,$card)->
     _adjust_adjacent_decks($deck)
-
   _on __events.card_moved, ($deck,$card) ->
     _adjust_adjacent_decks($deck)
 
   _on __events.inited, ($deck)->
+    ###
     col_min = 1 # Should only be 1 as we will only be scrolling vertically 
     deckId = $deck.attr("id")
     #How many decks "rows" are there currently?
@@ -601,13 +604,14 @@ window.Deckster = (options) ->
       "row_max":row_max
       "col_max":col_max
       "col_min":col_min
+    ###
 
     #Adding Height to Deck via CSS (add extra row for buffer)
     $deck
     .closest(_css_variables.selectors.deck_container)
     .attr("data-row-max",__row_max+1)
       
-    console.log("done init window layout",_window.__deck_mgr.layout)
+    #console.log("done init window layout",_window.__deck_mgr.layout)
     return true
 
   # Deckster Drag
@@ -971,7 +975,7 @@ window.Deckster = (options) ->
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
           $deck.find(_css_variables.selectors.controls).children(":visible").addClass("hider").hide()
           #Hide any other decks
-          $deck.closest(_css_variables.selectors.deck_container).siblings().hide()
+          $deck.closest(_css_variables.selectors.deck_container).nextAll().hide()
           $drop_handle.show()
           $drop_handle.addClass("cancel")
           id = parseInt($card.attr('data-card-id'))
