@@ -1,6 +1,6 @@
 /* -------------------------- Grid -------------------------- */
 
-#{$deckster_deck} {
+#{$deckster_deck_container} {
   position: relative;
   margin: 0 auto;
 }
@@ -10,11 +10,11 @@ $_i: 1;
   $_how_many_gutters: $_i - 1;
   $_how_many_tiles: $_i;
 
-  #{$deckster_deck}[data-col-max="#{$_i}"] {
+  #{$deckster_deck_container}[data-col-max="#{$_i}"] {
     width: ($default_card_width * $_how_many_tiles) + ($default_card_vertical_gutter * $_how_many_gutters);
   }
 
-  #{$deckster_deck}[data-row-max="#{$_i}"] {
+  #{$deckster_deck_container}[data-row-max="#{$_i}"] {
     height: ($default_card_height * $_how_many_tiles) + ($default_card_horizontal_gutter * $_how_many_gutters);
   }
 

@@ -29,6 +29,7 @@ _css_variables =
   styleSheet: "deckster.css"
   # if no title available, display this many chars from the content section
   chars_to_display: 20
+  buffer: "b"
 
 ###
   Default Ajax options, some options are typically overwritten.
@@ -225,7 +226,8 @@ window.Deckster = (options) ->
     inited: 'inited'
     card_expanded: 'card_expanded'
     card_collapsed: 'card_collapsed'
-    
+    card_moved:'card_moved'
+
   __event_callbacks = {}
 
   # --- Deckster Base Functions
@@ -251,7 +253,7 @@ window.Deckster = (options) ->
     __dominate_card_data = d
     _identify_problem_cards()
     __deck = {}
-    __deck_mgr = {}
+    _window.__deck_mgr = _window.__deck_mgr || {}
 
     _loop_through_spaces p.row, p.col, (p.row + (d.row_span - 1)), (p.col + (d.col_span - 1)), (p2) ->
       __deck[p2.row] = {} unless __deck[p2.row]?
@@ -487,21 +489,125 @@ window.Deckster = (options) ->
     _create_jump_scroll_card $deck
     _create_jump_scroll_deck 0xDEADBEEF
 
+  _adjust_adjacent_decks = ($deck) ->
+    deckId = $deck.attr("id")
+    specs = _window.__deck_mgr.lookup[deckId]
+    console.log("specs",specs)
+    console.log("layou before",_window.__deck_mgr.layout)
+    new_layout = {}
+  
+    #copy decks up to deck being modified
+    for row in [1...specs.row_min]
+      new_layout[row] = _window.__deck_mgr.layout[row]
+      
 
-  _on __events.inited, ($deck,row_min,row_max,col_min,col_max)->
+    #add current deck 
+    console.log("current deck",__deck)
+    for row,cols of __deck
+      new_layout[specs.row_min-1+row] = {}
+      new_layout[specs.row_min-1+row][col] = deckId for col in [1..__col_max]
+
+    #add back buffer
+    console.log("specs again",specs)
+    newRow = __row_max+specs.row_min
+    console.log("newRow 1st",newRow)
+    new_layout[newRow] = {}
+    new_layout[newRow][i] = _css_variables.buffer for i in [1..__col_max]
+    
+    # copy rest 
+    # (note: our previous buffer, for this deck, will be copied over when iterating 
+    # over the 'specs.row_max' row)
+    newRow += 1
+    prevId = -1
+    for row in [(specs.row_max+1).._window.__deck_mgr.row]
+      new_layout[newRow] = _window.__deck_mgr.layout[row]
+     
+      # Update global deck placements
+      id = new_layout[newRow][1] #
+      if id != prevId and id != _css_variables.buffer
+        _window.__deck_mgr.lookup[id].row_min = newRow
+        _window.__deck_mgr.lookup[id].row_max = newRow
+        prevId = id
+      else
+        _window.__deck_mgr.lookup[prevId].row_max = newRow
+
+
+      newRow+=1
+
+    console.log("lookups!", _window.__deck_mgr.lookup)
     ###
-    row_max = $deck.attr "data-row-max"
-    row_min = $deck.attr "data-row-min"
-
-    for y in [row_min..(row_max)]
-
-      for x in [col_min..(col_max)]
-
-        if __deck_mgr[y] == null
-          __deck_mgr[y] = {}
-
-        __deck_mgr[y][x] = $deck.attr("id")
+      Update global variables.
+      -New overall max row (note: the for loop increments this value 1 extra time when exiting for-loop)
+      -New Layout
+      -Deck Max 
     ###
+    _window.__deck_mgr.row = newRow-1 
+    console.log("_window.__deck_mgr.row",_window.__deck_mgr.row)
+    _window.__deck_mgr.layout = new_layout # new layout
+    console.log("layout",_window.__deck_mgr.layout)
+    console.log("__row_max!",__row_max)
+    _window.__deck_mgr.lookup[deckId].row_max = specs.row_min+__row_max
+
+
+    #Update Page
+    $deck
+    .closest(_css_variables.selectors.deck_container)
+    .attr("data-row-max",_window.__deck_mgr.lookup[deckId].row_max)
+    
+    return true    
+ 
+  ###
+    Adjust (if necessary) other decks when a particular deck is expanded/collapsed or its contents are moved around.
+  ###
+  _on __events.card_collapsed, ($deck,$card)->
+    _adjust_adjacent_decks($deck)
+
+  _on __events.card_expanded, ($deck,$card)->
+    _adjust_adjacent_decks($deck)
+
+  _on __events.card_moved, ($deck,$card) ->
+    _adjust_adjacent_decks($deck)
+
+  _on __events.inited, ($deck)->
+    col_min = 1 # Should only be 1 as we will only be scrolling vertically 
+    deckId = $deck.attr("id")
+    #How many decks "rows" are there currently?
+    if _window.__deck_mgr.row?  
+      #Start at the next available row
+      row_min = _window.__deck_mgr.row+1
+    else 
+      row_min = 1
+
+    #Max width for this deck
+    col_max = __col_max
+    #There's an extra row between decks to act as a buffer
+    row_max = row_min+__row_max
+
+    _window.__deck_mgr.layout = _window.__deck_mgr.layout || {} 
+    for y in [row_min..row_max]
+      for x in [col_min..col_max]
+
+        unless _window.__deck_mgr.layout[y]
+          _window.__deck_mgr.layout[y] = {}
+
+        _window.__deck_mgr.layout[y][x] = if y == row_max then _css_variables.buffer else $deck.attr("id")
+    
+    #Maximum number of rows 
+    _window.__deck_mgr.row = row_max
+    _window.__deck_mgr.lookup = _window.__deck_mgr.lookup || {}
+    #Record results
+    _window.__deck_mgr.lookup[deckId] =
+      "row_min":row_min
+      "row_max":row_max
+      "col_max":col_max
+      "col_min":col_min
+
+    #Adding Height to Deck via CSS (add extra row for buffer)
+    $deck
+    .closest(_css_variables.selectors.deck_container)
+    .attr("data-row-max",__row_max+1)
+      
+    console.log("done init window layout",_window.__deck_mgr.layout)
     return true
 
   # Deckster Drag
@@ -836,7 +942,7 @@ window.Deckster = (options) ->
             "col":col
             "row_span":d.row_span
             "col_span":d.col_span
-          console.log "new_d",new_d
+          
           _placeholder_div($card,new_d,
             "zIndez":zIndex
             "r":r
@@ -864,6 +970,8 @@ window.Deckster = (options) ->
           $card = $drop_handle.closest(_css_variables.selectors.card)
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
           $deck.find(_css_variables.selectors.controls).children(":visible").addClass("hider").hide()
+          #Hide any other decks
+          $deck.closest(_css_variables.selectors.deck_container).siblings().hide()
           $drop_handle.show()
           $drop_handle.addClass("cancel")
           id = parseInt($card.attr('data-card-id'))
@@ -871,9 +979,15 @@ window.Deckster = (options) ->
           _add_placeholders $card,d
         else
           $drop_handle.removeClass("cancel")
+          $card = $drop_handle.closest(_css_variables.selectors.card)
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
           $deck.find(_css_variables.selectors.controls).children(".hider").show().removeClass("hider")
           $deck.find(_css_variables.selectors.placeholders).remove()
+          #Show all the decks again
+          $(document).find(_css_variables.selectors.deck_container).show()
+          #Callbacks registered for event:
+          for callback in __event_callbacks[__events.card_moved] || []
+            break if callback($deck,$card) == false
       )
       $controls.append($droppable)
           
@@ -1048,6 +1162,6 @@ window.Deckster = (options) ->
 
 $ = jQuery
 $.fn.deckster = window.Deckster
-
+_window = $(this)
 
 

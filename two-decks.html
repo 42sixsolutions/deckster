@@ -47,16 +47,6 @@
 <script src="./public/js/bootstrap.js"></script>
 <script src="./deckster.js"></script>
 <script>
-$("#deck2").deckster({
-    animate: {
-      properties: {
-        opacity: ".5"
-      },
-      options: {
-        duration: "slow"
-      }
-    }
-});
 $("#deck1").deckster({
     animate: {
       properties: {
@@ -108,8 +98,18 @@ $("#deck1").deckster({
         "y-position": "top", // bottom | middle | top
         "stay-in-view": true // true | false
     }
-});
+});     
 
+$("#deck2").deckster({
+    animate: {
+      properties: {
+        opacity: ".5"
+      },
+      options: {
+        duration: "slow"
+      }
+    }
+});
 </script>
 </body>
 </html>
