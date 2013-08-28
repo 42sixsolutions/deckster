@@ -1,0 +1,235 @@
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-100.eot");
+  src: url("../fonts/museosans-100.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-100.woff") format("woff"), url("../fonts/museosans-100.ttf") format("truetype"), url("../fonts/museosans-100.svg#MuseoSans") format("svg");
+  font-weight: 100;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-300.eot");
+  src: url("../fonts/museosans-300.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-300.woff") format("woff"), url("../fonts/museosans-300.ttf") format("truetype"), url("../fonts/museosans-300.svg#MuseoSans") format("svg");
+  font-weight: 300;
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-500.eot");
+  src: url("../fonts/museosans-500.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-500.woff") format("woff"), url("../fonts/museosans-500.ttf") format("truetype"), url("../fonts/museosans-500.svg#MuseoSans") format("svg");
+  font-weight: 500;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-700.eot");
+  src: url("../fonts/museosans-700.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-700.woff") format("woff"), url("../fonts/museosans-700.ttf") format("truetype"), url("../fonts/museosans-700.svg#MuseoSans") format("svg");
+  font-weight: 700;
+  font-weight: bold;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-900.eot");
+  src: url("../fonts/museosans-900.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-900.woff") format("woff"), url("../fonts/museosans-900.ttf") format("truetype"), url("../fonts/museosans-900.svg#MuseoSans") format("svg");
+  font-weight: 900;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Controls';
+  src: url("../fonts/controls.eot");
+  src: url("../fonts/controls.eot?#iefix") format("embedded-opentype"), url("../fonts/controls.woff") format("woff"), url("../fonts/controls.ttf") format("truetype"), url("../fonts/controls.svg#Controls") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+/* -------------------------- CSS Reset -------------------------- */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+  blockquote:before, blockquote:after, q:before, q:after {
+    content: '';
+    content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.btn-group {
+  position: relative; }
+
+/* -------------------------- Theme -------------------------- */
+body {
+  background: #282b31;
+  color: #c1c2c3;
+  font-family: "MuseoSans", Arial, Helvetica, sans-serif;
+  font-weight: normal; }
+
+.deckster-deck-container {
+  margin: 0 auto;
+  width: 1230px; }
+
+.deck-header {
+  display: block;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  background: black;
+  margin: 0 0 20px 0;
+  color: #fff; }
+  .deck-header .wrapper {
+    margin: 0 auto;
+    width: 1230px;
+    position: relative; }
+  .deck-header .deck-title {
+    width: 100%;
+    padding: 0 80px;
+    text-align: center; }
+  .deck-header .deck-controls {
+    position: absolute;
+    top: 0;
+    right: 0; }
+    .deck-header .deck-controls .btn-group {
+      float: left; }
+    .deck-header .deck-controls .control {
+      font-size: 1em; }
+      .deck-header .deck-controls .control:hover {
+        color: #50555c; }
+
+.deckster-deck-jump-scroll {
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  z-index: 999; }
+  .deckster-deck-jump-scroll .control {
+    font-size: 1em;
+    color: #50555c; }
+    .deckster-deck-jump-scroll .control:hover {
+      color: #747b85; }
+
+.deckster-deck {
+  display: block;
+  position: relative;
+  top: 50px; }
+
+.deckster-title {
+  text-align: center; }
+
+.deckster-card {
+  background: #3d4146;
+  overflow: none;
+  padding: 0 0 20px 0;
+  -ms-box-shadow: 1px 1px 2px #111215;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=numericvalue(2px), Direction=degrees(1px, 1px), Color='#FF111215')";
+  filter: progid:DXImageTransform.Microsoft.Shadow(Strength=numericvalue(2px), Direction=degrees(1px, 1px), Color='#FF111215');
+  -o-box-shadow: 1px 1px 2px #111215;
+  -moz-box-shadow: 1px 1px 2px #111215;
+  -webkit-box-shadow: 1px 1px 2px #111215;
+  box-shadow: 1px 1px 2px #111215; }
+  .deckster-card .deckster-card-title {
+    position: relative;
+    width: 100%;
+    color: #c1c2c3;
+    padding: 20px 60px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.2em; }
+  .deckster-card .control {
+    color: #50555c; }
+    .deckster-card .control:hover {
+      color: #747b85; }
+  .deckster-card .content {
+    display: block;
+    overflow: auto;
+    height: 100%;
+    padding: 0 20px; }
+
+.placeholders {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+  position: relative; }
+  .placeholders:before {
+    content: '';
+    height: 0;
+    width: 0;
+    border-left: 40px solid #111215;
+    border-bottom: 40px solid transparent;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0; }
+  .placeholders:after {
+    content: '\e00b';
+    height: 25px;
+    width: 25px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: 'controls';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+    line-height: 25px;
+    font-size: 1em;
+    color: #50555c; }
+  .placeholders:hover {
+    background: rgba(255, 255, 255, 0.75); }
+    .placeholders:hover:before {
+      border-left: 40px solid black; }
+    .placeholders:hover:after {
+      color: #2c2f33; }
+
+.dropdown-menu {
+  background: white;
+  border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0; }
+  .dropdown-menu li {
+    color: #232323;
+    border-bottom: 1px solid #eee; }
+    .dropdown-menu li a {
+      color: #282b31;
+      text-decoration: none;
+      padding: 8px 15px; }
+      .dropdown-menu li a:hover {
+        background: #282b31;
+        color: white; }
+  .dropdown-menu:before {
+    display: block;
+    content: '';
+    border-bottom: 6px solid white;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    position: absolute;
+    top: -6px;
+    right: 4px; }

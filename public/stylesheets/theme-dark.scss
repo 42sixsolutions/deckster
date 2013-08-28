@@ -2,15 +2,24 @@ $fonts-path: "../fonts/";
 
 @import "partials/mixins";
 @import "partials/fonts";
+@import "partials/reset";
 
-$bodybg: 		#eeeeee;
-$cardbg: 		#ffffff;
-$headerbg: 		#1e262d;
-$text: 			#313131;
-$controls: 		#bbbbbb;
+$bodybg: 		#282b31;
+$cardbg: 		#3d4146;
+$headerbg: 		darken($bodybg,20%);
+$text: 			#c1c2c3;
+$controls: 		lighten($cardbg,8%);
 $padding: 		20px;
 $containwidth:  1230px;
 $font: 			'MuseoSans', Arial, Helvetica, sans-serif;
+
+
+$green: 		#83b53b;
+$blue:			#5491ba;
+$red:			#dd4444;
+$yellow:		#c6d82a;
+$white: 		#ffffff;
+
 
 /* -------------------------- Theme -------------------------- */
 
@@ -79,10 +88,10 @@ body {
 
   .control {
     font-size: 1em;
-    color: lighten($controls,25%);
+    color: $controls;
 
     &:hover {
-      color: $controls;
+      color: lighten($controls,15%);
     }
   }
 }
@@ -114,10 +123,10 @@ body {
   }
 
   .control {
-    color: lighten($controls,15%);
+    color: $controls;
 
     &:hover {
-      color: $controls;
+      color: lighten($controls,15%);
     }
   }
 
@@ -179,5 +188,38 @@ body {
     &:after {
       color: darken($controls,15%);
     }
+  }
+}
+
+.dropdown-menu {
+  background: $white;
+  border: 0;
+  @include rounded(0);
+  
+  li {
+    color: #232323;
+    border-bottom: 1px solid #eee;
+    
+    a {
+      color: $bodybg;
+      text-decoration: none;
+      padding: 8px 15px;
+      
+      &:hover {
+        background: $bodybg;
+        color: $white;
+      }
+    }
+  }
+  
+  &:before {
+    display: block;
+    content: '';
+    border-bottom: 6px solid $white;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    position: absolute;
+    top: -6px;
+    right: 4px;
   }
 }

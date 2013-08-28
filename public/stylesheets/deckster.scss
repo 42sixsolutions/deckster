@@ -22,9 +22,7 @@ $content-padding: 30px;
 $fonts-path: "../fonts/";
 
 @import "partials/mixins";
-@import "partials/reset";
 @import "partials/fonts";
-@import "partials/theme";
 @import "partials/grid";
 @import "partials/controls";
 
