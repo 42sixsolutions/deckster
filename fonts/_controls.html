@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+<head>
+<title>Your Font/Glyphs</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+
+@font-face {
+    font-family: 'Controls';
+    src: url('controls.eot');
+    src: url('controls.eot?#iefix') format('embedded-opentype'),
+         url('controls.woff') format('woff'),
+         url('controls.ttf') format('truetype'),
+         url('controls.svg#Controls') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+	body {
+		font-family: sans-serif;
+		color: #444;
+		line-height: 1.5;
+		font-size: 1em;
+	}
+	
+	* {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.centered {
+		margin: 0 auto;
+		width: 900px;
+	}
+
+	h1 {
+		margin: 50px 0 10px 0;
+		font-weight: normal;
+		font-size: 26px;
+		color: #222;
+	}
+	
+	h2 {
+		margin: 40px 0 10px 0;
+		font-weight: bold;
+		font-size: 16px;
+		color: #555;
+		padding: 0 0 5px 0;
+		border-bottom: 1px solid #eee;
+	}
+	
+	.footer {
+		margin: 100px 0 50px 0;
+		font-size: 12px;
+	}
+	
+	a {
+		color: #0e9ed9;
+		text-decoration: underline;
+	}
+	
+	a:hover {
+		color: #999;
+	}
+	
+	.box1 {
+		display: inline-block;
+		margin: 0 10px 10px 0;
+		border: 1px solid #eee;
+		background: #f8f8f8;
+		padding: 10px;
+		height: 90px;
+		width: 90px;
+		text-align: center;
+		color: #999;
+		font-size: 12px;
+		
+	}
+	
+	[data-icon]:before {
+		font-family: 'controls';
+		content: attr(data-icon);
+		speak: none;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.control {
+		font-family: 'controls';
+		speak: none;
+		font-style: normal;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	.fs1, .control {
+		display: block;
+		height: 50px;
+		width: 70px;
+		font-size: 20px;
+		line-height: 50px;
+		text-align: center;
+		color: #111;
+	}
+
+	
+.control.expand:before {
+  content: "\e000";
+}
+
+.control.collapse:before {
+  content: "\e001";
+}
+
+.control.drag:before {
+  content: "\e002";
+}
+
+.control.popout:before {
+  content: "\e003";
+}
+
+.control.remove:before {
+  content: "\e004";
+}
+
+.control.add:before {
+  content: "\e005";
+}
+
+.control.droppable:before {
+  content: "\e006";
+}
+
+.control.droppable.cancel:before,
+.control.cancel-drop:before {
+  content: "\e007";
+}
+
+.control.carrot-down:before {
+  content: "\e008";
+}
+
+.control.carrot-up:before {
+  content: "\e009";
+}
+	
+
+</style>
+</head>
+<body>
+<div class="centered">
+	<h1>Control Icons via Font</h1>
+	
+	<h2>Data-Icon Codes</h2>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe000;"></div>
+		&amp;#xe000;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe001;"></div>
+		&amp;#xe001;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe002;"></div>
+		&amp;#xe002;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe003;"></div>
+		&amp;#xe003;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe004;"></div>
+		&amp;#xe004;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe005;"></div>
+		&amp;#xe005;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe006;"></div>
+		&amp;#xe006;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe007;"></div>
+		&amp;#xe007;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe008;"></div>
+		&amp;#xe008;
+	</div>
+	<div class="box1">
+		<div class="fs1" aria-hidden="true" data-icon="&#xe009;"></div>
+		&amp;#xe009;
+	</div>
+
+	<div class="clear"></div>
+
+	<h2>Class Names</h2>
+	<span class="box1">
+		<span aria-hidden="true" class="control expand"></span>
+		expand
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control collapse"></span>
+		collapse
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control drag"></span>
+		drag
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control popout"></span>
+		popout
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control remove"></span>
+		remove
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control add"></span>
+		add
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control droppable"></span>
+		droppable
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control cancel-drop"></span>
+		cancel-drop
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control carrot-down"></span>
+		carrot-down
+	</span>
+	<span class="box1">
+		<span aria-hidden="true" class="control carrot-up"></span>
+		carrot-up
+	</span>
+
+	<p class="footer">The generated SVG font can be imported back to <a href="http://icomoon.io/app">IcoMoon</a> for modification and renamed to "controls" on download. View source for usage examples.</p>
+</div>
+</body>
+</html>
