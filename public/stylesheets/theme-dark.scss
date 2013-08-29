@@ -1,0 +1,225 @@
+$fonts-path: "../fonts/";
+
+@import "partials/mixins";
+@import "partials/fonts";
+@import "partials/reset";
+
+$bodybg: 		#282b31;
+$cardbg: 		#3d4146;
+$headerbg: 		darken($bodybg,20%);
+$text: 			#c1c2c3;
+$controls: 		lighten($cardbg,8%);
+$padding: 		20px;
+$containwidth:  1230px;
+$font: 			'MuseoSans', Arial, Helvetica, sans-serif;
+
+
+$green: 		#83b53b;
+$blue:			#5491ba;
+$red:			#dd4444;
+$yellow:		#c6d82a;
+$white: 		#ffffff;
+
+
+/* -------------------------- Theme -------------------------- */
+
+body {
+  background: $bodybg;
+  color: $text;
+  font-family: $font;
+  font-weight: normal;
+}
+
+.deckster-deck-container {
+    margin: 0 auto;
+    width: $containwidth;
+}
+
+.deck-header {
+  display: block;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  background: $headerbg;
+  margin: 0 0 20px 0;
+  color: #fff;
+  
+  .wrapper {
+    margin: 0 auto;
+    width: $containwidth;
+    position: relative;
+  }
+  
+  .deck-title {
+    width: 100%;
+    padding: 0 80px;
+    text-align: center;
+  }
+  
+  .deck-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    
+    .btn-group {
+      float: left;
+    }
+    
+    .control {
+      font-size: 1em;
+      
+      &:hover {
+        color: $controls;
+      }
+    }
+  }
+  
+}
+
+.deckster-deck-jump-scroll {
+	position: fixed;
+	top: 5px;
+	right: 10px;
+	z-index: 999;
+
+  .control {
+    font-size: 1em;
+    color: $controls;
+
+    &:hover {
+      color: lighten($controls,15%);
+    }
+  }
+}
+
+.deckster-deck {
+  display: block;
+  position: relative;
+  top: 50px;
+}
+
+.deckster-title {
+  text-align: center;
+}
+
+.deckster-card {
+  background: $cardbg;
+  overflow: none;
+  padding: 0 0 $padding 0;
+  @include box-shadow(1px,1px,2px,darken($bodybg,10%));
+  
+  .deckster-card-title {
+    position: relative;
+    width: 100%;
+    color: $text;
+    padding: 20px 60px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.2em;
+  }
+
+  .control {
+    color: $controls;
+
+    &:hover {
+      color: lighten($controls,15%);
+    }
+  }
+
+  .content {
+     display: block;
+     overflow: auto;
+     height: 100%;
+     padding: 0 $padding;
+  }
+  
+}
+
+.placeholders {
+  background: rgba(255,255,255,0.25);
+  box-shadow: none;
+  position: relative;
+  
+  &:before {
+    content: '';
+    height: 0;
+    width: 0;
+    border-left: 40px solid darken($bodybg,10%);
+    border-bottom: 40px solid transparent;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &:after {
+    content: '\e00b';
+    height: 25px;
+    width: 25px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: 'controls';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+    line-height: 25px;
+    font-size: 1em;
+    color: $controls;
+    
+  }
+  
+  &:hover {
+    background: rgba(255,255,255,0.75);
+
+    &:before {
+      border-left: 40px solid darken($bodybg,20%);
+    }
+
+    &:after {
+      color: darken($controls,15%);
+    }
+  }
+}
+
+.dropdown-menu {
+  background: $white;
+  border: 0;
+  @include rounded(0);
+  
+  li {
+    color: #232323;
+    border-bottom: 1px solid #eee;
+    
+    a {
+      color: $bodybg;
+      text-decoration: none;
+      padding: 8px 15px;
+      
+      &:hover {
+        background: $bodybg;
+        color: $white;
+      }
+    }
+  }
+  
+  &:before {
+    display: block;
+    content: '';
+    border-bottom: 6px solid $white;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    position: absolute;
+    top: -6px;
+    right: 4px;
+  }
+}

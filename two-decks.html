@@ -4,6 +4,7 @@
 <title>Deckster Demo</title>
 <link rel="stylesheet" href="./public/stylesheets/bootstrap.css" media="all" type="text/css" />
 <link rel="stylesheet" href="./public/stylesheets/deckster.css" media="all" type="text/css" />
+<link rel="stylesheet" href="./public/stylesheets/theme-light.css" media="all" type="text/css" />
 </head> 
 <body>
 <h1>Deckster</h1>
@@ -30,7 +31,7 @@
     aaa
   </div>
 </div>
-<div id="deck2" class="deckster-deck" data-col-max="4" data-draggable="true" data-expandable="true" data-cards-expanded="false" data-title="Test Deck 2">
+<div id="deck2" data-row-max="8" class="deckster-deck" data-col-max="4" data-draggable="true" data-expandable="true" data-cards-expanded="false" data-title="Test Deck 2">
     <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="1" data-expanded="false" data-col-expand="7" data-row-expand="-1" data-title="Non-Free-Credit-Report">
       Tile 1
     </div>
@@ -38,80 +39,79 @@
       Tile Zwei
     </div>
 </div>
+<div class="btn-group deckster-deck-jump-scroll">
+  <span class="dropdown-toggle control jump-deck caret" data-toggle="dropdown"></span>
+  <ul class="dropdown-menu pull-left">
+  </ul>
+</div>
 <script src="./jquery-2.0.3.min.js"></script>
-<script src="public/js/bootstrap.js"></script>
+<script src="./public/js/bootstrap.js"></script>
 <script src="./deckster.js"></script>
 <script>
-    $(document).ready(function(){
-        $("#deck1").deckster({
-            animate: {
-                properties: {
-                    opacity: ".5"
-                },
-                options: {
-                    duration: "slow"
-                }
-            },
-            "card-actions": {
-                "deck-1": {
-                    "card-6": {
-                        "card-expanded": function($card, $contentSection) {
-                            var ajax_options;
-                            ajax_options = {
-                                url: "./sampleSites/site6expand",
-                                type: "GET",
-                                success: function(data, status, response) {
-                                    /*
-                                     You'll want to replace the conte
-                                     */
+$(document).ready(function(){
+  $("#deck1").deckster({
+      animate: {
+        properties: {
+          opacity: ".5"
+        },
+        options: {
+          duration: "slow"
+        }
+      },
+      "card-actions":{
+        "deck-1":{
+          "card-6":{
+            "card-expanded": function($card,$contentSection){
+              ajax_options ={
+                url:"./sampleSites/site6expand",
+                type:"GET",
+                success: function(data,status, response){
+                  //replace card content
+                  $cardContent = $contentSection.html(data)
 
-                                    var $cardContent;
-                                    $cardContent = $contentSection.html(data);
-                                    return console.log("I've successfully replaced the content");
-                                },
-                                error: function() {
-                                    return console.log("I've failed to repalce the content");
-                                }
-                            };
-                            return ajax_options;
-                        },
-                        "card-collapsed": function($card, $contentSection) {
-                            var ajax_options;
-                            ajax_options = {
-                                url: "./sampleSites/site6",
-                                type: "GET",
-                                success: function(data, status, response) {
-                                    var $cardContent;
-                                    $cardContent = $contentSection.html(data);
-                                    return console.log("I've successfully replaced the content");
-                                },
-                                error: function() {
-                                    return console.log("I've failed to repalce the content");
-                                }
-                            };
-                            return ajax_options;
-                        }
-                    }
-                }
-            },
-            "scroll-helper": {
-                "x-position": "middle",
-                "y-position": "top",
-                "stay-in-view": true
-            }
-        });
-
-        $("#deck2").deckster({
-            animate: {
-                properties: {
-                    opacity: ".5"
+                  console.log("I've successfully replaced the content")
                 },
-                options: {
-                    duration: "slow"
+                error: function(){
+                  console.log("I've failed to repalce the content")
                 }
+              }
+              return ajax_options
+            },
+            "card-collapsed": function($card, $contentSection){
+              ajax_options = {
+                url:"./sampleSites/site6",
+                type:"GET",
+                success: function(data,status, response){
+                  $cardContent = $contentSection.html(data)
+
+                  console.log("I've successfully replaced the content")
+                },
+                error: function(){
+                  console.log("I've failed to repalce the content")
+                }
+              }
+              return ajax_options
             }
-        });
-    });
+          }
+        }
+      },
+      "scroll-helper": {
+          "x-position": "middle", // left | middle | right
+          "y-position": "top", // bottom | middle | top
+          "stay-in-view": true // true | false
+      }
+  });     
+});
+$("#deck2").deckster({
+    animate: {
+      properties: {
+        opacity: ".5"
+      },
+      options: {
+        duration: "slow"
+      }
+    }
+});
 </script>
 </body>
 </html>

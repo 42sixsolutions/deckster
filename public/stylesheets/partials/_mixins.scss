@@ -25,3 +25,9 @@
   -webkit-box-shadow:$x $y $blur $color; // Webkit (Safari, Chrome, other)
   box-shadow:$x $y $blur $color;
 }
+
+@mixin rounded($radius: 0.5em) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
