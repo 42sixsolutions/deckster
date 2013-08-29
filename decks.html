@@ -15,6 +15,26 @@
     <![endif]-->
 </head>
 <body>
+<h1>Simple Deck</h1>
+<pre class="prettyprint">
+$(document).ready(function () {
+        $("#deck1").deckster({
+            animate: {
+                properties: {
+                    opacity: ".5"
+                },
+                options: {
+                    duration: "slow"
+                }
+            },
+            "scroll-helper": {
+                "x-position": "middle",
+                "y-position": "top",
+                "stay-in-view": true
+            }
+        });
+    });
+</pre>
 <h1>Deckster</h1>
 
 <div id="deck1" class="deckster-deck" data-col-max="4" data-draggable="true" data-expandable="true"
@@ -68,6 +88,7 @@
 <script src="javascripts/scale.fix.js"></script>
 <script src="javascripts/jquery-2.0.3.min.js"></script>
 <script src="javascripts/bootstrap.js"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 <script src="javascripts/deckster.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
