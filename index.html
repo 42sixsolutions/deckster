@@ -34,7 +34,7 @@
       Tile 5
     </div>
   </div>
-  <div id="cardId6" class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="3" data-url="./sampleSites/site6" data-col-expand="10" data-row-expand="3" data-title="DISCOUNT ONLINE PHARMACY">
+  <div id="cardId6" class="deckster-card collapserEx" data-col="3" data-row="3" data-col-span="1" data-row-span="3" data-url="./sampleSites/site6" data-col-expand="10" data-row-expand="3" data-title="DISCOUNT ONLINE PHARMACY">
     <div class="content">
       Tile 6
     </div>
@@ -50,6 +50,16 @@
 <script src="./deckster.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+  $.deckster({
+    "card-actions":{
+        "card-expanded":function($card,$contentSection){
+            console.log("card-expanded: I'm registered globally");
+        },
+        "card-collapsed":function($card,$contentSection){
+            console.log("card-collapsed: I'm registered globally");
+        }
+    }
+  });
   $("#deck1").deckster({
       animate: {
         properties: {
@@ -60,27 +70,8 @@ $(document).ready(function(){
         }
       },
       "card-actions":{
-        "deck1":{
-          "cardId4":{
-            "card-expanded": function($card,$contentSection){
-              ajax_options ={
-                url:"./sampleSites/site6expand",
-                type:"GET",
-                success: function(data,status, response){
-                  //replace card content
-                  $cardContent = $contentSection.html(data)
-
-                  console.log("I've successfully replaced the content")
-                },
-                error: function(){
-                  console.log("I've failed to repalce the content")
-                }
-              }
-              return ajax_options
-            }
-          },
-          "cardId6":{
-            "card-expanded": function($card,$contentSection){
+          "card-expanded":{
+             "#cardId4" : function($card,$contentSection){
               ajax_options ={
                 url:"./sampleSites/site6expand",
                 type:"GET",
@@ -96,21 +87,42 @@ $(document).ready(function(){
               }
               return ajax_options
             },
-            "card-collapsed": function($card, $contentSection){
-              ajax_options = {
-                url:"./sampleSites/site6",
+            "#cardId6" : function($card,$contentSection){
+              ajax_options ={
+                url:"./sampleSites/site6expand",
                 type:"GET",
                 success: function(data,status, response){
+                  //replace card content
                   $cardContent = $contentSection.html(data)
 
-                  console.log("I've successfully replaced the content")
+                  console.log("I've successfully replaced the content on card expand")
                 },
                 error: function(){
                   console.log("I've failed to repalce the content")
                 }
               }
               return ajax_options
+            },
+            "*":function($card,$contentSection){ /* If any card in this deck is expanded call fn */
+              console.log("Running because a card in this deck was expanded");
+              console.log("-->",$card);
             }
+        },
+        "card-collapsed": {
+          ".collapserEx": function($card, $contentSection){
+            ajax_options = {
+              url:"./sampleSites/site6",
+              type:"GET",
+              success: function(data,status, response){
+                $cardContent = $contentSection.html(data)
+
+                console.log("I've successfully replaced the content on card collapse")
+              },
+              error: function(){
+                console.log("I've failed to repalce the content")
+              }
+            }
+            return ajax_options
           }
         }
       },

@@ -158,7 +158,12 @@ _create_jump_scroll_deck = () ->
             '.deckster-deck[data-title]',
             _css_variables.classes.deck_jump_scroll
 
+jQuery.deckster = (options)->
+  console.log("Registering global callbacks")
+  _document.__deck_mgr = options
+
 window.Deckster = (options) ->
+    
   $deck = $(this)
 
   unless $deck.hasClass(_css_variables.classes.deck)
@@ -260,7 +265,7 @@ window.Deckster = (options) ->
     __dominate_card_data = d
     _identify_problem_cards()
     __deck = {}
-    _window.__deck_mgr = _window.__deck_mgr || {}
+    _document.__deck_mgr = _document.__deck_mgr || {}
 
     _loop_through_spaces p.row, p.col, (p.row + (d.row_span - 1)), (p.col + (d.col_span - 1)), (p2) ->
       __deck[p2.row] = {} unless __deck[p2.row]?
@@ -811,39 +816,42 @@ window.Deckster = (options) ->
           )
         )
         
-       _on __events.card_expanded, ($deck,$card) ->
-        deckId = $deck.attr("id") 
-        cardId = $card.attr("id")
+      _card_changed = ($deck,$card,type) ->
+        if options["card-actions"]? and options["card-actions"][type]?
 
-        if options["card-actions"]? and options["card-actions"][deckId]? and options["card-actions"][deckId][cardId]? 
+         cardActions = options["card-actions"][type]
+         deckId = $deck.attr("id")
+         cardId = $card.attr("id")
+         $cardContent = $card.find(_css_variables.selectors.card_content)
+         for cardIdentity, action of cardActions
+           if "#"+$card.attr("id") == cardIdentity ||  $card.hasClass(cardIdentity[1..]) || cardIdentity == "*"
 
-         cardActions = options["card-actions"][deckId][cardId]
+               temp = action($card,$cardContent)
+               if temp? and temp.url?
+                  ###
+                     Abort any requests that are currently on-going.
+                  ###
+                  if _ajax_requests[deckId] and _ajax_requests[deckId][cardId]
+                    _ajax_requests[deckId][cardId].abort()
+                    delete _ajax_requests[deckId][cardId]
 
-         if cardActions["card-expanded"]?
-           ajaxOptions = cardActions["card-expanded"]($card,$card.find(_css_variables.selectors.card_content))
-           if ajaxOptions?
-             ###
-                Abort any requests that are currently on-going.
-             ###
-             if _ajax_requests[deckId] and _ajax_requests[deckId][cardId]
-              _ajax_requests[deckId][cardId].abort()
-              delete _ajax_requests[deckId][cardId]
+                    ###
+                      Send the ajax request after any card animation has finished (Typically when a card is expanded its size will be changed.) For example, trying to animate and load content into the card makes both operations laggy and detract from the user experience. 
+                    ###
+                  ajaxOptions = temp
+                  $card.queue().push(()->
+                    _ajax_requests[deckId][cardId] = _ajax(ajaxOptions)
+                  )
+        ### Call any globally registered callbacks ###
+        if _document.__deck_mgr? and _document.__deck_mgr["card-actions"]? and _document.__deck_mgr["card-actions"][type]?
+          _document.__deck_mgr["card-actions"][type]($card,$cardContent)
 
-             ###
-                Send the ajax request after any card animation has finished (Typically when a card is expanded its size will be changed.) For example, trying to animate and load content into the card makes both operations laggy and detract from the user experience. 
-             ###
-             $card.queue().push(()->_ajax(ajaxOptions))
+
+      _on __events.card_expanded, ($deck,$card) ->
+        _card_changed($deck,$card,"card-expanded")
 
       _on __events.card_collapsed, ($deck,$card) ->
-        deckId = $deck.attr("id")
-        cardId = $card.attr("id")
-        if options["card-actions"]? and options["card-actions"][deckId]? and options["card-actions"][deckId][cardId]? 
-
-         cardActions = options["card-actions"][deckId][cardId]
-         if cardActions["card-collapsed"]?
-           ajaxOptions = cardActions["card-collapsed"]($card,$card.find(_css_variables.selectors.card_content))
-           if ajaxOptions?
-            $card.queue().push(()->_ajax(ajaxOptions))
+        _card_changed($deck,$card,"card-collapsed")
 
   ###
     Setting url_enabled to true allows ajax requests to run.
@@ -1277,5 +1285,5 @@ window.Deckster = (options) ->
 $ = jQuery
 
 $.fn.deckster = window.Deckster
-_window = $(this)
+_document = $(document)
 

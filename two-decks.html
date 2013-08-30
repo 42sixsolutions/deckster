@@ -24,7 +24,7 @@
   <div class="deckster-card" data-col="1" data-row="3" data-col-span="3" data-row-span="1" data-url="./sampleSites/site5.html" data-col-expand="4" data-row-expand="4">
     Tile 5
   </div>
-  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="3" data-url="./sampleSites/site6" data-col-expand="10" data-row-expand="3" data-title="DISCOUNT ONLINE PHARMACY">
+  <div id="cardId6" class="deckster-card collapserEx" data-col="3" data-row="3" data-col-span="1" data-row-span="3" data-url="./sampleSites/site6" data-col-expand="10" data-row-expand="3" data-title="DISCOUNT ONLINE PHARMACY">
     Tile 6
   </div>
   <div class="deckster-card" data-col="3" data-row="3" data-col-span="3" data-row-span="3" data-url="./sampleSites/empty.html" data-col-expand="10" data-row-expand="3" data-title="Card to Hide" data-hidden="true">
@@ -49,6 +49,17 @@
 <script src="./deckster.js"></script>
 <script>
 $(document).ready(function(){
+  $.deckster({
+    "card-actions":{
+        "card-expanded":function($card,$contentSection){
+            console.log("card-expanded: I'm registered globally");
+        },
+        "card-collapsed":function($card,$contentSection){
+            console.log("card-collapsed: I'm registered globally");
+        }
+    }
+  });
+
   $("#deck1").deckster({
       animate: {
         properties: {
@@ -59,9 +70,8 @@ $(document).ready(function(){
         }
       },
       "card-actions":{
-        "deck-1":{
-          "card-6":{
-            "card-expanded": function($card,$contentSection){
+        "card-expanded":{
+          "#cardId6":function($card,$contentSection){
               ajax_options ={
                 url:"./sampleSites/site6expand",
                 type:"GET",
@@ -76,8 +86,10 @@ $(document).ready(function(){
                 }
               }
               return ajax_options
-            },
-            "card-collapsed": function($card, $contentSection){
+            }
+          },
+          "card-collapsed": {
+            ".collapserEx":function($card, $contentSection){
               ajax_options = {
                 url:"./sampleSites/site6",
                 type:"GET",
@@ -92,7 +104,6 @@ $(document).ready(function(){
               }
               return ajax_options
             }
-          }
         }
       },
       "scroll-helper": {
