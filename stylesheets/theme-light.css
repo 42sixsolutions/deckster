@@ -1,0 +1,173 @@
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-100.eot");
+  src: url("../fonts/museosans-100.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-100.woff") format("woff"), url("../fonts/museosans-100.ttf") format("truetype"), url("../fonts/museosans-100.svg#MuseoSans") format("svg");
+  font-weight: 100;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-300.eot");
+  src: url("../fonts/museosans-300.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-300.woff") format("woff"), url("../fonts/museosans-300.ttf") format("truetype"), url("../fonts/museosans-300.svg#MuseoSans") format("svg");
+  font-weight: 300;
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-500.eot");
+  src: url("../fonts/museosans-500.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-500.woff") format("woff"), url("../fonts/museosans-500.ttf") format("truetype"), url("../fonts/museosans-500.svg#MuseoSans") format("svg");
+  font-weight: 500;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-700.eot");
+  src: url("../fonts/museosans-700.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-700.woff") format("woff"), url("../fonts/museosans-700.ttf") format("truetype"), url("../fonts/museosans-700.svg#MuseoSans") format("svg");
+  font-weight: 700;
+  font-weight: bold;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url("../fonts/museosans-900.eot");
+  src: url("../fonts/museosans-900.eot?#iefix") format("embedded-opentype"), url("../fonts/museosans-900.woff") format("woff"), url("../fonts/museosans-900.ttf") format("truetype"), url("../fonts/museosans-900.svg#MuseoSans") format("svg");
+  font-weight: 900;
+  font-style: normal; }
+
+@font-face {
+  font-family: 'Controls';
+  src: url("../fonts/controls.eot");
+  src: url("../fonts/controls.eot?#iefix") format("embedded-opentype"), url("../fonts/controls.woff") format("woff"), url("../fonts/controls.ttf") format("truetype"), url("../fonts/controls.svg#Controls") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+/* -------------------------- Theme -------------------------- */
+body {
+  background: #eeeeee;
+  color: #313131;
+  font-family: "MuseoSans", Arial, Helvetica, sans-serif;
+  font-weight: normal; }
+
+.deckster-deck-container {
+  margin: 0 auto;
+  width: 1230px; }
+
+.deck-header {
+  display: block;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  background: #1e262d;
+  margin: 0 0 20px 0;
+  color: #fff; }
+  .deck-header .wrapper {
+    margin: 0 auto;
+    width: 1230px;
+    position: relative; }
+  .deck-header .deck-title {
+    width: 100%;
+    padding: 0 80px;
+    text-align: center; }
+  .deck-header .deck-controls {
+    position: absolute;
+    top: 0;
+    right: 0; }
+    .deck-header .deck-controls .btn-group {
+      float: left; }
+    .deck-header .deck-controls .control {
+      font-size: 1em; }
+      .deck-header .deck-controls .control:hover {
+        color: #bbbbbb; }
+
+.deckster-deck-jump-scroll {
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  z-index: 999; }
+  .deckster-deck-jump-scroll .control {
+    font-size: 1em;
+    color: #fbfbfb; }
+    .deckster-deck-jump-scroll .control:hover {
+      color: #bbbbbb; }
+
+.deckster-deck {
+  display: block;
+  position: relative;
+  top: 50px; }
+
+.deckster-title {
+  text-align: center; }
+
+.deckster-card {
+  background: white;
+  overflow: none;
+  padding: 0 0 20px 0;
+  -ms-box-shadow: 1px 1px 2px #d4d4d4;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=numericvalue(2px), Direction=degrees(1px, 1px), Color='#FFD4D4D4')";
+  filter: progid:DXImageTransform.Microsoft.Shadow(Strength=numericvalue(2px), Direction=degrees(1px, 1px), Color='#FFD4D4D4');
+  -o-box-shadow: 1px 1px 2px #d4d4d4;
+  -moz-box-shadow: 1px 1px 2px #d4d4d4;
+  -webkit-box-shadow: 1px 1px 2px #d4d4d4;
+  box-shadow: 1px 1px 2px #d4d4d4; }
+  .deckster-card .deckster-card-title {
+    position: relative;
+    width: 100%;
+    color: #313131;
+    padding: 20px 60px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.2em; }
+  .deckster-card .control {
+    color: #e1e1e1; }
+    .deckster-card .control:hover {
+      color: #bbbbbb; }
+  .deckster-card .content {
+    display: block;
+    overflow: auto;
+    height: 100%;
+    padding: 0 20px; }
+
+.placeholders {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+  position: relative; }
+  .placeholders:before {
+    content: '';
+    height: 0;
+    width: 0;
+    border-left: 40px solid #d4d4d4;
+    border-bottom: 40px solid transparent;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0; }
+  .placeholders:after {
+    content: '\e00b';
+    height: 25px;
+    width: 25px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: 'controls';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+    line-height: 25px;
+    font-size: 1em;
+    color: #bbbbbb; }
+  .placeholders:hover {
+    background: rgba(255, 255, 255, 0.75); }
+    .placeholders:hover:before {
+      border-left: 40px solid #bbbbbb; }
+    .placeholders:hover:after {
+      color: #959595; }
