@@ -626,13 +626,29 @@ window.Deckster = (options) ->
     _on __events.inited, ($deck) ->
       _bind_drag_controls(this)
 
+    _create_box = ($card,clazz)->
+      $div =  $("<div/>")
+      .addClass(clazz)
+      .addClass("deckster-card")
+      .attr("data-col",$card.attr("data-col"))
+      .attr("data-row",$card.attr("data-row"))
+      .attr("data-col-span",$card.attr("data-col-span"))
+      .attr("data-row-span",$card.attr("data-row-span"))
+
+      return $div
+
     _bind_drag_controls = (deck) ->
       $deck.find(_css_variables.selectors.drag_handle).on "mousedown", (e) ->
         $drag_handle = $(this)
+        
         __$active_drag_card = $drag_handle.parents(_css_variables.selectors.card)
 
         __$active_drag_card.addClass('draggable')
         __$active_drag_card.css 'z-index', 1000
+
+        #Shadowbox
+        $deck.append(_create_box(__$active_drag_card,"shadowbox"))
+        __$active_drag_card.css 'z-index','1000'
 
         __active_drag_card_drag_data =
           height: __$active_drag_card.outerHeight()
@@ -652,24 +668,35 @@ window.Deckster = (options) ->
           original_left = __active_drag_card_drag_data['original_left']
           original_top = __active_drag_card_drag_data['original_top']
           
+          $shadowbox = $(".shadowbox")
+          top = parseInt $shadowbox.attr("data-row")
+          left = parseInt $shadowbox.attr("data-col")
+
           messages = []
           if new_top - original_top < -200
             __active_drag_card_drag_data['original_top'] = __active_drag_card_drag_data['original_top']-200
             _move_card(__$active_drag_card,"up")
+            top -= 1
             messages.push 'UP' 
           if new_top - original_top > 200  
             __active_drag_card_drag_data['original_top'] = __active_drag_card_drag_data['original_top']+200
             _move_card(__$active_drag_card,"down")
+            top += 1
             messages.push 'DOWN' 
           if new_left - original_left < -300
             __active_drag_card_drag_data['original_left'] = __active_drag_card_drag_data['original_left']-300
             _move_card(__$active_drag_card,"left")
+            left -= 1
             messages.push 'LEFT' 
           if new_left - original_left > 300
             __active_drag_card_drag_data['original_left']  = __active_drag_card_drag_data['original_left']+300
             _move_card(__$active_drag_card,"right")
+            left += 1
             messages.push 'RIGHT'
           console.log messages.join(' ') if messages.length > 0
+
+          $shadowbox.attr("data-col",left)
+          $shadowbox.attr("data-row",top)
 
           __$active_drag_card.offset { top: new_top, left: new_left }
 
@@ -679,6 +706,11 @@ window.Deckster = (options) ->
           __$active_drag_card.css 'top', ''
           __$active_drag_card.css 'left', ''
           __$active_drag_card.css 'z-index', ''
+          __$active_drag_card.css 'opacity','1'
+
+          $(".shadowbox").fadeOut("slow",()->
+            $(this).remove()
+          )
 
           __$active_drag_card = undefined
           __active_drag_card_drag_data = undefined
