@@ -812,11 +812,13 @@ window.Deckster = (options) ->
         )
         
        _on __events.card_expanded, ($deck,$card) ->
-        deckId = $deck.data("deck-id") ? 1
-        cardId = $card.data("card-id")
-        if options["card-actions"]? and options["card-actions"]["deck-"+deckId]? and options["card-actions"]["deck-"+deckId]["card-"+cardId]? 
+        deckId = $deck.attr("id") 
+        cardId = $card.attr("id")
 
-         cardActions = options["card-actions"]["deck-"+deckId]["card-"+cardId]
+        if options["card-actions"]? and options["card-actions"][deckId]? and options["card-actions"][deckId][cardId]? 
+
+         cardActions = options["card-actions"][deckId][cardId]
+
          if cardActions["card-expanded"]?
            ajaxOptions = cardActions["card-expanded"]($card,$card.find(_css_variables.selectors.card_content))
            if ajaxOptions?
@@ -833,11 +835,11 @@ window.Deckster = (options) ->
              $card.queue().push(()->_ajax(ajaxOptions))
 
       _on __events.card_collapsed, ($deck,$card) ->
-        deckId = $deck.data("deck-id") ? 1
-        cardId = $card.data("card-id")
-        if options["card-actions"]? and options["card-actions"]["deck-"+deckId]? and options["card-actions"]["deck-"+deckId]["card-"+cardId]? 
+        deckId = $deck.attr("id")
+        cardId = $card.attr("id")
+        if options["card-actions"]? and options["card-actions"][deckId]? and options["card-actions"][deckId][cardId]? 
 
-         cardActions = options["card-actions"]["deck-"+deckId]["card-"+cardId]
+         cardActions = options["card-actions"][deckId][cardId]
          if cardActions["card-collapsed"]?
            ajaxOptions = cardActions["card-collapsed"]($card,$card.find(_css_variables.selectors.card_content))
            if ajaxOptions?
@@ -868,8 +870,8 @@ window.Deckster = (options) ->
                 this.remove()
                 _remove_card_from_deck this
 
-         deckId = $card.closest(_css_variables.selectors.deck).data("deck-id") ? 1
-         cardId = d.id
+         deckId = $card.closest(_css_variables.selectors.deck).attr("id") 
+         cardId = $card.attr("id")
          ###
           Keep track of requests incase we need to abort them.
          ###

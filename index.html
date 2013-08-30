@@ -24,7 +24,7 @@
       Tile 3
     </div>
   </div>
-  <div class="deckster-card" data-col="2" data-row="3" data-col-span="2" data-row-span="2" data-expanded="false" data-col-expand="3" data-row-expand="-1">
+  <div id="cardId4" class="deckster-card" data-col="2" data-row="3" data-col-span="2" data-row-span="2" data-expanded="false" data-col-expand="3" data-row-expand="-1">
     <div class="content">
       Tile 4
     </div>
@@ -34,7 +34,7 @@
       Tile 5
     </div>
   </div>
-  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="3" data-url="./sampleSites/site6" data-col-expand="10" data-row-expand="3" data-title="DISCOUNT ONLINE PHARMACY">
+  <div id="cardId6" class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="3" data-url="./sampleSites/site6" data-col-expand="10" data-row-expand="3" data-title="DISCOUNT ONLINE PHARMACY">
     <div class="content">
       Tile 6
     </div>
@@ -60,8 +60,26 @@ $(document).ready(function(){
         }
       },
       "card-actions":{
-        "deck-1":{
-          "card-6":{
+        "deck1":{
+          "cardId4":{
+            "card-expanded": function($card,$contentSection){
+              ajax_options ={
+                url:"./sampleSites/site6expand",
+                type:"GET",
+                success: function(data,status, response){
+                  //replace card content
+                  $cardContent = $contentSection.html(data)
+
+                  console.log("I've successfully replaced the content")
+                },
+                error: function(){
+                  console.log("I've failed to repalce the content")
+                }
+              }
+              return ajax_options
+            }
+          },
+          "cardId6":{
             "card-expanded": function($card,$contentSection){
               ajax_options ={
                 url:"./sampleSites/site6expand",
