@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <link rel="stylesheet" href="stylesheets/bootstrap.css">
     <link rel="stylesheet" href="stylesheets/deckster.css">
-    <link rel="stylesheet" href="stylesheets/theme-dark.css">
+    <link rel="stylesheet" href="stylesheets/theme-light.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -40,11 +40,58 @@
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;
+&lt;div id="deck2" class="deckster-deck" data-col-max="4" data-title="Simple Deck"&gt;
+    &lt;div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card"&gt;
+        &lt;div class="content"&gt;
+            Card Content
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="deckster-card" data-col="2" data-row="1" data-col-span="2" data-row-span="1" data-title="Simple Card"&gt;
+        &lt;div class="content"&gt;
+            Card Content
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="deckster-card" data-col="4" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card"&gt;
+        &lt;div class="content"&gt;
+            Card Content
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="deckster-card" data-col="1" data-row="2" data-col-span="4" data-row-span="1" data-title="Simple Card"&gt;
+        &lt;div class="content"&gt;
+            Card Content
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
 </pre>
 <pre class="prettyprint">
 $("#deck1").deckster();
+$("#deck2").deckster();
 </pre>
-<div id="deck1" class="deckster-deck" data-col-max="4" data-title="Dark Themed Deck">
+<div id="deck1" class="deckster-deck" data-col-max="4" data-title="Deck 1">
+    <div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card">
+        <div class="content">
+            Card Content
+        </div>
+    </div>
+    <div class="deckster-card" data-col="2" data-row="1" data-col-span="2" data-row-span="1" data-title="Simple Card">
+        <div class="content">
+            Card Content
+        </div>
+    </div>
+    <div class="deckster-card" data-col="4" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card">
+        <div class="content">
+            Card Content
+        </div>
+    </div>
+
+    <div class="deckster-card" data-col="1" data-row="2" data-col-span="4" data-row-span="1" data-title="Simple Card">
+        <div class="content">
+            Card Content
+        </div>
+    </div>
+</div>
+<div id="deck2" class="deckster-deck" data-col-max="4" data-title="Deck 2">
     <div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card">
         <div class="content">
             Card Content
@@ -75,6 +122,7 @@ $("#deck1").deckster();
 <script type="text/javascript">
     $(document).ready(function () {
         $("#deck1").deckster();
+        $("#deck2").deckster();
     });
 </script>
 </body>

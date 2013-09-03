@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <link rel="stylesheet" href="stylesheets/bootstrap.css">
     <link rel="stylesheet" href="stylesheets/deckster.css">
-    <link rel="stylesheet" href="stylesheets/theme-dark.css">
+    <link rel="stylesheet" href="stylesheets/theme-light.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -17,24 +17,30 @@
 </head>
 <body>
 <pre class="prettyprint">
-&lt;div id="deck1" class="deckster-deck" data-col-max="4" data-title="Simple Deck"&gt;
-    &lt;div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card"&gt;
+&lt;div id="deck1" class="deckster-deck" data-col-max="4" data-title="Disabled Deck" data-expandable="false"
+     data-draggable="false" data-droppable="false" data-removable="false" data-remove-empty="false"&gt;
+    &lt;!-- data-expandable="true" is default --&gt;
+    &lt;!-- data-draggable="true" is default --&gt;
+    &lt;!-- data-droppable="true" is default --&gt;
+    &lt;!-- data-removable="true" is default --&gt;
+    &lt;!-- data-remove-empty="true" is default --&gt;
+    &lt;div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1"&gt;
         &lt;div class="content"&gt;
             Card Content
         &lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class="deckster-card" data-col="2" data-row="1" data-col-span="2" data-row-span="1" data-title="Simple Card"&gt;
+    &lt;div class="deckster-card" data-col="2" data-row="1" data-col-span="2" data-row-span="1"&gt;
         &lt;div class="content"&gt;
             Card Content
         &lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class="deckster-card" data-col="4" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card"&gt;
+    &lt;div class="deckster-card" data-col="4" data-row="1" data-col-span="1" data-row-span="1"&gt;
         &lt;div class="content"&gt;
             Card Content
         &lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;div class="deckster-card" data-col="1" data-row="2" data-col-span="4" data-row-span="1" data-title="Simple Card"&gt;
+    &lt;div class="deckster-card" data-col="1" data-row="2" data-col-span="4" data-row-span="1"&gt;
         &lt;div class="content"&gt;
             Card Content
         &lt;/div&gt;
@@ -44,24 +50,25 @@
 <pre class="prettyprint">
 $("#deck1").deckster();
 </pre>
-<div id="deck1" class="deckster-deck" data-col-max="4" data-title="Dark Themed Deck">
-    <div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card">
+<div id="deck1" class="deckster-deck" data-col-max="4" data-title="Disabled Deck" data-expandable="false"
+     data-draggable="false" data-droppable="false" data-removable="false" data-remove-empty="false">
+    <div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1">
         <div class="content">
             Card Content
         </div>
     </div>
-    <div class="deckster-card" data-col="2" data-row="1" data-col-span="2" data-row-span="1" data-title="Simple Card">
+    <div class="deckster-card" data-col="2" data-row="1" data-col-span="2" data-row-span="1">
         <div class="content">
             Card Content
         </div>
     </div>
-    <div class="deckster-card" data-col="4" data-row="1" data-col-span="1" data-row-span="1" data-title="Simple Card">
+    <div class="deckster-card" data-col="4" data-row="1" data-col-span="1" data-row-span="1">
         <div class="content">
             Card Content
         </div>
     </div>
 
-    <div class="deckster-card" data-col="1" data-row="2" data-col-span="4" data-row-span="1" data-title="Simple Card">
+    <div class="deckster-card" data-col="1" data-row="2" data-col-span="4" data-row-span="1">
         <div class="content">
             Card Content
         </div>
