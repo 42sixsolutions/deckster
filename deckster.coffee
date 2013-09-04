@@ -625,7 +625,7 @@ window.Deckster = (options) ->
     __active_drag_card_drag_data = undefined
 
     _on __events.inited, ($deck) ->
-      controls = "<a class='#{_css_variables.classes.drag_handle} control drag'></a>"
+      controls = "<a title='Drag' class='#{_css_variables.classes.drag_handle} control drag'></a>"
       $deck.find(_css_variables.selectors.controls).append controls
 
     _on __events.inited, ($deck) ->
@@ -735,8 +735,8 @@ window.Deckster = (options) ->
   if options['expandable'] && options['expandable'] == true
     _on __events.inited, ($deck) ->
       controls = """
-                 <a class='#{_css_variables.classes.expand_handle} control expand'></a>
-                 <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
+                 <a title="Expand" class='#{_css_variables.classes.expand_handle} control expand'></a>
+                 <a title="Collapse" class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
       $deck.find(_css_variables.selectors.controls).each((index)->
         $card = $(this).closest(_css_variables.selectors.card)
@@ -750,8 +750,7 @@ window.Deckster = (options) ->
 
       $deck.find(_css_variables.selectors.collapse_handle).click ->
         _collapse_on_click(this)
-
-
+ 
 
     _expand_on_click = (element) ->
         $expand_handle = $(element)
@@ -1019,7 +1018,9 @@ window.Deckster = (options) ->
   if options.droppable == true
     _on __events.inited, ($card,d) ->
       $controls = $card.find(_css_variables.selectors.controls)
-      $droppable = $("<a></a>").addClass(_css_variables.selectors.droppable.substring(1) + ' control droppable1')
+      $droppable = $("<a></a>")
+      .addClass(_css_variables.classes.droppable + ' control droppable1')
+      .attr("title","Drop")
       $droppable.click( (element) ->  
         $drop_handle = $(element.currentTarget)
         unless $drop_handle.hasClass("cancel") 
@@ -1068,7 +1069,7 @@ window.Deckster = (options) ->
  
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($card) ->
-      controls = "<a class='#{_css_variables.classes.remove_handle} control remove'></a>"
+      controls = "<a title='Remove' class='#{_css_variables.classes.remove_handle} control remove'></a>"
       $card.find(_css_variables.selectors.controls).append controls
 
       $card.find(_css_variables.selectors.remove_handle).click ->
