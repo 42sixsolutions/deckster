@@ -27,4 +27,8 @@ $fonts-path: "../fonts/";
 @import "partials/controls";
 
 
-
+div.shadowbox{
+	border:10px solid rgba(0,150,150,.15);
+    z-index:100;
+ 	position:absolute;
+}

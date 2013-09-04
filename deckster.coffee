@@ -158,7 +158,12 @@ _create_jump_scroll_deck = () ->
             '.deckster-deck[data-title]',
             _css_variables.classes.deck_jump_scroll
 
+jQuery.deckster = (options)->
+  console.log("Registering global callbacks")
+  _document.__deck_mgr = options
+
 window.Deckster = (options) ->
+    
   $deck = $(this)
 
   unless $deck.hasClass(_css_variables.classes.deck)
@@ -260,7 +265,7 @@ window.Deckster = (options) ->
     __dominate_card_data = d
     _identify_problem_cards()
     __deck = {}
-    _window.__deck_mgr = _window.__deck_mgr || {}
+    _document.__deck_mgr = _document.__deck_mgr || {}
 
     _loop_through_spaces p.row, p.col, (p.row + (d.row_span - 1)), (p.col + (d.col_span - 1)), (p2) ->
       __deck[p2.row] = {} unless __deck[p2.row]?
@@ -626,13 +631,29 @@ window.Deckster = (options) ->
     _on __events.inited, ($deck) ->
       _bind_drag_controls(this)
 
+    _create_box = ($card,clazz)->
+      $div =  $("<div/>")
+      .addClass(clazz)
+      .addClass("deckster-card")
+      .attr("data-col",$card.attr("data-col"))
+      .attr("data-row",$card.attr("data-row"))
+      .attr("data-col-span",$card.attr("data-col-span"))
+      .attr("data-row-span",$card.attr("data-row-span"))
+
+      return $div
+
     _bind_drag_controls = (deck) ->
       $deck.find(_css_variables.selectors.drag_handle).on "mousedown", (e) ->
         $drag_handle = $(this)
+        
         __$active_drag_card = $drag_handle.parents(_css_variables.selectors.card)
 
         __$active_drag_card.addClass('draggable')
         __$active_drag_card.css 'z-index', 1000
+
+        #Shadowbox
+        $deck.append(_create_box(__$active_drag_card,"shadowbox"))
+        __$active_drag_card.css 'z-index','1000'
 
         __active_drag_card_drag_data =
           height: __$active_drag_card.outerHeight()
@@ -652,24 +673,35 @@ window.Deckster = (options) ->
           original_left = __active_drag_card_drag_data['original_left']
           original_top = __active_drag_card_drag_data['original_top']
           
+          $shadowbox = $(".shadowbox")
+          top = parseInt $shadowbox.attr("data-row")
+          left = parseInt $shadowbox.attr("data-col")
+
           messages = []
           if new_top - original_top < -200
             __active_drag_card_drag_data['original_top'] = __active_drag_card_drag_data['original_top']-200
             _move_card(__$active_drag_card,"up")
+            top -= 1
             messages.push 'UP' 
           if new_top - original_top > 200  
             __active_drag_card_drag_data['original_top'] = __active_drag_card_drag_data['original_top']+200
             _move_card(__$active_drag_card,"down")
+            top += 1
             messages.push 'DOWN' 
           if new_left - original_left < -300
             __active_drag_card_drag_data['original_left'] = __active_drag_card_drag_data['original_left']-300
             _move_card(__$active_drag_card,"left")
+            left -= 1
             messages.push 'LEFT' 
           if new_left - original_left > 300
             __active_drag_card_drag_data['original_left']  = __active_drag_card_drag_data['original_left']+300
             _move_card(__$active_drag_card,"right")
+            left += 1
             messages.push 'RIGHT'
           console.log messages.join(' ') if messages.length > 0
+
+          $shadowbox.attr("data-col",left)
+          $shadowbox.attr("data-row",top)
 
           __$active_drag_card.offset { top: new_top, left: new_left }
 
@@ -679,6 +711,11 @@ window.Deckster = (options) ->
           __$active_drag_card.css 'top', ''
           __$active_drag_card.css 'left', ''
           __$active_drag_card.css 'z-index', ''
+          __$active_drag_card.css 'opacity','1'
+
+          $(".shadowbox").fadeOut("slow",()->
+            $(this).remove()
+          )
 
           __$active_drag_card = undefined
           __active_drag_card_drag_data = undefined
@@ -779,37 +816,42 @@ window.Deckster = (options) ->
           )
         )
         
-       _on __events.card_expanded, ($deck,$card) ->
-        deckId = $deck.data("deck-id") ? 1
-        cardId = $card.data("card-id")
-        if options["card-actions"]? and options["card-actions"]["deck-"+deckId]? and options["card-actions"]["deck-"+deckId]["card-"+cardId]? 
+      _card_changed = ($deck,$card,type) ->
+        if options["card-actions"]? and options["card-actions"][type]?
 
-         cardActions = options["card-actions"]["deck-"+deckId]["card-"+cardId]
-         if cardActions["card-expanded"]?
-           ajaxOptions = cardActions["card-expanded"]($card,$card.find(_css_variables.selectors.card_content))
-           if ajaxOptions?
-             ###
-                Abort any requests that are currently on-going.
-             ###
-             if _ajax_requests[deckId] and _ajax_requests[deckId][cardId]
-              _ajax_requests[deckId][cardId].abort()
-              delete _ajax_requests[deckId][cardId]
+         cardActions = options["card-actions"][type]
+         deckId = $deck.attr("id")
+         cardId = $card.attr("id")
+         $cardContent = $card.find(_css_variables.selectors.card_content)
+         for cardIdentity, action of cardActions
+           if "#"+$card.attr("id") == cardIdentity ||  $card.hasClass(cardIdentity[1..]) || cardIdentity == "*"
 
-             ###
-                Send the ajax request after any card animation has finished (Typically when a card is expanded its size will be changed.) For example, trying to animate and load content into the card makes both operations laggy and detract from the user experience. 
-             ###
-             $card.queue().push(()->_ajax(ajaxOptions))
+               temp = action($card,$cardContent)
+               if temp? and temp.url?
+                  ###
+                     Abort any requests that are currently on-going.
+                  ###
+                  if _ajax_requests[deckId] and _ajax_requests[deckId][cardId]
+                    _ajax_requests[deckId][cardId].abort()
+                    delete _ajax_requests[deckId][cardId]
+
+                    ###
+                      Send the ajax request after any card animation has finished (Typically when a card is expanded its size will be changed.) For example, trying to animate and load content into the card makes both operations laggy and detract from the user experience. 
+                    ###
+                  ajaxOptions = temp
+                  $card.queue().push(()->
+                    _ajax_requests[deckId][cardId] = _ajax(ajaxOptions)
+                  )
+        ### Call any globally registered callbacks ###
+        if _document.__deck_mgr? and _document.__deck_mgr["card-actions"]? and _document.__deck_mgr["card-actions"][type]?
+          _document.__deck_mgr["card-actions"][type]($card,$cardContent)
+
+
+      _on __events.card_expanded, ($deck,$card) ->
+        _card_changed($deck,$card,"card-expanded")
 
       _on __events.card_collapsed, ($deck,$card) ->
-        deckId = $deck.data("deck-id") ? 1
-        cardId = $card.data("card-id")
-        if options["card-actions"]? and options["card-actions"]["deck-"+deckId]? and options["card-actions"]["deck-"+deckId]["card-"+cardId]? 
-
-         cardActions = options["card-actions"]["deck-"+deckId]["card-"+cardId]
-         if cardActions["card-collapsed"]?
-           ajaxOptions = cardActions["card-collapsed"]($card,$card.find(_css_variables.selectors.card_content))
-           if ajaxOptions?
-            $card.queue().push(()->_ajax(ajaxOptions))
+        _card_changed($deck,$card,"card-collapsed")
 
   ###
     Setting url_enabled to true allows ajax requests to run.
@@ -836,8 +878,8 @@ window.Deckster = (options) ->
                 this.remove()
                 _remove_card_from_deck this
 
-         deckId = $card.closest(_css_variables.selectors.deck).data("deck-id") ? 1
-         cardId = d.id
+         deckId = $card.closest(_css_variables.selectors.deck).attr("id") 
+         cardId = $card.attr("id")
          ###
           Keep track of requests incase we need to abort them.
          ###
@@ -1241,7 +1283,7 @@ window.Deckster = (options) ->
     events: __events
 
 $ = jQuery
-$.fn.deckster = window.Deckster
-_window = $(this)
 
+$.fn.deckster = window.Deckster
+_document = $(document)
 
