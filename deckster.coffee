@@ -129,7 +129,7 @@ _create_nav_menu = () ->
 # Builds the list based on all elements present in the DOM that match
 # the title-selector (e.g., '.deckster-deck [data-title]' for a card
 # with a title
-_create_jump_scroll = (target_ul_selector, title_selector) ->
+_create_jump_scroll = (target_ul_selector, title_selector,classId) ->
     _nav_menu ?= _create_nav_menu()
     $item_title_ddl = $ target_ul_selector
     # Start fresh
@@ -140,7 +140,8 @@ _create_jump_scroll = (target_ul_selector, title_selector) ->
 
     $title_items.each (index, item) ->
         title = $(item).data 'title'
-        $nav_item = $  "<li><a href='#'>#{title}</a></li>"
+        elementId = $(item).attr("data-card-id") ? $(item).attr("id")
+        $nav_item = $  "<li id='#{classId+"-"+elementId}'><a href='#'>#{title}</a></li>"
         # Set up the click callback for the menu item
         $nav_item.on 'click', () ->
           _scrollToView $ item
@@ -149,11 +150,13 @@ _create_jump_scroll = (target_ul_selector, title_selector) ->
 _create_jump_scroll_card = ($deck) ->
     # Collect all data-title cards from given deck
     _create_jump_scroll("#"+$deck.attr("id")+"-nav"+" ul",
-            "#"+$deck.attr("id")+'.deckster-deck [data-title]')
+            "#"+$deck.attr("id")+'.deckster-deck [data-title]',
+             _css_variables.classes.card_jump_scroll)
 
 _create_jump_scroll_deck = () ->
     _create_jump_scroll "#{_css_variables.selectors.deck_jump_scroll} ul",
-            '.deckster-deck[data-title]'
+            '.deckster-deck[data-title]',
+            _css_variables.classes.deck_jump_scroll
 
 window.Deckster = (options) ->
   $deck = $(this)
@@ -244,8 +247,12 @@ window.Deckster = (options) ->
 
     _force_card_to_position $card, d, {row: d.row, col: d.col}
 
+    retain_callbacks = []
     for callback in __event_callbacks[__events.card_added] || []
-      break if callback($card, d) == false
+      unless callback($card, d) == false
+        retain_callbacks.push(callback)
+
+    __event_callbacks[__events.card_added] = retain_callbacks
 
   _force_card_to_position = ($card, d, p) ->
     throw 'Card expands out of bounds' if p.col + (d.col_span - 1) > __col_max
@@ -493,8 +500,6 @@ window.Deckster = (options) ->
     ###
     deckId = $deck.attr("id")
     specs = _window.__deck_mgr.lookup[deckId]
-    console.log("specs",specs)
-    console.log("layou before",_window.__deck_mgr.layout)
     new_layout = {}
   
     #copy decks up to deck being modified
@@ -503,15 +508,12 @@ window.Deckster = (options) ->
       
 
     #add current deck 
-    console.log("current deck",__deck)
     for row,cols of __deck
       new_layout[specs.row_min-1+row] = {}
       new_layout[specs.row_min-1+row][col] = deckId for col in [1..__col_max]
 
     #add back buffer
-    console.log("specs again",specs)
     newRow = __row_max+specs.row_min
-    console.log("newRow 1st",newRow)
     new_layout[newRow] = {}
     new_layout[newRow][i] = _css_variables.buffer for i in [1..__col_max]
     
@@ -534,8 +536,6 @@ window.Deckster = (options) ->
 
 
       newRow+=1
-
-    console.log("lookups!", _window.__deck_mgr.lookup)
     ###
     ###
       Update global variables.
@@ -885,7 +885,8 @@ window.Deckster = (options) ->
 
     for row_remove in [d.row..row_end]
       for col_remove in [d.col..col_end]
-        delete __deck[row_remove][col_remove]       
+        break unless __deck[row_remove]
+        delete __deck[row_remove][col_remove] if  __deck[row_remove][col_remove]==d.id
 
     return true
 
@@ -895,8 +896,9 @@ window.Deckster = (options) ->
 
     #add new entry to grid
     for row_add in [d.row..row_end]
-      if not(__deck[row_add])
+      unless __deck[row_add]
         __deck[row_add] = {}
+
       for col_add in [d.col..col_end]
         __deck[row_add][col_add] = d.id
 
@@ -916,6 +918,7 @@ window.Deckster = (options) ->
         if __row_max == row_subtractor
           __row_max -= 1
       row_subtractor -= 1  
+
 
   _fit_location = (row,col,d) ->
     row_end = d.row_span+row-1
@@ -970,28 +973,33 @@ window.Deckster = (options) ->
       $droppable = $("<a></a>").addClass(_css_variables.selectors.droppable.substring(1) + ' control droppable1')
       $droppable.click( (element) ->  
         $drop_handle = $(element.currentTarget)
-        if not $drop_handle.hasClass("cancel") 
+        unless $drop_handle.hasClass("cancel") 
           $card = $drop_handle.closest(_css_variables.selectors.card)
           $deck = $drop_handle.closest(_css_variables.selectors.deck)
           $deck.find(_css_variables.selectors.controls).children(":visible").addClass("hider").hide()
-          #Hide any other decks
-          $deck.closest(_css_variables.selectors.deck_container).nextAll().hide()
+          #Hide any other decks below the current one
+          $deck.closest(_css_variables.selectors.deck_container).nextAll(_css_variables.selectors.deck_container).hide()
           $drop_handle.show()
           $drop_handle.addClass("cancel")
           id = parseInt($card.attr('data-card-id'))
           d = __card_data_by_id[id]
           _add_placeholders $card,d
         else
-          $drop_handle.removeClass("cancel")
+          $drop_handle.removeClass("cancel")      
           $card = $drop_handle.closest(_css_variables.selectors.card)
-          $deck = $drop_handle.closest(_css_variables.selectors.deck)
+          $deck = $drop_handle.closest(_css_variables.selectors.deck)     
           $deck.find(_css_variables.selectors.controls).children(".hider").show().removeClass("hider")
+
           $deck.find(_css_variables.selectors.placeholders).remove()
           #Show all the decks again
           $(document).find(_css_variables.selectors.deck_container).show()
           #Callbacks registered for event:
+          retain_callbacks = []
           for callback in __event_callbacks[__events.card_moved] || []
-            break if callback($deck,$card) == false
+            unless callback($deck,$card) == false
+              retain_callbacks.push(callback)
+
+          __event_callbacks[__events.card_moved]  = retain_callbacks
       )
       $controls.append($droppable)
           
@@ -1018,10 +1026,17 @@ window.Deckster = (options) ->
 
     _remove_on_click = (element) ->
         $remove_handle = $(element)
-        $card = $remove_handle.parents(_css_variables.selectors.card)
-        deckId = $card.closest(_css_variables.classes.deck).attr('id')
-        id = parseInt $card.attr 'data-card-id'
+
+        $card = $remove_handle.closest(_css_variables.selectors.card)
+        cardId = parseInt $card.attr 'data-card-id'
+        d = __card_data_by_id[cardId]
+
+        $deck = $card.closest(_css_variables.selectors.deck)
+        deckId = $deck.attr("id")
+
+        ### Set Title ###
         titleText = $card.find(_css_variables.selectors.card_title).text()
+        
         unless titleText.length
           # Display the first n characters of the content
           $content = $card.find(_css_variables.selectors.card_content)
@@ -1029,30 +1044,93 @@ window.Deckster = (options) ->
           charLen = $content.text().length if $content.text().length < _css_variables.chars_to_display
           titleText = $content.text().substring(0,charLen)+"..."
 
-        dropdown = $deck.parent().find(_css_variables.selectors.removed_dropdown)
+        ### Dropdown Handle ###
+        $dropdown = $deck.closest(_css_variables.selectors.deck_container).find(_css_variables.selectors.removed_dropdown)
 
-        if dropdown.is(":hidden")
-          dropdown.show()
+        if $dropdown.is(":hidden")
+          $dropdown.show()
 
         # Add to dropdown menu
-        dropdown.find('ul').append(_get_removed_card_li_tag(id, titleText)).appendTo(dropdown)
-          
-        # Define onclick behavior for the 'Add' button in the 'Removed Cards' dropdown
-        dropdown.find('#'+_css_variables.classes.removed_card_button + '-' + id).click ->
-          _add_back_card(id)
+        $dropdown.find('ul').append(_get_removed_card_li_tag(cardId, titleText))
 
-        # Define onclick behavior for the 'Add to bottom' button in the 'Removed Cards' dropdown
-        dropdown.find('#' + _css_variables.classes.add_card_to_bottom_button + '-' + id).click ->
-          _add_back_card_to_bottom(id)
+        ### 
+        Event is currently unpredictable, hold off for now.
+        Add card back to orig position (moving other cards if necessary)
+        $dropdown.find('#'+_css_variables.classes.removed_card_button + '-' + cardId).click ->
+          _add_back_card(cardId)
+        ###
 
-        # Remove this card from the deck
-        _remove_card_from_deck $card
+        ### Add card to open position ###
+        $dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + cardId).click ->
+          _move_to_open_position(cardId,$dropdown)
 
-        #Detach card from deck
+        ### Detach card from deck ###
         $card.detach()
 
-        _create_jump_scroll_card($deck)
-        _apply_deck()
+        ### Remove this card from the __deck variable ###
+        _remove_old_position $card, d
+
+        #Remove card from "Jump To" dropdown
+        $dropdown.siblings("#"+deckId+"-nav").find("#"+_css_variables.classes.card_jump_scroll+"-"+cardId).remove()
+
+        #Remvoe Empty Rows in Deck
+        _clean_up_deck()
+      
+    _move_to_open_position= (cardId,$dropdown)->
+      $card = __cards_by_id[cardId] 
+      d = __card_data_by_id[cardId]
+
+      #Add back card to HTML page
+      $deck.append($card.hide())
+
+      _on __events.card_moved, ($deck,$card)->      
+        ###
+          Show card once any transition animations are complete (which are called when a user selects a new spot.)
+        ###
+        $card.queue().push(()->
+          $card.show()
+        )
+
+        #Add card to "Jump To" Dropdown
+        _add_card_to_jump($card,$dropdown)
+        
+        #Only run this callback once.
+        return false
+
+      #Delete card from "Removed Dropdown"
+      _delete_card_from_removed(d.id,$dropdown)
+
+      #Show possible spots to move. 
+      $card
+      .find(_css_variables.selectors.droppable)
+      .trigger("click")
+
+    _delete_card_from_removed = (cardId,$dropdown)->
+      #Remove from the "Removed Cards" dropdown
+      $dropdown
+      .find('#'+ _css_variables.classes.removed_card_li + '-' + cardId)
+      .remove()
+
+      # Hide the "Removed Cards" dropdown if empty
+      if $dropdown.find('ul').children().size() == 0  
+        $dropdown.hide() 
+
+    _add_card_to_jump = ($card,$dropdown)->
+      #Add Card back to "Jump To" dropdown
+      if( $card.data("title")? )
+
+        title = $card.data 'title'
+        elementId = $card.attr("data-card-id")
+        classId = _css_variables.classes.card_jump_scroll
+        $nav_item = $  "<li id='#{classId+"-"+elementId}'><a href='#'>#{title}</a></li>"
+        
+        # Set up the click callback for the menu item
+        $nav_item.on 'click', () ->
+          _scrollToView $card
+
+        $dropdown
+        .siblings(_css_variables.selectors.card_jump_scroll)
+        .find('ul').append $nav_item
 
     ###
     # Removes the card from the __deck variable so that it doesn't take up space once removed
@@ -1075,15 +1153,14 @@ window.Deckster = (options) ->
     #   and an 'Add' button.
     ###
     _get_removed_card_li_tag = (id, titleText) ->
-      "<li id='#{_css_variables.classes.removed_card_li}-" + id + 
-        "' class='#{_css_variables.classes.removed_card_li}'>" + titleText + 
-        "<a id='#{_css_variables.classes.removed_card_button}-" + id + 
-        "' ><img src='./public/images/plus.png' 
-                 class='#{_css_variables.classes.removed_card_button}' ></a>" + 
-        "<button id='#{_css_variables.classes.add_card_to_bottom_button}-" + id + 
-        "' class='btn control add'>Add to bottom</button>" +
-      "</li>"
-
+      return """
+        <li id=#{_css_variables.classes.removed_card_li}-#{id}
+        class=#{_css_variables.classes.removed_card_li}>
+        <a id=#{_css_variables.classes.removed_card_button}-#{id}>
+        #{titleText}
+        </a>
+        </li>
+      """
     ###
     # This is the callback when the 'Add' button is clicked for the card from the 'Removed Cards' dropdown
     ###
@@ -1101,7 +1178,6 @@ window.Deckster = (options) ->
     _add_back_card_to_bottom = (cardId) ->
       return unless cardId?
         
-      console.log "__row_max: " + __row_max
       $card = __cards_by_id[cardId] 
       d = __card_data_by_id[cardId]
 
