@@ -738,13 +738,20 @@ window.Deckster = (options) ->
                  <a class='#{_css_variables.classes.expand_handle} control expand'></a>
                  <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
-      $deck.find(_css_variables.selectors.controls).append controls
+      $deck.find(_css_variables.selectors.controls).each((index)->
+        $card = $(this).closest(_css_variables.selectors.card)
+        ###Hide Expand Control if necessary ###
+        if (parseInt($card.data("col-expand")) > 0 or parseInt($card.data("row-expand")) > 0)  
+          $(this).append controls
+      )
 
       $deck.find(_css_variables.selectors.expand_handle).click ->
         _expand_on_click(this)
 
       $deck.find(_css_variables.selectors.collapse_handle).click ->
         _collapse_on_click(this)
+
+
 
     _expand_on_click = (element) ->
         $expand_handle = $(element)
@@ -1051,13 +1058,14 @@ window.Deckster = (options) ->
         title = $card.data "title"
 
         unless title? and !$card.find(_css_variables.selectors.card_title).text()
-              return
+          return
+        
         $title_div = $('<div>')
               .text(title)
               .addClass(_css_variables.classes.card_title)
         $card.prepend $title_div
 
-  # Deckster Remove
+ 
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($card) ->
       controls = "<a class='#{_css_variables.classes.remove_handle} control remove'></a>"
