@@ -8,8 +8,8 @@ build: ${MAIN_CSS} deckster.js
 ${MAIN_CSS}: ${CSS_DIR}/deckster.scss ${CSS_DIR}/partials/*.scss
 	node-sass $< $@
 
-deckster.js: deckster.coffee
-	coffee -c deckster.coffee
+deckster.js: deckster/decksterGlobal.coffee
+	coffee -j deckster.js -c deckster/*.coffee
 
 serve: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 	node server.js
