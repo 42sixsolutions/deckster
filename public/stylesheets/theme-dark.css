@@ -170,8 +170,9 @@ body {
 
 .placeholders {
   background: rgba(255, 255, 255, 0.25);
-  box-shadow: none;
-  position: relative; }
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none; }
   .placeholders:before {
     content: '';
     height: 0;

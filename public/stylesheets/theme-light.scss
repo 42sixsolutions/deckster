@@ -2,6 +2,7 @@ $fonts-path: "../fonts/";
 
 @import "partials/mixins";
 @import "partials/fonts";
+@import "partials/reset";
 
 $bodybg: 		#eeeeee;
 $cardbg: 		#ffffff;
@@ -132,8 +133,9 @@ body {
 
 .placeholders {
   background: rgba(255,255,255,0.25);
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
   box-shadow: none;
-  position: relative;
   
   &:before {
     content: '';
