@@ -3,3 +3,6 @@ deckster.css
 deckster.js
 *.zip
 npm-debug.log
+.idea
+.idea/
+.idea/*
