@@ -5,6 +5,7 @@ _css_variables =
     card: '.deckster-card'
     card_title: '.deckster-card-title'
     controls: '.deckster-controls'
+    deck_controls: '.deck-controls'
     drag_handle: '.deckster-drag-handle'
     expand_handle: '.deckster-expand-handle'
     collapse_handle: '.deckster-collapse-handle'
@@ -176,6 +177,7 @@ window.Deckster = (options) ->
     url_enabled:true
     removable: true
     droppable: true
+    persist: true
 
   options = $.extend {}, __default_options, options
 
@@ -195,7 +197,7 @@ window.Deckster = (options) ->
   __set_option 'removable'
   __set_option 'url-enabled', 'url_enabled'
   __set_option 'droppable'
-
+  __set_option 'persist'
   ###
      Init Dragging options
   ###   
@@ -431,6 +433,7 @@ window.Deckster = (options) ->
     $deck_wrapper = $(_init_deck_wrapper($deck))
     $deck.replaceWith($deck_wrapper)
     $deck_wrapper.append $deck
+
     # Hide the "Removed Cards" dropdown if it doesn't have any cards
     $dropdown = $deck_wrapper.find(_css_variables.selectors.removed_dropdown)
     $dropdown.hide() if $dropdown.find('ul').children().size() == 0
@@ -466,6 +469,7 @@ window.Deckster = (options) ->
              <ul class="dropdown-menu pull-right"></ul>
            </div>
     """
+
 
   init = ->
     __col_max = $deck.data 'col-max'
@@ -619,13 +623,44 @@ window.Deckster = (options) ->
     #console.log("done init window layout",_window.__deck_mgr.layout)
     return true
 
+  #Persist Deck
+  if options['persist'] && options['persist'] == true
+
+    _on __events.inited, ($deck) ->
+      $deck.closest(_css_variables.selectors.deck_container)
+      .find(_css_variables.selectors.deck_controls).append(_init_persistence())
+      $("#save").bind("click",_saveDeck)
+      $("#load").bind("click",_loadDeck)
+
+    _init_persistence = ()->
+      return """
+        <span>
+          <button id = "save">Save</button>
+          <button id = "load">Load</button>
+        </span>
+      """
+    _saveDeck = (event) ->
+      if typeof(Storage) != undefined 
+        console.log("save")
+        localStorage.deck = JSON.stringify(__deck)
+      else
+        alert("This browser does not apear to support local storage.")
+
+    _loadDeck = (event)->
+      if typeof(Storage) != undefined 
+        console.log("loading")
+        __deck = JSON.parse(localStorage.deck)
+        _apply_deck()
+      else
+        alert("This browser does not support local storage")
+
   # Deckster Drag
   if options['draggable'] && options['draggable'] == true
     __$active_drag_card = undefined
     __active_drag_card_drag_data = undefined
 
     _on __events.inited, ($deck) ->
-      controls = "<a class='#{_css_variables.classes.drag_handle} control drag'></a>"
+      controls = "<a title='Drag' class='#{_css_variables.classes.drag_handle} control drag'></a>"
       $deck.find(_css_variables.selectors.controls).append controls
 
     _on __events.inited, ($deck) ->
@@ -735,16 +770,22 @@ window.Deckster = (options) ->
   if options['expandable'] && options['expandable'] == true
     _on __events.inited, ($deck) ->
       controls = """
-                 <a class='#{_css_variables.classes.expand_handle} control expand'></a>
-                 <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
+                 <a title="Expand" class='#{_css_variables.classes.expand_handle} control expand'></a>
+                 <a title="Collapse" class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
-      $deck.find(_css_variables.selectors.controls).append controls
+      $deck.find(_css_variables.selectors.controls).each((index)->
+        $card = $(this).closest(_css_variables.selectors.card)
+        ###Hide Expand Control if necessary ###
+        if (parseInt($card.data("col-expand")) > 0 or parseInt($card.data("row-expand")) > 0)  
+          $(this).append controls
+      )
 
       $deck.find(_css_variables.selectors.expand_handle).click ->
         _expand_on_click(this)
 
       $deck.find(_css_variables.selectors.collapse_handle).click ->
         _collapse_on_click(this)
+ 
 
     _expand_on_click = (element) ->
         $expand_handle = $(element)
@@ -1012,7 +1053,9 @@ window.Deckster = (options) ->
   if options.droppable == true
     _on __events.inited, ($card,d) ->
       $controls = $card.find(_css_variables.selectors.controls)
-      $droppable = $("<a></a>").addClass(_css_variables.selectors.droppable.substring(1) + ' control droppable1')
+      $droppable = $("<a></a>")
+      .addClass(_css_variables.classes.droppable + ' control droppable1')
+      .attr("title","Drop")
       $droppable.click( (element) ->  
         $drop_handle = $(element.currentTarget)
         unless $drop_handle.hasClass("cancel") 
@@ -1051,16 +1094,17 @@ window.Deckster = (options) ->
         title = $card.data "title"
 
         unless title? and !$card.find(_css_variables.selectors.card_title).text()
-              return
+          return
+        
         $title_div = $('<div>')
               .text(title)
               .addClass(_css_variables.classes.card_title)
         $card.prepend $title_div
 
-  # Deckster Remove
+ 
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($card) ->
-      controls = "<a class='#{_css_variables.classes.remove_handle} control remove'></a>"
+      controls = "<a title='Remove' class='#{_css_variables.classes.remove_handle} control remove'></a>"
       $card.find(_css_variables.selectors.controls).append controls
 
       $card.find(_css_variables.selectors.remove_handle).click ->
