@@ -1,10 +1,15 @@
   if options['expandable'] && options['expandable'] == true
-    _on __events.inited, ($deck) ->
+    _on __events.inited, ($deck, cards) ->
       controls = """
                  <a class='#{_css_variables.classes.expand_handle} control expand'></a>
                  <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
-      $deck.find(_css_variables.selectors.controls).append controls
+      cards.each ->
+        $card = $(this)
+        row_expand = $card.attr 'data-row-expand'
+        col_expand = $card.attr 'data-col-expand'
+
+        $card.find(_css_variables.selectors.controls).append controls if row_expand? || col_expand?
 
       $deck.find(_css_variables.selectors.expand_handle).click ->
         _expand_on_click(this)

@@ -250,7 +250,7 @@
     _apply_deck()
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
     for callback in __event_callbacks[__events.inited] || []
-      break if callback($deck) == false
+      break if callback($deck, cards) == false
     _create_jump_scroll_card $deck
     _create_jump_scroll_deck 0xDEADBEEF
 
