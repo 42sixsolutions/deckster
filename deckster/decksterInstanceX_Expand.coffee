@@ -1,8 +1,8 @@
   if options['expandable'] && options['expandable'] == true
     _on __events.inited, ($deck, cards) ->
       controls = """
-                 <a class='#{_css_variables.classes.expand_handle} control expand'></a>
-                 <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
+                 <a title="Expand" class='#{_css_variables.classes.expand_handle} control expand'></a>
+                 <a title="Collapse" class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
       cards.each ->
         $card = $(this)

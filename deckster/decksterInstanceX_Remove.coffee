@@ -1,6 +1,6 @@
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($card) ->
-      controls = "<a class='#{_css_variables.classes.remove_handle} control remove'></a>"
+      controls = "<a title='Remove' class='#{_css_variables.classes.remove_handle} control remove'></a>"
       $card.find(_css_variables.selectors.controls).append controls
 
       $card.find(_css_variables.selectors.remove_handle).click ->

@@ -121,7 +121,8 @@
   if options.droppable == true
     _on __events.inited, ($card, d) ->
       $controls = $card.find(_css_variables.selectors.controls)
-      $droppable = $("<a></a>").addClass(_css_variables.selectors.droppable.substring(1) + ' control droppable1')
+      $droppable = $("<a title='Drop' class='#{_css_variables.classes.droppable} control droppable1'></a>")
+
       $droppable.click((element) ->
         $drop_handle = $(element.currentTarget)
         unless $drop_handle.hasClass("cancel")

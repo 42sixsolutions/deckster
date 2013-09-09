@@ -3,7 +3,7 @@
     __active_drag_card_drag_data = undefined
 
     _on __events.inited, ($deck) ->
-      controls = "<a class='#{_css_variables.classes.drag_handle} control drag'></a>"
+      controls = "<a title='Drag' class='#{_css_variables.classes.drag_handle} control drag'></a>"
       $deck.find(_css_variables.selectors.controls).append controls
 
     _on __events.inited, ($deck) ->
