@@ -1,4 +1,4 @@
-  init()
+  _loadRemoteDeck()
 
   deckster =
     deck: __deck

@@ -20,7 +20,8 @@ _css_variables =
     droppable: '.droppable'
     deck_title: '.deckster-title'
     deck_container: '.deckster-deck-container'
-
+    deck_controls: '.deck-controls'
+    
   selector_functions:
     card_expanded: (option)->
       '[data-expanded=' + option + ']'

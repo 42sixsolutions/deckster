@@ -5,7 +5,8 @@
     url_enabled: true
     removable: true
     droppable: true
-
+    persist:true
+    
   options = $.extend {}, __default_options, options
 
   ###
