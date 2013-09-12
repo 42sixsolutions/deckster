@@ -14,6 +14,12 @@ deckster.js: deckster/*.coffee
 serve: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 	node server.js
 
+rest: 
+	node express_example/app.js
+
+database: 
+	./mongodb/bin/mongod
+
 zip: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 	zip deckster-0.0.1.zip deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 

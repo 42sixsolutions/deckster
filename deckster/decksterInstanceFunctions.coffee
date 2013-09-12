@@ -4,8 +4,28 @@
 
   _add_card = ($card, d) ->
     throw 'Card is too wide' if d.col_span > __col_max
+    
+    ### Note:
+      * data-skip-force: cards that are being loaded from a saved deck and don't need to be positioned via
+      _force_card_to_position(..)
+      * data-is-removed: cards that have been removed and don't need to be position/added to __deck
+    ###
+    if $card.attr("data-skip-force")=="true" and $card.attr("data-is-removed")!="true"
+      ### 
+        if loading a saved deck, just set the new position in __deck and run callbacks so cards don't
+          get repositioned with _force_card_to_position(..). 
+      ###
+      _set_new_position($card, d) 
+    else if $card.attr("data-skip-force")!="true" and $card.attr("data-is-removed")!="true"
+      ### If we're not loading a saved deck, run this function (per usual) ###
+      _force_card_to_position $card, d, {row: d.row, col: d.col}      
+    ### else skip adding card to __deck and run callbacks ###
 
-    _force_card_to_position $card, d, {row: d.row, col: d.col}
+    ### Removed Cards: Since these cards will not be added to __deck 
+        and hence its 'data-card-id' will not be updated/initialized in _apply_deck(),
+        I will need to update its data-card-id here 
+    ###    
+    $card.attr 'data-card-id', d.id if $card.attr("data-is-removed")=="true"
 
     retain_callbacks = []
     for callback in __event_callbacks[__events.card_added] || []

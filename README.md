@@ -19,8 +19,10 @@ Samples can be found here.[http://42sixsolutions.github.io/deckster/](http://42s
 
 1. Install the smelting tools: node-sass and coffee-script. `npm install -g node-sass coffee-script`
 2. Smelt the source into finely crafted JavaScript and CSS. `make`
-3. Launch the demo server. `make serve`
-4. View the demo. `open http://localhost:3030/`
+3. Launch Demo Database. `make database`
+4. Launch REST service. `make rest`
+5. Launch the demo server. `make serve`
+6. View the demo. `open http://localhost:3030/`
 
 # DEPLOY
 

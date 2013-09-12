@@ -17,12 +17,23 @@
         persistance = _document.__deck_mgr.persistance
         ### Save DECK ###
         deckId = $deck.attr("id")
-        $deckClone = $deck.clone(true)
+        $deckClone = $deck.clone()
 
-        $deckClone.find(_css_variables.selectors.controls).remove()
-        $deckClone.find(_css_variables.selectors.title).remove()
-        $deckClone.find(_css_variables.selectors.card_content+"[data-url]").html("")
-        
+        $deckClone.find(_css_variables.selectors.controls).each(()->          
+          $controls = $(this)
+          $expandHandle = $controls.find(_css_variables.selectors.expand_handle)
+          $card = $controls.closest(_css_variables.selectors.card) 
+          if $expandHandle.css("display")=="none"
+            $card.attr("data-is-expanded","true")
+
+          $card.find(_css_variables.selectors.controls).remove()
+          $card.find(_css_variables.selectors.title).remove()
+          $card.attr("data-skip-force","true")
+
+          if $card.attr("[data-url]")?
+            $card.attr("[data-url]").html("")          
+        )
+
         ### Save Removed Cards ###
         $dropdown = $deck.closest(_css_variables.selectors.deck_container).find(_css_variables.selectors.removed_dropdown)
         $dropdown.find("a").each((index)->
@@ -30,16 +41,21 @@
           temp = $link.attr("id").indexOf(_css_variables.classes.removed_card_button)+
             _css_variables.classes.removed_card_button.length+1
           cardId = parseInt $link.attr("id").substring(temp)
-          $card = __cards_by_id[cardId].clone().attr("data-is-removed","true")
+          $card = __cards_by_id[cardId].clone()
+
+          ### Take Note: Card State (expanded/collapsed) ###
+          $card.attr("data-is-expanded","true") if $card.find(_css_variables.selectors.expand_handle).css("display") == "none"
+          ### Take Note: Removed Card ###
+          $card.attr("data-is-removed","true")
+          ### Remove content this regenerated when deck is loaded ###
           $card.find(_css_variables.selectors.controls).remove()
           $card.find(_css_variables.selectors.title).remove()
           $card.find(_css_variables.selectors.card_content+"[data-url]").html("")
-
+  
           $deckClone.append($card)
         )
         deckClone = $deckClone[0].outerHTML
         deckId = $deck.attr("id")
-        
         ### Create REST call ###
         if persistance?
             url = 
@@ -55,7 +71,7 @@
             url.data = {}
             url.data[deckId] = {}
             url.data[deckId].layout = deckClone
-            console.log("URL UNSTRINGIFYED",url)
+
             _ajax(url)
 
         #else
@@ -70,8 +86,6 @@
         __col_max = 0
         __row_max = 0
       
-      _add_callback = ($card)->
-
       _loadRemoteDeck = ()->
         #unless _localMgr("load":false) 
           persistance = _document.__deck_mgr.persistance
@@ -97,31 +111,34 @@
                   console.log("Replacing Deck")
                   $deck.replaceWith(layout)
 
-                console.log(str)            
+                         
                 _reset_deck()
                 ### Set new deck handle ###
                 $deck = $("#"+deckId)   
                 __is_saved = true
                 ### INIT ###
                 init()
-                idsToRemove = []
                 
-                $.each($deck.find("[data-is-removed='true'] "+_css_variables.selectors.remove_handle),
-                  (index)->
+                $("[data-is-expanded='true'] "+_css_variables.selectors.expand_handle).each(()->
+                  $(this).closest(_css_variables.selectors.card).removeAttr("data-is-expanded")
+                  $(this).hide()
+                  $(this).siblings(_css_variables.selectors.collapse_handle).show()
+                )
+
+                $("[data-is-removed='true'] "+_css_variables.selectors.remove_handle).each(()->
+                    console.log "card-id",$(this).closest(_css_variables.selectors.card).data("card-id")
+                    $(this).closest(_css_variables.selectors.card).removeAttr("data-is-removed")
                     $(this).trigger('click')
-                    idsToRemove
-                    .push(parseInt $(this).closest(_css_variables.selectors.card).data("card-id"))
                 )
-                
-                $.each(idsToRemove,(index)->
-                  __cards_by_id[idsToRemove[index]].removeAttr("data-is-removed")
-                )
-                
+
+                $("[data-skip-force='true']").removeAttr('data-skip-force')
+
+
               #_localMgr("save":true)
+              console.log(str) 
 
             "error":(response,status,exception)->
-              str = "Error Loading Deck"
-              console.log(str)
+              console.log "Error Loading Deck"
               init()
               #_localMgr("save":true)
 
