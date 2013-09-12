@@ -120,9 +120,13 @@
                 init()
                 
                 $("[data-is-expanded='true'] "+_css_variables.selectors.expand_handle).each(()->
-                  $(this).closest(_css_variables.selectors.card).removeAttr("data-is-expanded")
+                  $card = $(this).closest(_css_variables.selectors.card)
+                  $deck = $(this).closest(_css_variables.selectors.deck) 
+                  $card.removeAttr("data-is-expanded")
                   $(this).hide()
                   $(this).siblings(_css_variables.selectors.collapse_handle).show()
+                  for callback in __event_callbacks[__events.card_expanded] || []
+                    break if callback($deck, $card) == false
                 )
 
                 $("[data-is-removed='true'] "+_css_variables.selectors.remove_handle).each(()->
