@@ -1,34 +1,15 @@
-  _placeholder_div = ($card, _d, settings) ->
-    width = $card.outerWidth()
-    height = $card.outerHeight()
+  _placeholder_div = ($card, _d) ->
+
     $placeholder =
       $("<div>")
-      .addClass("placeholders")
-      .addClass(_css_variables.selectors.card.substring(1))
+      .addClass(_css_variables.classes.placeholders)
+      .addClass(_css_variables.classes.card)
       .attr("data-col", _d["col"])
       .attr("data-row", _d["row"])
       .attr("data-col-span", _d.col_span)
       .attr("data-row-span", _d.row_span)
-      #.css("background-color","rgb("+settings.r+","+settings.g+","+settings.b+")")
-      .css("z-index", settings.zIndex)
     $card.closest(_css_variables.selectors.deck).append($placeholder)
-    $placeholder.click((action) ->
-      _remove_old_position $card, __card_data_by_id[_d.id]
-      $selectedCard = $(action.currentTarget)
-      #$card.css("z-index",0)
-      __card_data_by_id[_d.id] = _d
-      _set_new_position $card, _d
-      _apply_transition $card, _d
-      $card.find(_css_variables.selectors.droppable).trigger("click")
-    )
-    $placeholder.mouseenter((action) ->
-      $(this).data("prev-z-index", $(this).css("z-index"))
-      $(this).css("z-index", 1000)
-    )
-    $placeholder.mouseleave((action) ->
-      $(this).css("z-index", $(this).data("prev-z-index"))
-    )
-    return $card
+    return $placeholder
 
   _remove_old_position = ($card, d) ->
     row_end = d.row + d.row_span - 1
@@ -85,11 +66,26 @@
 
     return true
 
+  _placeholder_callbacks = ($placeholder,_d)->
+    $placeholder.click((action) ->
+      $card = __cards_by_id[_d.id]
+      _remove_old_position $card, __card_data_by_id[_d.id]
+      $selectedCard = $(action.currentTarget)
+      __card_data_by_id[_d.id] = _d
+      _set_new_position $card, _d
+      _apply_transition $card, _d
+      $card.find(_css_variables.selectors.droppable).trigger("click")
+    )
+    
+    $placeholder.mouseenter((action) ->
+      $(this).css("z-index", 3000)
+    )
+    
+    $placeholder.mouseleave((action) ->
+      $(this).css("z-index", "")
+    )
+
   _add_placeholders = ($card, d)->
-    zIndex = 1
-    r = 0
-    g = 25
-    b = 50
     for row in [1..(__row_max + 1)] #search over all rows, including last.
       for col in [1..__col_max] #search over all columns.
         if _fit_location(row, col, d)
@@ -101,17 +97,9 @@
             "row_span": d.row_span
             "col_span": d.col_span
 
-          _placeholder_div($card, new_d,
-            "zIndez": zIndex
-            "r": r
-            "g": g
-            "b": b)
-
-          zIndex += 1
-          r = ((r + 0) % 200)
-          g = ((g + 50) % 150)
-          b = ((b + 50) % 250)
-
+          $placeholder = _placeholder_div($card, new_d)
+          _placeholder_callbacks($placeholder,new_d) 
+    
     return -1;
 
   ###

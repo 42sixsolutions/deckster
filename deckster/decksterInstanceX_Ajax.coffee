@@ -11,12 +11,13 @@
           context: $card
           success: (data, status, response) ->
             if (!!data.trim()) # URL content is not empty
-              $controls = this.find(_css_variables.selectors.controls).clone true
-              $title = this.find(_css_variables.selectors.card_title)
-              this.html ""
-              this.append $title
-              this.append $controls
-              this.append '<div class="content">' + data + '</div>'
+              #$controls = this.find(_css_variables.selectors.controls).clone true
+              #$title = this.find(_css_variables.selectors.card_title)
+              #this.html ""
+              #this.append $title
+              #this.append $controls
+              #this.append '<div class="content">' + data + '</div>'
+              this.find(_css_variables.selectors.card_content).html(data)
             else # Remove the card if url content is empty & div text content is empty
               divText = this.find(_css_variables.selectors.card_content).text()
               if (!divText.trim() and $deck.data('remove-empty') == true)

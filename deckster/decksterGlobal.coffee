@@ -21,7 +21,9 @@ _css_variables =
     deck_title: '.deckster-title'
     deck_container: '.deckster-deck-container'
     deck_controls: '.deck-controls'
-    
+    placeholders: '.placeholder'
+    drag_mod_handle: '.deckster-drag-mod-handle'
+  
   selector_functions:
     card_expanded: (option)->
       '[data-expanded=' + option + ']'
