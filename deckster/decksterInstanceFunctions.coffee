@@ -2,7 +2,7 @@
     __event_callbacks[event] = [] unless __event_callbacks[event]?
     __event_callbacks[event].push callback
 
-  _add_card = ($card, d) ->
+  _add_card = ($card, d, remainStatic) ->
     throw 'Card is too wide' if d.col_span > __col_max
     
     ### Note:
@@ -10,7 +10,7 @@
       _force_card_to_position(..)
       * data-is-removed: cards that have been removed and don't need to be position/added to __deck
     ###
-    if $card.attr("data-skip-force")=="true" and $card.attr("data-is-removed")!="true"
+    if ($card.attr("data-skip-force")=="true" and $card.attr("data-is-removed")!="true") or remainStatic
       ### 
         if loading a saved deck, just set the new position in __deck and run callbacks so cards don't
           get repositioned with _force_card_to_position(..). 
@@ -240,11 +240,26 @@
            </div>
            """
 
+  _layout_check = ($cards)->
+
+    result = true
+    $cards.each((index)->
+      $card = $(this)
+      unless $card.attr("data-row")? && $card.attr("data-col")?
+        console.log "card does not have row and col specified"
+        result = false
+        return false
+    )
+    console.log "all cards have row, col specified", result
+    return result
+
   init = ->
     __col_max = $deck.data 'col-max'
     _init_deck_header($deck)
 
-    cards = $deck.children(_css_variables.selectors.card)
+    cards = $deck.children(_css_variables.selectors.card)  
+    remainStatic = _layout_check(cards)
+
     cards.each ->
       $card = $(this)
 
@@ -260,7 +275,7 @@
 
         __cards_by_id[d.id] = $card
         __card_data_by_id[d.id] = d
-        _add_card($card, d)
+        _add_card($card, d,remainStatic)
 
       $cheight = $(this).height()
       $theight = $('.deckster-card-title', this).height() + 40
