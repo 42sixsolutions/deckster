@@ -44,6 +44,7 @@
 
       ### Add card to open position ###
       $dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + cardId).click ->
+        __card_data_by_id[cardId].isRemoved = false
         _move_to_open_position(cardId, $dropdown)
 
       ### Detach card from deck ###
@@ -51,6 +52,7 @@
 
       ### Remove this card from the __deck variable ###
       _remove_old_position $card, d
+      d.isRemoved = true
 
       #Remove card from "Jump To" dropdown
       $dropdown.siblings("#" + deckId + "-nav").find("#" + _css_variables.classes.card_jump_scroll + "-" + cardId).remove()

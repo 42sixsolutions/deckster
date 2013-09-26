@@ -94,7 +94,7 @@
             "type":"GET"
             "success":(data,status,response)->
               str  = "No Deck Saved"
-              if(data._id == "undefined")
+              if(data._id == "undefined" or data._id == undefined)
                 __is_saved = false
                 _reset_deck()
                 init()

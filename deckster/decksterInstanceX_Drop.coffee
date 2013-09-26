@@ -22,31 +22,33 @@
 
     return true
 
-  _set_new_position = ($card, d) ->
+  _set_new_position = ($card, d,settings) ->
+    deck = if settings and settings.deck then settings.deck else __deck
     row_end = d.row_span + d.row - 1
     col_end = d.col_span + d.col - 1
 
     #add new entry to grid
     for row_add in [d.row..row_end]
-      unless __deck[row_add]
-        __deck[row_add] = {}
+      unless deck[row_add]
+        deck[row_add] = {}
 
       for col_add in [d.col..col_end]
-        __deck[row_add][col_add] = d.id
+        deck[row_add][col_add] = d.id
 
     if row_end > __row_max
       __row_max = row_end
 
-    _clean_up_deck()
+    _clean_up_deck("deck":deck)
 
     return true
 
-  _clean_up_deck = ()->
+  _clean_up_deck = (settings)->
+    deck = if settings and settings.deck then settings.deck else __deck
     #Clean up empty rows
     row_subtractor = __row_max
     while row_subtractor > 0
-      if $.isEmptyObject(__deck[row_subtractor])
-        delete __deck[row_subtractor]
+      if $.isEmptyObject(deck[row_subtractor])
+        delete deck[row_subtractor]
         if __row_max == row_subtractor
           __row_max -= 1
       row_subtractor -= 1
@@ -56,7 +58,7 @@
     row_end = d.row_span + row - 1
     col_end = d.col_span + col - 1
 
-    if col_end > __col_max
+    if col_end > __col_max or row_end < 1  
       return false
 
     for row_test in [row..row_end]
