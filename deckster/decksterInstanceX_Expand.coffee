@@ -140,18 +140,22 @@
 
       row_span = d.row_span
       o_row_span  = d['original-row-span'] 
-      row = d.row
+
 
       ### Can we move this card up any further ? ###
-      row_test = row-1
-      shifts = 0
-      while _fit_location(row_test,o_col,
+      #row_test = row-1
+      #shifts = _can_move_up(o_col,o_col_end,row-1)
+      row = d.row #- shifts
+
+      ###
+      while _can_move_up(row_test,o_col,
         "row_span":o_row_span
         "col_span":o_col_span,
         "ignoreId",id)
         row = row_test
         row_test -= 1
         shifts += 1
+      ###
 
       ### Set back origional values ###    
       d.col = o_col
@@ -164,13 +168,13 @@
 
       ### Set the new position/size of card ###
       _set_new_position($card,d)
-
+      ###
       for c in [col..__col_max]
         if c >= o_col and c <= o_col_end
           moving_info["col_moves"][c] = row_span-o_row_span+(shifts)
 
         else if c >= col and c <= col_end
-          ### Are there empty spaces above ? ###
+           
           vertical_empty_spaces = 0
           row_test = row-1
           while row_test > 0 and __deck[row_test][c] == undefined 
@@ -179,25 +183,25 @@
 
           moving_info["col_moves"][c] = row_span+vertical_empty_spaces
         else
-          ### Are there empty spaces above ? ###
+          
           vertical_empty_spaces = 0 
           row_test = row
           while row_test <= __row_max and __deck[row_test][c] == undefined 
             vertical_empty_spaces += 1
             row_test +=1
 
-          ### Are there empty spaces below ? ###
+           
           row_test = row-1
           while row_test > 0 and __deck[row_test][c] == undefined
             vertical_empty_spaces += 1
             row_test -= 1
 
           moving_info["col_moves"][c] = vertical_empty_spaces
-
+      ###
       ### Moving Metadata ###
-      moving_info["col"] = col
+      moving_info["col"] = 1
       moving_info["col_end"] = __col_max
-      moving_info["row"] = row+shifts+row_span
+      moving_info["row"] = row #row+shifts+row_span
       moving_info["id"] = d.id
 
       console.log "row" , row
@@ -215,24 +219,41 @@
 
       return min
 
+    _can_move_up = (col,col_end,row)->
+      spaces = 0
+      while row > 0 
+        for c in [col..col_end] 
+          if __deck[row] and __deck[row][c] 
+            return spaces
+
+        spaces += 1
+        row -= 1
+
+      return spaces
+
+
     _move_up = (info)->
 
       for row in [info.row..__row_max]
         for col in [info.col..info.col_end]
 
-          if __deck[row] and __deck[row][col] and __deck[row][col] != info.id 
+          if __deck[row] and __deck[row][col]
             id = __deck[row][col]
             if __cards_needing_resolved_by_id[id] == undefined         
                 d = __card_data_by_id[id]
-                f_v_spaces = free_vertical_spaces(info,d)
-              while f_v_spaces > 0 and f_v_spaces != Number.MAX_VALUE
-                if  _fit_location(d.row-f_v_spaces,d.col,d,"ignoreId":id)
+                f_v_spaces = _can_move_up(d.col,d.col+d.col_span-1,d.row-1)#free_vertical_spaces(info,d)
+                #while f_v_spaces > 0 and f_v_spaces != Number.MAX_VALUE
+                #if _can_move_up(d.col,d.col+d.col_span-1,d.row) > 0#_fit_location(d.row-f_v_spaces,d.col,d,"ignoreId":id)
+                console.log "free spaces "+id, f_v_spaces
+                console.log "deck!!",__deck
+                if f_v_spaces > 0 
                   $card = __cards_by_id[id] 
                   _remove_old_position($card,d)
                   d.row -= f_v_spaces
                   _set_new_position($card,d)
-                else
-                  f_v_spaces -= 1
+                #  break;
+                #else
+                #  f_v_spaces -= 1
 
             
             __cards_needing_resolved_by_id[id]=true
