@@ -120,28 +120,55 @@
       if _document.__deck_mgr? and _document.__deck_mgr["card-actions"]? and _document.__deck_mgr["card-actions"][type]?
         _document.__deck_mgr["card-actions"][type]($card, $cardContent)
 
+    ### COLLAPSING ###
     _collapse_card = ($card)->
       moving_info = {}
       moving_info["col_moves"] = {}
-
+      ### Get Card ###
       id = parseInt $card.attr "data-card-id"
       d = __card_data_by_id[id]
       ### Remove old position/size of card ####
       _remove_old_position($card,d)
-      ### Figure out the height differences for each col ###
+
+      ### Calculate New Dimensions ###
       o_col_span = d['original-col-span'] 
       o_col = d['original-col']
       o_col_end = o_col+o_col_span-1
 
       col = d.col
       col_end = d.col+d.col_span-1
+
       row_span = d.row_span
       o_row_span  = d['original-row-span'] 
       row = d.row
 
+      ### Can we move this card up any further ? ###
+      row_test = row-1
+      shifts = 0
+      while _fit_location(row_test,o_col,
+        "row_span":o_row_span
+        "col_span":o_col_span,
+        "ignoreId",id)
+        row = row_test
+        row_test -= 1
+        shifts += 1
+
+      ### Set back origional values ###    
+      d.col = o_col
+      d.col_span = o_col_span
+      d.row_span = o_row_span
+      d.row = row
+      delete d['original-row-span'] 
+      delete  d['original-col-span']
+      delete d['original-col']
+
+      ### Set the new position/size of card ###
+      _set_new_position($card,d)
+
       for c in [col..__col_max]
         if c >= o_col and c <= o_col_end
-          moving_info["col_moves"][c] = row_span-o_row_span
+          moving_info["col_moves"][c] = row_span-o_row_span+(shifts)
+
         else if c >= col and c <= col_end
           ### Are there empty spaces above ? ###
           vertical_empty_spaces = 0
@@ -159,6 +186,7 @@
             vertical_empty_spaces += 1
             row_test +=1
 
+          ### Are there empty spaces below ? ###
           row_test = row-1
           while row_test > 0 and __deck[row_test][c] == undefined
             vertical_empty_spaces += 1
@@ -166,33 +194,24 @@
 
           moving_info["col_moves"][c] = vertical_empty_spaces
 
-
-      moving_info["col"] = d.col
+      ### Moving Metadata ###
+      moving_info["col"] = col
       moving_info["col_end"] = __col_max
-      moving_info["row"] = d.row+d.row_span
+      moving_info["row"] = row+shifts+row_span
       moving_info["id"] = d.id
 
-      ### Set back origional values ###    
-      d.col = d['original-col']
-      d.col_span = d['original-col-span'] 
-      d.row_span = d['original-row-span'] 
-      delete d['original-row-span'] 
-      delete  d['original-col-span']
-      delete d['original-col']
-
-      ### Set the new position/size of card ###
-      _set_new_position($card,d)
+      console.log "row" , row
       console.log "moving_info!!!",moving_info
       return moving_info
 
     free_vertical_spaces = (info,d)->
 
-      min = Number.MAX
+      min = Number.MAX_VALUE
       col_end = d.col+d.col_span-1
 
       for c in [d.col..col_end]
-        info["col_moves"][c] < min
-        min = info["col_moves"][c]
+        if info["col_moves"][c] < min
+          min = info["col_moves"][c]
 
       return min
 
@@ -206,11 +225,14 @@
             if __cards_needing_resolved_by_id[id] == undefined         
                 d = __card_data_by_id[id]
                 f_v_spaces = free_vertical_spaces(info,d)
-              if f_v_spaces != Number.MAX and _fit_location(d.row-f_v_spaces,d.col,d)
-                $card = __cards_by_id[id] 
-                _remove_old_position($card,d)
-                d.row -= f_v_spaces
-                _set_new_position($card,d)
+              while f_v_spaces > 0 and f_v_spaces != Number.MAX_VALUE
+                if  _fit_location(d.row-f_v_spaces,d.col,d,"ignoreId":id)
+                  $card = __cards_by_id[id] 
+                  _remove_old_position($card,d)
+                  d.row -= f_v_spaces
+                  _set_new_position($card,d)
+                else
+                  f_v_spaces -= 1
 
             
             __cards_needing_resolved_by_id[id]=true
@@ -218,31 +240,38 @@
       console.log "resolved cards",__cards_needing_resolved_by_id
       return true
 
+
     _click_to_collapse = (element)->
+      ### Grab Card ###
       $collapse_handle = $(element)
       $card = $collapse_handle.parents(_css_variables.selectors.card)
+      ### Collapse Card and retrieve metadata about new deck layout ###
       info  = _collapse_card($card)
+      ### Move cards up into freed spaces ###
       _move_up(info)
-      _apply_deck()
-      __cards_needing_resolved_by_id = {}
-      console.log "current deck", __deck
 
-      $collapse_handle = $(element)
-      $card = $collapse_handle.parents(_css_variables.selectors.card)
-      id = parseInt $card.attr 'data-card-id'
-
+      ### Hide Collapse View ###
       $collapse_handle.hide()
       $collapse_handle.siblings(_css_variables.selectors.expand_handle).show()
       _clean_up_deck()
+      
+      ### Call Collapsing Callbacks ###
       for callback in __event_callbacks[__events.card_collapsed] || []
         break if callback($deck, $card) == false
 
+      ### Saves changes made ot each card ###
+      _apply_deck()
+      ### Clear out global helper variables ###
+      __cards_needing_resolved_by_id = {}
+      console.log "current deck", __deck
 
+    ### EXPANDING ###
     _find_expansion_size = ($card)->
       console.log "_find_expansion_size"
-
+      ### Get Card ###
       id = $card.data("card-id")
       d = __card_data_by_id[id]
+      ### Calculate new dimensions ###
       row_expand = parseInt $card.attr "data-row-expand"
       row_end = d.row + -1 + row_expand
       row_start = d.row
@@ -251,16 +280,21 @@
       col_expand = parseInt $card.attr "data-col-expand"
       col_end = col_start + col_expand - 1 
       
+      ### 
+         If necessary, adjust the card to the leftmost space 
+         on the deck to accomidate the new size
+      ###
       while col_start + col_expand - 1 > __col_max and col_start > 0
         col_start -= 1
         col_end = col_expand + col_start - 1
       
+      ### If card to wide, truncate ###   
       if col_start == 0
-        ### Expansion Size to Big: Truncate ###
         col_start = 1
         col_end = __col_max
         col_span = col_end - col_start + 1
 
+      ### Expanded Card info and metadata ###
       result = 
           "id":id
           "row": row_start
@@ -311,6 +345,9 @@
       moving_info["col_moves"] = {}
       processed_cards = {}
 
+      ### Scan through all rows that intersect with 
+          our card's expansion 
+      ###
       for i in [changes.row..changes.row_end]
         for col, id of __deck[i]
 
@@ -324,14 +361,16 @@
             row_start = d.row + blocks_to_move
             row_end = row_start + -1 + d.row_span 
 
+            ### If this card's width doesn't fall within our
+                area of concern, skip it
+            ###
             if changes.col > col_end or changes.col_end < col_start
               console.log "skipping!!", id
               continue
 
-            ### Track conflicting cards ###
+            ### We're going to need to push some cards down to make space for our expanded card.
 
-            __cards_needing_resolved_in_order.push id
-
+            ###
             section_clear = true
             for i in [col_start..col_end] 
               if moving_info["col_moves"] != undefined and moving_info["col_moves"][i] > blocks_to_move
@@ -344,6 +383,7 @@
 
             console.log "Adding conflict.... ",id
 
+            ### If that current, card has not been dealth with ###
             if __cards_needing_resolved_by_id[id] == undefined or __cards_needing_resolved_by_id[id] < moving_info["col_moves"][col_start]
               __cards_needing_resolved_by_id[id] = moving_info["col_moves"][col_start]
               info = 
@@ -363,30 +403,40 @@
       return moving_info
 
 
-    _adjust_conflicts = ()->
+    _adjust_conflicts = (info)->
       console.log "_adjust_conflicts"
       new_deck = {}
 
-      for id, d of __card_data_by_id        
-        if d.isRemoved
+      ### For all cards in the deck ###
+      for id, d of __card_data_by_id
+     
+        ### That are currently visible ###     
+        if d.isRemoved or info.id == id
           continue
 
         $card = __cards_by_id[id]
+        ### If the card conflicts with our expansion ###
         if __cards_needing_resolved_by_id[id]
+          ### Move it down a certain amount of spots (calculated previously) ###
           d.row = d.row + __cards_needing_resolved_by_id[id]
+
+        ### Now set the position of the card on our new deck ###
         _set_new_position($card,d,"deck":new_deck)
 
       console.log "new_deck",new_deck
+      ### Set the global var to our new deck ###
       __deck = new_deck 
 
 
     set_up_expansion = ($card,changes)->
       $expand_handle = $card.find(_css_variables.selectors.expand_handle)
+      ### Get Card ###
       id = parseInt $card.attr 'data-card-id'
       d = __card_data_by_id[id]
 
       console.log ['Expand <<<', $card, d, { row: d.row, col: d.col }]
 
+      ### Update Card width/height and save previous dimensions ###
       d['original-col']  = d.col
       d['original-col-span'] = d.col_span
       d['original-row-span'] = d.row_span
@@ -395,49 +445,40 @@
       d['col'] = changes.col
       d['col_span'] = changes.col_span
 
+      ### If the card's dimensions aren't 
       if d.col_span == $card.data('original-col-span') and d.row_span == $card.data('original-row-span')
         return;
+      ###
 
       console.log ['Expand >>>', $card, d, { row: d.row, col: d.col }]
-      _set_new_position($card,d)
+      ### Set the card's new dimensions ###
+      _set_new_position($card,d,"readjust":true)
 
+      ### Hide Expansion Handle ###
       $expand_handle.hide()
       $expand_handle.siblings(_css_variables.selectors.collapse_handle).show()
+      ### Call callbacks ###
       for callback in __event_callbacks[__events.card_expanded] || []
         break if callback($deck, $card) == false
 
     _click_to_expand = (element)->
       $expand_handle = $(element)
       $card = $expand_handle.closest(_css_variables.selectors.card)
-      ### Find the expansion dimensions of the card ###
+      ### Find the expanded dimensions of the card ###
       info = _find_expansion_size($card)
-
       ### Identify cards that intersect with this expansion ###
       moving_info = _identify_intersecting_cards(info)
-      console.log "needing resolve!!!",__cards_needing_resolved_by_id
-      _adjust_conflicts()
-      ## Try resolving conflicting cards ###
-      #_try_resolving_conflicting_cards(info,lowest_card_row_ids)
-      ### else just push all conflicting cards down ###
-      #_move_conflicts_down(info,moving_info)
-
-      ### Set the new position on the __deck ###
-      #__card_data_by_id[info.id] = info
-      #_remove_old_position($card,d)
-      #console.log "DECK NOW", JSON.stringify(__deck)
-      #d['col'] = info.col
-      #d['row_span'] = info.row_span 
-      #d['col_span'] = info.col_span
-      ### Set up card's data ###
+      ### Move conflicts cards ###  
+      _adjust_conflicts(moving_info)
+      ### Expand our new card and call Expansion callbacks ###
       set_up_expansion($card,info)
 
-      
+      ### Apply changes made to each card to UI ###
       _apply_deck()
-      #console.log "final product"
-      #console.log __deck
-      __cards_needing_resolved_in_order = []
+      ### Clear out global helper variables ###
       __cards_needing_resolved_by_id = {} 
 
+      console.log "row_check",__row_max
     _on __events.card_expanded, ($deck, $card) ->
       _card_changed($deck, $card, "card-expanded")
 

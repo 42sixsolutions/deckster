@@ -38,7 +38,7 @@
     if row_end > __row_max
       __row_max = row_end
 
-    _clean_up_deck("deck":deck)
+    _clean_up_deck(settings)
 
     return true
 
@@ -51,20 +51,46 @@
         delete deck[row_subtractor]
         if __row_max == row_subtractor
           __row_max -= 1
+
       row_subtractor -= 1
 
+    ###
+    if settings and settings.readjust
+      r = 1
+      while r <= __row_max
+        empty_rows = 0
+        while r <= __row_max and deck[r] == undefined
+          empty_rows += 1
+          r += 1
 
-  _fit_location = (row, col, d) ->
+        if empty_rows > 0
+          processed = {}
+          for row_move in [r..__row_max]
+            for c, id of __deck[row_move]
+                if processed[id] == undefined
+                  processed[id] = true
+                  d = __card_data_by_id[id]
+                  d.row -= empty_rows
+                  __cards_by_id[id].attr("data-row",d.row)
+
+        r += 1
+    ###
+
+  _fit_location = (row, col, d,settings) ->
+    deck = if settings and settings.deck then settings.deck else __deck
     row_end = d.row_span + row - 1
     col_end = d.col_span + col - 1
 
-    if col_end > __col_max or row_end < 1  
+    if col_end > __col_max or row_end < 1  or row < 1
       return false
 
     for row_test in [row..row_end]
       for col_test in [col..col_end]
-        if __deck[row_test] and __deck[row_test][col_test] #these areas must be empty
-          return false # if not return false; we can't use spot.
+        if deck[row_test] and deck[row_test][col_test] #these areas must be empty
+          if settings and settings.ignoreId and settings.ignoreId == deck[row_test][col_test]
+            continue
+          else
+            return false # if not return false; we can't use spot.
 
     return true
 
