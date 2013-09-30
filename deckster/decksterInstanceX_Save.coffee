@@ -30,6 +30,7 @@
 
           $card.find(_css_variables.selectors.controls).remove()
           $card.find(_css_variables.selectors.title).remove()
+          $card.find(_css_variables.selectors.drag_mod_handle).remove()
           $card.attr("data-skip-force","true")
 
           if $card.attr("[data-url]")?
@@ -52,6 +53,7 @@
           ### Remove content this regenerated when deck is loaded ###
           $card.find(_css_variables.selectors.controls).remove()
           $card.find(_css_variables.selectors.title).remove()
+          $card.find(_css_variables.selectors.drag_mod_handle).remove()
           $card.find(_css_variables.selectors.card_content+"[data-url]").html("")
   
           $deckClone.append($card)
