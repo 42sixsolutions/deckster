@@ -8,11 +8,17 @@ build: ${MAIN_CSS} deckster.js
 ${MAIN_CSS}: ${CSS_DIR}/deckster.scss ${CSS_DIR}/partials/*.scss
 	node-sass $< $@
 
-deckster.js: deckster.coffee
-	coffee -c deckster.coffee
+deckster.js: deckster/*.coffee
+	coffee -j deckster.js -c $<
 
 serve: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 	node server.js
+
+rest: 
+	node express_example/app.js
+
+database: 
+	./mongodb/bin/mongod
 
 zip: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 	zip deckster-0.0.1.zip deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js

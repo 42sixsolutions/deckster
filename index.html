@@ -9,7 +9,7 @@
 <body>
 
 <div id="deck1" class="deckster-deck" data-col-max="4" data-draggable="true" data-expandable="true" data-cards-expanded="false" data-title="Test Deck 1" data-removable="true" data-remove-empty="true">
-  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="1" data-expanded="false" data-col-expand="7" data-row-expand="-1" data-title="Free-Credit-Report">
+  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="1" data-expanded="false" data-col-expand="7" data-row-expand="1" data-title="Free-Credit-Report">
     <div class="content">
       Tile 1
     </div>
@@ -19,12 +19,12 @@
       Tile 2
     </div>
   </div>
-  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="2" data-url="./sampleSites/site3.html" data-col-expand="0" data-row-expand="0">
+  <div class="deckster-card" data-col="3" data-row="3" data-col-span="1" data-row-span="2" data-url="./sampleSites/site3.html">
     <div class="content">
       Tile 3
     </div>
   </div>
-  <div id="cardId4" class="deckster-card" data-col="2" data-row="3" data-col-span="2" data-row-span="2" data-expanded="false" data-col-expand="3" data-row-expand="-1">
+  <div id="cardId4" class="deckster-card" data-col="2" data-row="3" data-col-span="2" data-row-span="2" data-expanded="false" data-col-expand="3" data-row-expand="1">
     <div class="content">
       Tile 4
     </div>
@@ -58,6 +58,10 @@ $(document).ready(function(){
         "card-collapsed":function($card,$contentSection){
             console.log("card-collapsed: I'm registered globally");
         }
+    },
+    "persistance":{
+       "format":"REST",
+       "url":"http://127.0.0.1:3000/user/tywinlannisterrss@42six.com",
     }
   });
   $("#deck1").deckster({

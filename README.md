@@ -3,8 +3,9 @@
 # ABOUT
 
 Deckster is a lightweight web UI framework for organizing lots of interactive elements on a single screen.
+Samples can be found here.[http://42sixsolutions.github.io/deckster/](http://42sixsolutions.github.io/deckster/)
 
-# REQUIREMENTS
+# DEVELOPMENT REQUIREMENTS
 
 * [Node.js](http://nodejs.org/) 0.10+. If multiple versions are needed in your environment, consult [NVM](https://github.com/creationix/nvm).
 * `make`, such as from [Xcode](https://developer.apple.com/xcode/) command line tools, [build-essential](http://packages.ubuntu.com/search?keywords=build-essential), or [Strawberry Perl](http://chocolatey.org/packages/StrawberryPerl).
@@ -18,8 +19,10 @@ Deckster is a lightweight web UI framework for organizing lots of interactive el
 
 1. Install the smelting tools: node-sass and coffee-script. `npm install -g node-sass coffee-script`
 2. Smelt the source into finely crafted JavaScript and CSS. `make`
-3. Launch the demo server. `make serve`
-4. View the demo. `open http://localhost:3030/`
+3. Launch Demo Database. `make database`
+4. Launch REST service. `make rest`
+5. Launch the demo server. `make serve`
+6. View the demo. `open http://localhost:3030/`
 
 # DEPLOY
 
@@ -37,7 +40,7 @@ Running `make lint` yields tips for improving the code.
 # Using Deckster
 
 ## Init
-Each deck should be initialized with a call to the '$(..).deckster(..)' function. The caller should be a jquery object containing the deck element. You should pass your configuration options to this call.
+Each deck should be initialized with a call to the '$(deckID).deckster(..)' function. The caller should be a jquery object containing the deck element. You should pass your configuration options to this call.
 
 ## Navigation
 For large pages with many cards or multiple decks, a navigation button bar is provided at the top right (position is

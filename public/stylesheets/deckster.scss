@@ -8,6 +8,7 @@ $deckster_drag_handle: ".deckster-drag-handle";
 $deckster_remove_handle: ".deckster-remove-handle";
 $deckster_removed_card_li: ".deckster-removed-card-li";
 $deckster_removed_card_button: ".deckster-removed-card-button";
+$deckster_drag_mod_handle:".deckster-drag-mod-handle";
 
 $deckster_deck_jump_scroll: '.deckster-deck-jump-scroll';
 
@@ -31,4 +32,9 @@ div.shadowbox{
 	border:10px solid rgba(0,150,150,.15);
     z-index:100;
  	position:absolute;
+}
+
+#{$deckster_drag_mod_handle}{
+	padding-right:10px;
+	padding-bottom:5px;
 }

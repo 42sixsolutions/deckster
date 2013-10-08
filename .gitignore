@@ -3,3 +3,5 @@ deckster.css
 deckster.js
 *.zip
 npm-debug.log
+*.swp
+.idea*

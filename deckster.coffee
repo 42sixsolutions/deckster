@@ -5,6 +5,7 @@ _css_variables =
     card: '.deckster-card'
     card_title: '.deckster-card-title'
     controls: '.deckster-controls'
+    deck_controls: '.deck-controls'
     drag_handle: '.deckster-drag-handle'
     expand_handle: '.deckster-expand-handle'
     collapse_handle: '.deckster-collapse-handle'
@@ -40,7 +41,6 @@ _ajax_default =
   error: (response,status,exception) ->
       console.log("Status: "+status+" Error: "+exception)
   timeout: 3000
-  type: 'GET'
   async: true
 
 ###
@@ -166,6 +166,8 @@ window.Deckster = (options) ->
     
   $deck = $(this)
 
+  original_content = $deck[0].outerHTML
+
   unless $deck.hasClass(_css_variables.classes.deck)
     return console.log 'Not a valid deck'
 
@@ -176,6 +178,7 @@ window.Deckster = (options) ->
     url_enabled:true
     removable: true
     droppable: true
+    persist: true
 
   options = $.extend {}, __default_options, options
 
@@ -195,7 +198,7 @@ window.Deckster = (options) ->
   __set_option 'removable'
   __set_option 'url-enabled', 'url_enabled'
   __set_option 'droppable'
-
+  __set_option 'persist'
   ###
      Init Dragging options
   ###   
@@ -213,6 +216,7 @@ window.Deckster = (options) ->
     Deckster Base 
    --- Deckster Base Variables
   ###
+ 
   __next_id = 1
   __deck = {}
   __cards_by_id = {}
@@ -225,7 +229,7 @@ window.Deckster = (options) ->
 
   __dominate_card_data = undefined
   
-
+  __is_saved = false
   ###
     Registered callbacks events. 
   ###
@@ -260,6 +264,7 @@ window.Deckster = (options) ->
     __event_callbacks[__events.card_added] = retain_callbacks
 
   _force_card_to_position = ($card, d, p) ->
+    console.log("__col_max",__col_max)
     throw 'Card expands out of bounds' if p.col + (d.col_span - 1) > __col_max
     _mark_card_as_resolved d
     __dominate_card_data = d
@@ -406,7 +411,7 @@ window.Deckster = (options) ->
           row_max_value = d.row + d.row_span - 1
           __row_max = row_max_value if row_max_value > __row_max
 
-    $deck.attr 'data-row-max', row_max
+    $deck.attr 'data-row-max', __row_max
 
   ###
   # Initially, cards will be hidden if the 'data-hidden' attribute is true, or
@@ -431,6 +436,7 @@ window.Deckster = (options) ->
     $deck_wrapper = $(_init_deck_wrapper($deck))
     $deck.replaceWith($deck_wrapper)
     $deck_wrapper.append $deck
+
     # Hide the "Removed Cards" dropdown if it doesn't have any cards
     $dropdown = $deck_wrapper.find(_css_variables.selectors.removed_dropdown)
     $dropdown.hide() if $dropdown.find('ul').children().size() == 0
@@ -467,7 +473,9 @@ window.Deckster = (options) ->
            </div>
     """
 
+
   init = ->
+
     __col_max = $deck.data 'col-max'
     _init_deck_header($deck)
 
@@ -495,11 +503,13 @@ window.Deckster = (options) ->
       $(this).css('padding-top',$theight)
 
     _apply_deck()
+    console.log "riw-max",$deck.attr("data-row-max")
     cards.append "<div class='#{_css_variables.classes.controls}'></div>"
     for callback in __event_callbacks[__events.inited] || []
       break if callback($deck) == false
     _create_jump_scroll_card $deck
     _create_jump_scroll_deck 0xDEADBEEF
+
 
   _adjust_adjacent_decks = ($deck) ->
     ###
@@ -619,13 +629,199 @@ window.Deckster = (options) ->
     #console.log("done init window layout",_window.__deck_mgr.layout)
     return true
 
+  #Persist Deck
+  if options['persist'] && options['persist'] == true
+
+    _on __events.inited, ($deck) ->
+      $deck.closest(_css_variables.selectors.deck_container)
+      .find(_css_variables.selectors.deck_controls).append(_init_persistence())
+      $("#save").bind("click",_saveDeckRemotly)
+      $("#load").bind("click",_loadRemoteDeck)
+
+    _init_persistence = ()->
+      return """
+        <span>
+          <button id = "save">Save</button>
+          <button id = "load">Load</button>
+        </span>
+      """
+
+    _saveDeckRemotly = ()->
+      persistance = _document.__deck_mgr.persistance
+      ### Save DECK ###
+      deckId = $deck.attr("id")
+      $deckClone = $deck.clone(true)
+
+      $deckClone.find(_css_variables.selectors.controls).remove()
+      $deckClone.find(_css_variables.selectors.title).remove()
+      $deckClone.find(_css_variables.selectors.card_content+"[data-url]").html("")
+      
+      ### Save Removed Cards ###
+      $dropdown = $deck.closest(_css_variables.selectors.deck_container).find(_css_variables.selectors.removed_dropdown)
+      removedCardClones = null
+      $dropdown.find("a").each((index)->
+        $link = $(this)
+        #removedCardClones = removedCardClones || {}
+        temp = $link.attr("id").indexOf(_css_variables.classes.removed_card_button)+
+          _css_variables.classes.removed_card_button.length+1
+        cardId = parseInt $link.attr("id").substring(temp)
+        $card = __cards_by_id[cardId].clone().attr("data-is-removed","true")
+        #removedCardClones[cardId] = $card.clone()[0].outerHTML
+        $card.find(_css_variables.selectors.controls).remove()
+        $card.find(_css_variables.selectors.title).remove()
+        $card.find(_css_variables.selectors.card_content+"[data-url]").html("")
+
+        $deckClone.append($card)
+      )
+      deckClone = $deckClone[0].outerHTML
+      deckId = $deck.attr("id")
+      
+      ### Create REST call ###
+      if persistance?
+          url = 
+            "url":persistance.url
+            "type": "POST" #if __is_saved then "PUT" else "POST"
+            "success":(data,status,response)->
+              console.log("successfully saved deck preferences")
+              #_localMgr("save":true)
+              __is_saved = true
+            "error":(response,status,exception)->
+              console.log("unsuccessfully saved deck preferences")
+              
+          url.data = {}
+          url.data[deckId] = {}
+          url.data[deckId].layout = deckClone
+          if removedCardClones?
+            url.data[deckId].removedCards = JSON.stringify(removedCardClones)
+          console.log("URL UNSTRINGIFYED",url)
+          console.log("URL: "+JSON.stringify(url));
+          _ajax(url)
+
+      #else
+        ### Only Persist Locally ###
+        #_localMgr("save":true)
+
+    _reset_deck = ()->
+      __next_id = 1
+      __deck = {}
+      __cards_by_id = {}
+      __card_data_by_id = {}
+      __col_max = 0
+      __row_max = 0
+    
+    _add_callback = ($card)->
+
+    _loadRemoteDeck = ()->
+      #unless _localMgr("load":false) 
+        persistance = _document.__deck_mgr.persistance
+        url = 
+          "url":persistance.url
+          "type":"GET"
+          "success":(data,status,response)->
+            str  = "No Deck Saved"
+            if(data._id == "undefined")
+              __is_saved = false
+              _reset_deck()
+              init()
+            else
+              str = "Loading Saved Deck"
+              deckId = $deck.attr("id")
+              layout = data[deckId].layout
+              ### Add back saved deck ###
+              if $deck.closest(_css_variables.selectors.deck_container).length > 0
+                console.log("Replacing Deck Container")
+                $deck.closest(_css_variables.selectors.deck_container)
+                .replaceWith(layout)
+              else
+                console.log("Replacing Deck")
+                $deck.replaceWith(layout)
+
+              console.log(str)            
+              _reset_deck()
+              ### Set new deck handle ###
+              $deck = $("#"+deckId)   
+              __is_saved = true
+              ### INIT ###
+              init()
+              ### Add back removed cards 
+              if data[deckId].removedCards?
+                data[deckId].removedCards = JSON.parse(data[deckId].removedCards)
+                $dropdown = $deck.closest(_css_variables.selectors.deck_container).find(_css_variables.selectors.removed_dropdown);
+              ###
+              idsToRemove = []
+              
+              $.each($deck.find("[data-is-removed='true'] "+_css_variables.selectors.remove_handle),
+                (index)->
+                  $(this).trigger('click')
+                  idsToRemove
+                  .push(parseInt $(this).closest(_css_variables.selectors.card).data("card-id"))
+              )
+              
+              $.each(idsToRemove,(index)->
+                __cards_by_id[idsToRemove[index]].removeAttr("data-is-removed")
+              )
+              
+              ###
+                cardId = __next_id++
+                $card = $(cardHTML)
+                $card.attr("id",cardId)
+                __cards_by_id[cardId] = $card
+                __card_data_by_id[cardId] = 
+                    "id":cardId
+                    "row":parseInt $card.attr("data-row")
+                    "col":parseInt $card.attr("data-col")
+                    "row_span": parseInt $card.attr("data-row-span")
+                    "col_span":parseInt $card.attr("data-col-span")
+
+                $dropdown.find('ul')
+                .append(_get_removed_card_li_tag(cardId, _get_title($card)));
+                
+                $dropdown.find('#' + _css_variables.classes.removed_card_button + '-' + cardId).click ->
+                  temp = $(this).attr("id").indexOf(_css_variables.classes.removed_card_button)+
+                     _css_variables.classes.removed_card_button.length+1
+                  cardId = parseInt $(this).attr("id").substring(temp)
+                  console.log("cardId::",cardId)
+                  _move_to_open_position(cardId,$dropdown)
+              
+
+              if ($dropdown.is(":hidden")) 
+                $dropdown.show()
+              ###
+            #_localMgr("save":true)
+
+          "error":(response,status,exception)->
+            str = "Error Loading Deck"
+            console.log(str)
+            init()
+            #_localMgr("save":true)
+
+        return _ajax(url)
+
+    _localMgr = (option)->
+      return false
+
+      if typeof(Storage)?
+        if option.load and localStorage.deck
+          console.log("Loading Locally Saved Deck")
+          console.log("DECK "+JSON.parse(localStorage.deck))
+
+          __deck = JSON.parse(localStorage.deck)
+          _apply_deck()
+          return true
+        else if option.save?
+          console.log("Saving Deck Locally")
+          localStorage.deck = JSON.stringify(__deck)
+          return true    
+        
+      return false
+
   # Deckster Drag
   if options['draggable'] && options['draggable'] == true
     __$active_drag_card = undefined
     __active_drag_card_drag_data = undefined
 
     _on __events.inited, ($deck) ->
-      controls = "<a class='#{_css_variables.classes.drag_handle} control drag'></a>"
+      controls = "<a title='Drag' class='#{_css_variables.classes.drag_handle} control drag'></a>"
       $deck.find(_css_variables.selectors.controls).append controls
 
     _on __events.inited, ($deck) ->
@@ -722,29 +918,37 @@ window.Deckster = (options) ->
 
 
     _move_card = ($card, direction) ->
-      id = $card.data('card-id')
+      id = parseInt $card.data('card-id')
       d = __card_data_by_id[id]
+      console.log "data", d
       switch direction
         when 'left' then _force_card_to_position $card, d, { row: d.row, col: d.col - 1}
         when 'right' then _force_card_to_position $card, d, { row: d.row, col: d.col + 1}
         when 'up' then _force_card_to_position $card, d, { row: d.row - 1, col: d.col}
         when 'down' then _force_card_to_position $card, d, { row: d.row + 1, col: d.col}
       _apply_deck()
+      console.log("new Deck",__deck)
 
   # Deckster Expand
   if options['expandable'] && options['expandable'] == true
     _on __events.inited, ($deck) ->
       controls = """
-                 <a class='#{_css_variables.classes.expand_handle} control expand'></a>
-                 <a class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
+                 <a title="Expand" class='#{_css_variables.classes.expand_handle} control expand'></a>
+                 <a title="Collapse" class='#{_css_variables.classes.collapse_handle} control collapse' style='display:none;'></a>
                  """
-      $deck.find(_css_variables.selectors.controls).append controls
+      $deck.find(_css_variables.selectors.controls).each((index)->
+        $card = $(this).closest(_css_variables.selectors.card)
+        ###Hide Expand Control if necessary ###
+        if (parseInt($card.data("col-expand")) > 0 or parseInt($card.data("row-expand")) > 0)  
+          $(this).append controls
+      )
 
       $deck.find(_css_variables.selectors.expand_handle).click ->
         _expand_on_click(this)
 
       $deck.find(_css_variables.selectors.collapse_handle).click ->
         _collapse_on_click(this)
+ 
 
     _expand_on_click = (element) ->
         $expand_handle = $(element)
@@ -1012,7 +1216,9 @@ window.Deckster = (options) ->
   if options.droppable == true
     _on __events.inited, ($card,d) ->
       $controls = $card.find(_css_variables.selectors.controls)
-      $droppable = $("<a></a>").addClass(_css_variables.selectors.droppable.substring(1) + ' control droppable1')
+      $droppable = $("<a></a>")
+      .addClass(_css_variables.classes.droppable + ' control droppable1')
+      .attr("title","Drop")
       $droppable.click( (element) ->  
         $drop_handle = $(element.currentTarget)
         unless $drop_handle.hasClass("cancel") 
@@ -1051,16 +1257,30 @@ window.Deckster = (options) ->
         title = $card.data "title"
 
         unless title? and !$card.find(_css_variables.selectors.card_title).text()
-              return
+          return
+        
         $title_div = $('<div>')
               .text(title)
               .addClass(_css_variables.classes.card_title)
         $card.prepend $title_div
 
-  # Deckster Remove
+ 
+  _get_title = ($card)->
+    ### Set Title ###
+    titleText = $card.find(_css_variables.selectors.card_title).text()
+    
+    unless titleText.length
+      # Display the first n characters of the content
+      $content = $card.find(_css_variables.selectors.card_content)
+      charLen = _css_variables.chars_to_display
+      charLen = $content.text().length if $content.text().length < _css_variables.chars_to_display
+      titleText = $content.text().substring(0,charLen)+"..."
+
+    return titleText
+
   if options['removable'] && options['removable'] == true
     _on __events.inited, ($card) ->
-      controls = "<a class='#{_css_variables.classes.remove_handle} control remove'></a>"
+      controls = "<a title='Remove' class='#{_css_variables.classes.remove_handle} control remove'></a>"
       $card.find(_css_variables.selectors.controls).append controls
 
       $card.find(_css_variables.selectors.remove_handle).click ->
@@ -1077,14 +1297,7 @@ window.Deckster = (options) ->
         deckId = $deck.attr("id")
 
         ### Set Title ###
-        titleText = $card.find(_css_variables.selectors.card_title).text()
-        
-        unless titleText.length
-          # Display the first n characters of the content
-          $content = $card.find(_css_variables.selectors.card_content)
-          charLen = _css_variables.chars_to_display
-          charLen = $content.text().length if $content.text().length < _css_variables.chars_to_display
-          titleText = $content.text().substring(0,charLen)+"..."
+        titleText = _get_title($card)
 
         ### Dropdown Handle ###
         $dropdown = $deck.closest(_css_variables.selectors.deck_container).find(_css_variables.selectors.removed_dropdown)
@@ -1275,7 +1488,7 @@ window.Deckster = (options) ->
 
   # Deckster End
 
-  init()
+  _loadRemoteDeck()
 
   deckster =
     deck: __deck
