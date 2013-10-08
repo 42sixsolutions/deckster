@@ -57,6 +57,7 @@
       __active_dragging_data.d["row_span"] = row
       
       if col_mod != 0 or row_mod != 0 
+          console.log "adjusting deck"
           __$active_dragging_placeholder.attr("data-row-span",row)
           __$active_dragging_placeholder.attr("data-col-span",col)
           _force_card_to_position __$active_dragging_card,__active_dragging_data.d, { row: __active_dragging_data.d.row, col: __active_dragging_data.d.col}
@@ -107,7 +108,8 @@
 
     _init_drag_expand_callbacks = ()->
       ### Init Dragging Process ###
-      $deck.find(_css_variables.selectors.drag_mod_handle).on "mousedown", (event)->
+      $drag_handles = $deck.find(_css_variables.selectors.drag_mod_handle)
+      $drag_handles.on "mousedown", (event)->
         console.log "drag mousedown"
         $card = $(this).closest(_css_variables.selectors.card)
         cardId = parseInt $card.data("card-id")
@@ -184,7 +186,24 @@
 
           _width_check(currentX,currentX-__active_dragging_data.x)
           _height_check(currentY, currentY-__active_dragging_data.y)
-          _expand_card()
+          #_expand_card()
+
+          __$active_dragging_card.width(__active_dragging_data.width)
+          __$active_dragging_card.height(__active_dragging_data.height)
+          
+          ### Move surrounding cards if expanding / collapsing has reached a certain points ###
+          col_change = (__active_dragging_data.width-__active_dragging_data.delta_width)
+          if col_change > __col_threshold_min or col_change < -(__col_threshold_min)
+            console.log "col_change", col_change 
+            _expand_card()
+            __active_dragging_data.delta_width += col_change
+
+          row_change = (__active_dragging_data.height-__active_dragging_data.delta_height)
+          if row_change > __row_threshold_min or row_change < -(__row_threshold_min)
+            console.log "row_change", row_change 
+            _expand_card()
+            __active_dragging_data.delta_height += row_change
+
 
           ### Set z-index back to what it was before ###
           __$active_dragging_card.css("z-index",__$active_dragging_card.attr("data-prev-z"))

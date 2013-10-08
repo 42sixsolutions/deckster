@@ -1,9 +1,11 @@
   if options['persist'] && options['persist'] == true
       _on __events.inited, ($deck,$card) ->
-        $deck.closest(_css_variables.selectors.deck_container)
-        .find(_css_variables.selectors.deck_controls).append(_init_persistence())
-        $("#save").bind("click",_saveDeckRemotly)
-        $("#load").bind("click",_loadRemoteDeck)
+        if _document.__deck_mgr != undefined and _document.__deck_mgr.persistance != undefined and 
+        _document.__deck_mgr.persistance.url != undefined
+            $deck.closest(_css_variables.selectors.deck_container)
+            .find(_css_variables.selectors.deck_controls).append(_init_persistence())
+            $("#save").bind("click",_saveDeckRemotly)
+            $("#load").bind("click",_loadRemoteDeck)
 
       _init_persistence = ()->
         return """ 
@@ -28,6 +30,7 @@
 
           $card.find(_css_variables.selectors.controls).remove()
           $card.find(_css_variables.selectors.title).remove()
+          $card.find(_css_variables.selectors.drag_mod_handle).remove()
           $card.attr("data-skip-force","true")
 
           if $card.attr("[data-url]")?
@@ -50,6 +53,7 @@
           ### Remove content this regenerated when deck is loaded ###
           $card.find(_css_variables.selectors.controls).remove()
           $card.find(_css_variables.selectors.title).remove()
+          $card.find(_css_variables.selectors.drag_mod_handle).remove()
           $card.find(_css_variables.selectors.card_content+"[data-url]").html("")
   
           $deckClone.append($card)
@@ -88,6 +92,8 @@
       
       _loadRemoteDeck = ()->
         #unless _localMgr("load":false) 
+        if _document.__deck_mgr != undefined and _document.__deck_mgr.persistance != undefined and 
+        _document.__deck_mgr.persistance.url != undefined
           persistance = _document.__deck_mgr.persistance
           url = 
             "url":persistance.url
@@ -147,6 +153,12 @@
               #_localMgr("save":true)
 
           return _ajax(url)
+        else
+          __is_saved = false
+          _reset_deck()
+          init()
+
+        return undefined
 
       _localMgr = (option)->
         return false

@@ -165,8 +165,6 @@
           applied_card_ids[id] = true
 
           $card = __cards_by_id[id]
-          __card_data_by_id[id].row = parseInt row
-          __card_data_by_id[id].col = parseInt col
           d = __card_data_by_id[id]
 
           $card.attr 'data-card-id', id
