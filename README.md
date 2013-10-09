@@ -7,65 +7,71 @@ Deckster is a lightweight web UI framework for organizing lots of interactive el
 # USAGE
 
 Please reference the [samples](http://42sixsolutions.github.io/deckster/) for their usages.  In short, it's
+'''javascript
     $("#deck1").deckster();
+'''
 
 ## Deck Data Attributes
 
-* col-max (REQUIRED) (Example: 4)
-    How many cards across is the deck?
+<dl>
+    <dt>col-max (REQUIRED) (Example: 4)</dt>
+    <dd>How many cards across is the deck?</dd>
 
-* title (Example: 'Sample Deck')
-    If given, a the title will display above the deck
+    <dt>title (Example: 'Sample Deck')</dt>
+    <dd>If given, a the title will display above the deck</dd>
 
-* expandable (Default: True)
-    Can the user expand the cards?  Individual card options can override this.
+    <dt>expandable (Default: True)</dt>
+    <dd>Can the user expand the cards?  Individual card options can override this.</dd>
 
-* cards-expanded (Default: True)
-    Do the cards start out expanded?  Individual card options can override this.
+    <dt>cards-expanded (Default: True)</dt>
+    <dd>Do the cards start out expanded?  Individual card options can override this.</dd>
 
-* draggable (Default: True)
-    Can the cards be dragged?  Individual card options can override this.
+    <dt>draggable (Default: True)</dt>
+    <dd>Can the cards be dragged?  Individual card options can override this.</dd>
 
-* removable (Default: True)
-    Can the cards be removed?  Individual card options can override this.
+    <dt>removable (Default: True)</dt>
+    <dd>Can the cards be removed?  Individual card options can override this.</dd>
+</dl>
 
 ## Card Data Attributes
 
-* col (REQUIRED) (Example: 2)
-    The initial column for the top left of the card
+<dl>
+    <dt>col (REQUIRED) (Example: 2)</dt>
+    <dd>The initial column for the top left of the card</dd>
 
-* row (REQUIRED) (Example: 2)
-    The initial row for the top left of the card
+    <dt>row (REQUIRED) (Example: 2)</dt>
+    <dd>The initial row for the top left of the card</dd>
 
-* col-span (Example: 3)
-    The width of the card
+    <dt>col-span (Example: 3)</dt>
+    <dd>The width of the card</dd>
 
-* row-span (Example: 3)
-    The height of the card
+    <dt>row-span (Example: 3)</dt>
+    <dd>The height of the card</dd>
 
-* col-expand (Example: 4)
-    The width of the card when expanded
+    <dt>col-expand (Example: 4)</dt>
+    <dd>The width of the card when expanded</dd>
 
-* row-expand (Example: 4)
-    The height of the card when expanded
+    <dt>row-expand (Example: 4)</dt>
+    <dd>The height of the card when expanded</dd>
 
-* url (Example: 'http://www.google.com')
-    If given, the response of the ajax call will be placed in the content
+    <dt>url (Example: 'http://www.google.com')</dt>
+    <dd>If given, the response of the ajax call will be placed in the content</dd>
 
-* title (Example: 'Sample Card')
-    If given, the title will display above the deck
+    <dt>title (Example: 'Sample Card')</dt>
+    <dd>If given, the title will display above the deck</dd>
 
-* expandable (Default: True)
-    Can the user expand the card?  Individual card options can override this.
+    <dt>expandable (Default: True)</dt>
+    <dd>Can the user expand the card?  Individual card options can override this.</dd>
 
-* cards-expanded (Default: True)
-    Do the card start out expanded?  Individual card options can override this.
+    <dt>cards-expanded (Default: True)</dt>
+    <dd>Do the card start out expanded?  Individual card options can override this.</dd>
 
-* draggable (Default: True)
-    Can the card be dragged?  Individual card options can override this.
+    <dt>draggable (Default: True)</dt>
+    <dd>Can the card be dragged?  Individual card options can override this.</dd>
 
-* removable (Default: True)
-    Can the card be removed?  This will override the deck option.
+    <dt>removable (Default: True)</dt>
+    <dd>Can the card be removed?  This will override the deck option.</dd>
+</dl>
 
 # DEVELOPMENT REQUIREMENTS
 
