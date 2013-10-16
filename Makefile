@@ -9,7 +9,7 @@ ${MAIN_CSS}: ${CSS_DIR}/deckster.scss ${CSS_DIR}/partials/*.scss
 	node-sass $< $@
 
 deckster.js: deckster/*.coffee
-	coffee -j deckster.js -c $<
+	coffee -j deckster.js -c $^
 
 serve: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
 	node server.js
