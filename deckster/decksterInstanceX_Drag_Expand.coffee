@@ -14,7 +14,7 @@
     _init_drag_expand = ()->
       return """ 
         <div style="float:right">
-          <span class="#{_css_variables.classes.drag_mod_handle}">D</span>
+          <span class="#{_css_variables.classes.drag_mod_handle}"></span>
         </div>
       """ 
 

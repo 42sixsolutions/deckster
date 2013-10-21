@@ -210,33 +210,36 @@
 
   _init_deck_wrapper = ($deck) ->
     return """
-           <div class="#{_css_variables.classes.deck_container}">
-           <div class="deck-header">
-           <div class="wrapper">
-           <div class="#{_css_variables.classes.deck_title}">#{$deck.data("title") or ""}</div>
-           <div class="deck-controls">
-    #{_init_card_add_remove()}
-    #{_init_card_scroll($deck)}
-           </div>
-           </div>
-           </div>
-           """
+          <div class="#{_css_variables.classes.deck_container}">
+            <div class="deck-header">
+              <div class="wrapper">
+                <div class="#{_css_variables.classes.deck_title}">
+                  #{$deck.data("title") or ""}
+                </div>
+                <div class="deck-controls">
+                  #{_init_card_add_remove()}
+                  #{_init_card_scroll($deck)}
+                </div>
+              </div>
+            </div>
+          </div>
+          """
 
   _init_card_add_remove = ()->
     return """
-           <div class="btn-group #{_css_variables.classes.removed_dropdown}">
-           <span class="dropdown-toggle control add" data-toggle="dropdown"></span>
-           <ul class="dropdown-menu pull-right"></ul>
-           </div>
-           """
+          <div class="btn-group #{_css_variables.classes.removed_dropdown}">
+            <span class="dropdown-toggle control add" data-toggle="dropdown"></span>
+            <ul class="dropdown-menu pull-right"></ul>
+          </div>
+          """
 
   _init_card_scroll = ($deck)->
     return """
-           <div id="#{$deck.attr("id")}-nav" class="btn-group #{_css_variables.classes.card_jump_scroll}">
-           <span class="dropdown-toggle control jump-card" data-toggle="dropdown"></span>
-           <ul class="dropdown-menu pull-right"></ul>
-           </div>
-           """
+          <div id="#{$deck.attr("id")}-nav" class="btn-group #{_css_variables.classes.card_jump_scroll}">
+            <span class="dropdown-toggle control jump-card" data-toggle="dropdown"></span>
+            <ul class="dropdown-menu pull-right"></ul>
+          </div>
+          """
 
   _layout_check = ($cards)->
 
