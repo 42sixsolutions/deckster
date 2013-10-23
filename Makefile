@@ -1,4 +1,5 @@
 CSS_DIR = public/stylesheets
+FONT_FILES = public/fonts/*
 MAIN_CSS = ${CSS_DIR}/deckster.css
 # Keep globbing consistent across platforms
 export LC_COLLATE = C
@@ -26,7 +27,7 @@ database:
 	./mongodb/bin/mongod
 
 zip: deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
-	zip deckster-0.0.1.zip deckster.js ${MAIN_CSS} index.html jquery-2.0.3.min.js
+	zip deckster-0.0.1.zip deckster.js ${MAIN_CSS} ${FONT_FILES} index.html jquery-2.0.3.min.js
 
 lint: coffeelint jshint csslint tidy
 
