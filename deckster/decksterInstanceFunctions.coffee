@@ -122,7 +122,7 @@
     unless leftAnimate? and topAnimate?
       mysheet = null
       for sheet, index in document.styleSheets
-        if _css_variables.styleSheet == sheet.href.split("/").pop()
+        if sheet.href? and _css_variables.styleSheet == sheet.href.split("/").pop()
           mysheet = sheet
           break
 
