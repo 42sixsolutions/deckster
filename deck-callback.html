@@ -45,7 +45,8 @@
 <pre class="prettyprint">
 $("#deck1").deckster();
 </pre>
-<div id="deck1" class="deckster-deck" data-col-max="4" data-title="Expandable Cards" data-expandable="true" data-cards-expanded="false">
+<div id="deck1" class="deckster-deck" data-col-max="4" data-title="Expandable Cards" data-expandable="true"
+     data-cards-expanded="false">
     <div class="deckster-card" data-col="1" data-row="1" data-col-span="1" data-row-span="1"
          data-col-expand="4" data-row-expand="1">
         <div class="content">
@@ -77,7 +78,14 @@ $("#deck1").deckster();
 <script src="javascripts/deckster.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#deck1").deckster();
+        $("#deck1").deckster({"card-actions": {
+            "card-expanded": function ($card, $contentSection) {
+                console.log("card-expanded: I'm registered globally");
+            },
+            "card-collapsed": function ($card, $contentSection) {
+                console.log("card-collapsed: I'm registered globally");
+            }
+        }});
     });
 </script>
 </body>

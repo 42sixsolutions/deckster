@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Decks</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="stylesheets/deckster.css">
+    <link rel="stylesheet" href="stylesheets/theme-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div id="deck1" class="deckster-deck" data-col-max="4" data-title="IceCar" data-expandable="true" data-cards-expanded="false">
+    <div class="deckster-card" data-col="1" data-row="1" data-col-span="4" data-row-span="1" data-col-expand="4" data-row-expand="3">
+        <div class="content">
+            Ice Car Search
+        </div>
+    </div>
+    <div class="deckster-card" data-col="1" data-row="2" data-col-span="1" data-row-span="1" data-col-expand="4" data-row-expand="3">
+        <div class="content">
+            Ice Car Data
+        </div>
+    </div>
+    <div class="deckster-card" data-col="2" data-row="2" data-col-span="1" data-row-span="1" data-col-expand="4" data-row-expand="3">
+        <div class="content">
+            Ice Car Map
+        </div>
+    </div>
+    <div class="deckster-card" data-col="3" data-row="2" data-col-span="1" data-row-span="1" data-col-expand="4" data-row-expand="3">
+        <div class="content">
+            Ice Car Graph
+        </div>
+    </div>
+    <div class="deckster-card" data-col="4" data-row="2" data-col-span="1" data-row-span="1" data-col-expand="4" data-row-expand="3">
+        <div class="content">
+            Ice Car Results
+        </div>
+    </div>
+    <div class="deckster-card" data-col="1" data-row="3" data-col-span="2" data-row-span="2" data-col-expand="4" data-row-expand="3">
+        <div class="content">
+            Ice Car Charts
+        </div>
+    </div>
+</div>
+<script src="javascripts/scale.fix.js"></script>
+<script src="javascripts/jquery-2.0.3.min.js"></script>
+<script src="javascripts/bootstrap.js"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<script src="javascripts/deckster.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#deck1").deckster();
+    });
+</script>
+</body>
+</html>
